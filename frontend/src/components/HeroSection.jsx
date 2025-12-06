@@ -84,3 +84,93 @@ const HeroSection = () => {
 };
 
 export default HeroSection;
+
+// // components/HeroSection.jsx
+
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Card, CardContent } from "@/components/ui/card";
+// import { Calendar, MapPin, Users } from "lucide-react";
+
+// const HeroSection = () => {
+//   return (
+//     <section className="min-h-screen bg-gradient-to-br from-slate-900 via-slate-800 to-slate-900 relative overflow-hidden">
+//       {/* Floating Blur Lights */}
+//       <div className="absolute top-10 left-10 w-72 h-72 bg-indigo-600/20 blur-3xl rounded-full" />
+//       <div className="absolute bottom-10 right-10 w-72 h-72 bg-cyan-500/20 blur-3xl rounded-full" />
+//       <div className="absolute inset-0 bg-grid-white/[0.03] bg-[size:60px_60px]" />
+
+//       <div className="relative z-10 container mx-auto px-6 pt-28 pb-20">
+//         {/* Hero Text */}
+//         <div className="text-center max-w-4xl mx-auto mb-16">
+//           <h1 className="text-5xl md:text-7xl font-extrabold text-white leading-tight drop-shadow-md">
+//             Find the Perfect
+//             <span className="bg-gradient-to-r from-indigo-400 to-cyan-400 bg-clip-text text-transparent">
+//               {" "}
+//               Ride
+//             </span>{" "}
+//             for Your Journey
+//           </h1>
+
+//           <p className="text-xl text-slate-300 mt-6 max-w-2xl mx-auto">
+//             Premium rentals for every occasion — luxury drives, city rides,
+//             family trips, and off-road adventures. Choose your ideal vehicle.
+//           </p>
+//         </div>
+
+//         {/* Search Bar */}
+//         <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl rounded-2xl">
+//           <CardContent className="p-8">
+//             <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
+//               {/* Location */}
+//               <div className="space-y-2">
+//                 <label className="text-slate-200 text-sm font-medium flex items-center">
+//                   <MapPin className="w-4 h-4 mr-2 text-cyan-300" />
+//                   Pick-up Location
+//                 </label>
+//                 <Input
+//                   placeholder="Search city or airport..."
+//                   className="bg-white/10 border-white/20 text-slate-100 placeholder:text-slate-400"
+//                 />
+//               </div>
+
+//               {/* Date */}
+//               <div className="space-y-2">
+//                 <label className="text-slate-200 text-sm font-medium flex items-center">
+//                   <Calendar className="w-4 h-4 mr-2 text-cyan-300" />
+//                   Pick-up Date
+//                 </label>
+//                 <Input
+//                   type="date"
+//                   className="bg-white/10 border-white/20 text-slate-100"
+//                 />
+//               </div>
+
+//               {/* Passengers */}
+//               <div className="space-y-2">
+//                 <label className="text-slate-200 text-sm font-medium flex items-center">
+//                   <Users className="w-4 h-4 mr-2 text-cyan-300" />
+//                   Passengers
+//                 </label>
+//                 <Input
+//                   type="number"
+//                   placeholder="2"
+//                   className="bg-white/10 border-white/20 text-slate-100 placeholder:text-slate-400"
+//                 />
+//               </div>
+
+//               {/* Button */}
+//               <div className="flex items-end">
+//                 <Button className="w-full h-12 text-lg rounded-xl bg-gradient-to-r from-indigo-500 to-cyan-500 hover:opacity-90 transition-all shadow-lg hover:shadow-indigo-500/20">
+//                   Find Your Car
+//                 </Button>
+//               </div>
+//             </div>
+//           </CardContent>
+//         </Card>
+//       </div>
+//     </section>
+//   );
+// };
+
+// export default HeroSection;
