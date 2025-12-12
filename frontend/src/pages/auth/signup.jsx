@@ -505,6 +505,194 @@
 //   );
 // }
 
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import api from "../../utils/api";
+
+// import { Card, CardContent } from "@/components/ui/card";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { Mail, Lock, User, ShieldCheck } from "lucide-react";
+// import { motion } from "framer-motion";
+
+// export default function Signup() {
+//   const [step, setStep] = useState("register");
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [otp, setOtp] = useState("");
+//   const [error, setError] = useState("");
+//   const navigate = useNavigate();
+
+//   // STEP 1 — Send OTP
+//   const handleRegister = async (e) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       await api.post("/auth/send-otp", { name, email, password });
+//       setStep("otp");
+//     } catch (err) {
+//       setError(err.response?.data?.message || "Something went wrong");
+//     }
+//   };
+
+//   // STEP 2 — Verify OTP
+//   const verifyOtp = async (e) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       const res = await api.post("/auth/verify-otp", {
+//         name,
+//         email,
+//         password,
+//         otp,
+//       });
+
+//       localStorage.setItem("token", res.data.token);
+//       navigate("/");
+//     } catch (err) {
+//       setError(err.response?.data?.message || "Invalid OTP");
+//     }
+//   };
+
+//   return (
+//     <section className="min-h-screen grid grid-cols-1 lg:grid-cols-2 bg-gradient-to-br from-slate-900 via-blue-900 to-slate-900">
+//       <div className="flex items-center justify-center px-6 lg:px-16 py-10 relative">
+//         <div className="absolute inset-0 bg-grid-white/[0.05] bg-[size:60px_60px]" />
+
+//         <motion.div
+//           initial={{ opacity: 0, y: 30 }}
+//           animate={{ opacity: 1, y: 0 }}
+//           className="relative z-10 w-full max-w-xl"
+//         >
+//           <div className="flex justify-center mb-8">
+//             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-1 flex gap-2">
+//               <Button
+//                 variant="ghost"
+//                 className="text-white hover:bg-white/10"
+//                 onClick={() => navigate("/login")}
+//               >
+//                 Login
+//               </Button>
+//               <Button className="bg-cyan-500 hover:bg-cyan-600 text-white shadow">
+//                 Register
+//               </Button>
+//             </div>
+//           </div>
+
+//           <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl py-6 rounded-2xl">
+//             <CardContent className="space-y-6">
+//               <div className="text-center mb-4">
+//                 <h1 className="text-3xl font-bold text-white">
+//                   {step === "register"
+//                     ? "Create an account"
+//                     : "Verify Your Email"}
+//                 </h1>
+//                 <p className="text-gray-300">
+//                   {step === "register"
+//                     ? "Get started with just a few details"
+//                     : `Enter the OTP sent to ${email}`}
+//                 </p>
+//               </div>
+
+//               {error && (
+//                 <p className="text-red-400 text-center -mt-3">{error}</p>
+//               )}
+
+//               {/* REGISTER FORM */}
+//               {step === "register" && (
+//                 <form onSubmit={handleRegister} className="space-y-6">
+//                   <div>
+//                     <label className="text-white text-sm mb-1 flex items-center gap-2">
+//                       <User size={18} /> Full Name
+//                     </label>
+//                     <Input
+//                       value={name}
+//                       onChange={(e) => setName(e.target.value)}
+//                       required
+//                       className="bg-white/20 border-white/30 text-white"
+//                     />
+//                   </div>
+
+//                   <div>
+//                     <label className="text-white text-sm mb-1 flex items-center gap-2">
+//                       <Mail size={18} /> Email Address
+//                     </label>
+//                     <Input
+//                       value={email}
+//                       onChange={(e) => setEmail(e.target.value)}
+//                       required
+//                       className="bg-white/20 border-white/30 text-white"
+//                     />
+//                   </div>
+
+//                   <div>
+//                     <label className="text-white text-sm mb-1 flex items-center gap-2">
+//                       <Lock size={18} /> Password
+//                     </label>
+//                     <Input
+//                       type="password"
+//                       value={password}
+//                       onChange={(e) => setPassword(e.target.value)}
+//                       required
+//                       className="bg-white/20 border-white/30 text-white"
+//                     />
+//                   </div>
+
+//                   <Button
+//                     type="submit"
+//                     className="w-full bg-cyan-500 hover:bg-cyan-600 text-white h-12 text-lg rounded-xl"
+//                   >
+//                     Send OTP
+//                   </Button>
+//                 </form>
+//               )}
+
+//               {/* OTP FORM */}
+//               {step === "otp" && (
+//                 <form onSubmit={verifyOtp} className="space-y-6">
+//                   <div>
+//                     <label className="text-white text-sm mb-1 flex items-center gap-2">
+//                       <ShieldCheck size={18} /> OTP Code
+//                     </label>
+//                     <Input
+//                       value={otp}
+//                       onChange={(e) => setOtp(e.target.value)}
+//                       maxLength={6}
+//                       required
+//                       className="bg-white/20 border-white/30 text-white text-center tracking-widest"
+//                     />
+//                   </div>
+
+//                   <Button
+//                     type="submit"
+//                     className="w-full bg-cyan-500 hover:bg-cyan-600 text-white h-12 text-lg rounded-xl"
+//                   >
+//                     Verify OTP
+//                   </Button>
+//                 </form>
+//               )}
+//             </CardContent>
+//           </Card>
+//         </motion.div>
+//       </div>
+
+//       <div className="hidden lg:flex items-center justify-center relative">
+//         <div className="h-[95vh] w-[90%] shadow-2xl rounded-3xl overflow-hidden relative">
+//           <img
+//             src="https://images.unsplash.com/photo-1603881359318-e2bc03deaaee?q=80&w=765&auto=format&fit=crop"
+//             alt="Car Rental"
+//             className="w-full h-full object-cover"
+//           />
+//           <div className="absolute inset-0 bg-black/20" />
+//         </div>
+//       </div>
+//     </section>
+//   );
+// }
+
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import api from "../../utils/api";
@@ -512,7 +700,7 @@ import api from "../../utils/api";
 import { Card, CardContent } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { Mail, Lock, User, ShieldCheck } from "lucide-react";
+import { Mail, Lock, User } from "lucide-react";
 import { motion } from "framer-motion";
 
 export default function Signup() {
@@ -520,8 +708,10 @@ export default function Signup() {
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
+  const [confirmPassword, setConfirmPassword] = useState(""); // 🔹 NEW FIELD
   const [otp, setOtp] = useState("");
   const [error, setError] = useState("");
+
   const navigate = useNavigate();
 
   // STEP 1 — Send OTP
@@ -529,31 +719,20 @@ export default function Signup() {
     e.preventDefault();
     setError("");
 
+    // 🔹 Password Match Check
+    if (password !== confirmPassword) {
+      setError("Passwords do not match");
+      return;
+    }
+
     try {
       await api.post("/auth/send-otp", { name, email, password });
-      setStep("otp");
+
+      navigate("/verify-otp", {
+        state: { name, email, password },
+      });
     } catch (err) {
       setError(err.response?.data?.message || "Something went wrong");
-    }
-  };
-
-  // STEP 2 — Verify OTP
-  const verifyOtp = async (e) => {
-    e.preventDefault();
-    setError("");
-
-    try {
-      const res = await api.post("/auth/verify-otp", {
-        name,
-        email,
-        password,
-        otp,
-      });
-
-      localStorage.setItem("token", res.data.token);
-      navigate("/");
-    } catch (err) {
-      setError(err.response?.data?.message || "Invalid OTP");
     }
   };
 
@@ -576,7 +755,7 @@ export default function Signup() {
               >
                 Login
               </Button>
-              <Button className="bg-cyan-500 hover:bg-cyan-600 text-white shadow">
+              <Button className="bg-black/80 hover:bg-black text-white shadow">
                 Register
               </Button>
             </div>
@@ -586,14 +765,10 @@ export default function Signup() {
             <CardContent className="space-y-6">
               <div className="text-center mb-4">
                 <h1 className="text-3xl font-bold text-white">
-                  {step === "register"
-                    ? "Create an account"
-                    : "Verify Your Email"}
+                  Create an account
                 </h1>
                 <p className="text-gray-300">
-                  {step === "register"
-                    ? "Get started with just a few details"
-                    : `Enter the OTP sent to ${email}`}
+                  Get started with just a few details
                 </p>
               </div>
 
@@ -601,94 +776,180 @@ export default function Signup() {
                 <p className="text-red-400 text-center -mt-3">{error}</p>
               )}
 
-              {/* REGISTER FORM */}
-              {step === "register" && (
-                <form onSubmit={handleRegister} className="space-y-6">
-                  <div>
-                    <label className="text-white text-sm mb-1 flex items-center gap-2">
-                      <User size={18} /> Full Name
-                    </label>
-                    <Input
-                      value={name}
-                      onChange={(e) => setName(e.target.value)}
-                      required
-                      className="bg-white/20 border-white/30 text-white"
-                    />
-                  </div>
+              <form onSubmit={handleRegister} className="space-y-6">
+                {/* NAME */}
+                <div>
+                  <label className="text-white text-sm mb-1 flex items-center gap-2">
+                    <User size={18} /> Full Name
+                  </label>
+                  <Input
+                    value={name}
+                    onChange={(e) => setName(e.target.value)}
+                    required
+                    className="bg-white/20 border-white/30 text-white"
+                  />
+                </div>
 
-                  <div>
-                    <label className="text-white text-sm mb-1 flex items-center gap-2">
-                      <Mail size={18} /> Email Address
-                    </label>
-                    <Input
-                      value={email}
-                      onChange={(e) => setEmail(e.target.value)}
-                      required
-                      className="bg-white/20 border-white/30 text-white"
-                    />
-                  </div>
+                {/* EMAIL */}
+                <div>
+                  <label className="text-white text-sm mb-1 flex items-center gap-2">
+                    <Mail size={18} /> Email Address
+                  </label>
+                  <Input
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    required
+                    className="bg-white/20 border-white/30 text-white"
+                  />
+                </div>
 
-                  <div>
-                    <label className="text-white text-sm mb-1 flex items-center gap-2">
-                      <Lock size={18} /> Password
-                    </label>
-                    <Input
-                      type="password"
-                      value={password}
-                      onChange={(e) => setPassword(e.target.value)}
-                      required
-                      className="bg-white/20 border-white/30 text-white"
-                    />
-                  </div>
+                {/* PASSWORD */}
+                <div>
+                  <label className="text-white text-sm mb-1 flex items-center gap-2">
+                    <Lock size={18} /> Password
+                  </label>
+                  <Input
+                    type="password"
+                    value={password}
+                    onChange={(e) => setPassword(e.target.value)}
+                    required
+                    className="bg-white/20 border-white/30 text-white"
+                  />
+                </div>
 
-                  <Button
-                    type="submit"
-                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-white h-12 text-lg rounded-xl"
-                  >
-                    Send OTP
-                  </Button>
-                </form>
-              )}
+                {/* CONFIRM PASSWORD — 🔹 NEW FIELD */}
+                <div>
+                  <label className="text-white text-sm mb-1 flex items-center gap-2">
+                    <Lock size={18} /> Confirm Password
+                  </label>
+                  <Input
+                    type="password"
+                    value={confirmPassword}
+                    onChange={(e) => setConfirmPassword(e.target.value)}
+                    required
+                    className="bg-white/20 border-white/30 text-white"
+                  />
+                </div>
 
-              {/* OTP FORM */}
-              {step === "otp" && (
-                <form onSubmit={verifyOtp} className="space-y-6">
-                  <div>
-                    <label className="text-white text-sm mb-1 flex items-center gap-2">
-                      <ShieldCheck size={18} /> OTP Code
-                    </label>
-                    <Input
-                      value={otp}
-                      onChange={(e) => setOtp(e.target.value)}
-                      maxLength={6}
-                      required
-                      className="bg-white/20 border-white/30 text-white text-center tracking-widest"
-                    />
-                  </div>
-
-                  <Button
-                    type="submit"
-                    className="w-full bg-cyan-500 hover:bg-cyan-600 text-white h-12 text-lg rounded-xl"
-                  >
-                    Verify OTP
-                  </Button>
-                </form>
-              )}
+                {/* SUBMIT */}
+                <Button
+                  type="submit"
+                  className="w-full  bg-black/80 hover:bg-gray-800 text-white shadow h-12 text-lg rounded-xl"
+                >
+                  Register
+                </Button>
+              </form>
             </CardContent>
           </Card>
         </motion.div>
       </div>
 
+      {/* RIGHT IMAGE PANEL */}
       <div className="hidden lg:flex items-center justify-center relative">
-        <div className="h-[95vh] w-[90%] shadow-2xl rounded-3xl overflow-hidden relative">
+        <div className="h-[95vh] w-[90%] rounded-3xl overflow-hidden relative shadow-2xl">
           <img
-            src="https://images.unsplash.com/photo-1603881359318-e2bc03deaaee?q=80&w=765&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1603881359318-e2bc03deaaee?q=80&w=1400&auto=format&fit=crop"
             alt="Car Rental"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transform scale-105 hover:scale-100 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-black/30" />
+
+          <div className="absolute left-10 bottom-30 text-white z-20">
+            <h3 className="text-5xl font-semibold">Find the perfect ride</h3>
+            <br></br>
+            <p className="text-slate-200 mt-1 max-w-xs">
+              Rent fast, drive safe — curated picks for every journey.
+            </p>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import api from "../../utils/api";
+
+// import { Card, CardContent } from "@/components/ui/card";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { Mail, Lock, User } from "lucide-react";
+
+// export default function Signup() {
+//   const [name, setName] = useState("");
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [error, setError] = useState("");
+
+//   const navigate = useNavigate();
+
+//   const handleRegister = async (e) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       await api.post("/auth/send-otp", { name, email, password });
+
+//       navigate("/verify-otp", { state: { name, email, password } });
+//     } catch (err) {
+//       setError(err.response?.data?.message || "Something went wrong");
+//     }
+//   };
+
+//   return (
+//     <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl py-6 rounded-2xl">
+//       <CardContent className="space-y-6">
+//         <div className="text-center mb-4">
+//           <h1 className="text-3xl font-bold text-white">Create an account</h1>
+//           <p className="text-gray-300">Get started with just a few details</p>
+//         </div>
+
+//         {error && <p className="text-red-400 text-center -mt-3">{error}</p>}
+
+//         <form onSubmit={handleRegister} className="space-y-6">
+//           <div>
+//             <label className="text-white text-sm mb-1 flex items-center gap-2">
+//               <User size={18} /> Full Name
+//             </label>
+//             <Input
+//               className="bg-white/20 border-white/30 text-white"
+//               value={name}
+//               onChange={(e) => setName(e.target.value)}
+//             />
+//           </div>
+
+//           <div>
+//             <label className="text-white text-sm mb-1 flex items-center gap-2">
+//               <Mail size={18} /> Email
+//             </label>
+//             <Input
+//               className="bg-white/20 border-white/30 text-white"
+//               value={email}
+//               onChange={(e) => setEmail(e.target.value)}
+//             />
+//           </div>
+
+//           <div>
+//             <label className="text-white text-sm mb-1 flex items-center gap-2">
+//               <Lock size={18} /> Password
+//             </label>
+//             <Input
+//               type="password"
+//               className="bg-white/20 border-white/30 text-white"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//             />
+//           </div>
+
+//           <Button
+//             type="submit"
+//             className="w-full bg-cyan-500 text-white h-12 text-lg rounded-xl"
+//           >
+//             Create Account
+//           </Button>
+//         </form>
+//       </CardContent>
+//     </Card>
+//   );
+// }

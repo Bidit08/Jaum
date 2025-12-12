@@ -73,7 +73,7 @@ const CarShowcase = () => {
                 {/* Car Image */}
                 <div className="relative overflow-hidden rounded-t-lg">
                   <img
-                    src={car.image}
+                    src="https://images.unsplash.com/photo-1620891549027-942fdc95d3f5?q=80&w=687&auto=format&fit=crop&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D}"
                     alt={car.name}
                     className="w-full h-48 object-cover group-hover:scale-105 transition-transform duration-300"
                   />
@@ -111,7 +111,7 @@ const CarShowcase = () => {
                     </div>
                   </div>
 
-                  <Button className="w-full bg-slate-900 hover:bg-slate-800">
+                  <Button className="w-full bg-slate-900 hover:bg-slate-800 text-white">
                     Book Now
                   </Button>
                 </div>

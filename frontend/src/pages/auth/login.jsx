@@ -334,7 +334,7 @@ export default function Login() {
           {/* Toggle */}
           <div className="flex justify-center mb-8">
             <div className="bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-1 flex gap-2">
-              <Button className="bg-cyan-500 hover:bg-cyan-600 text-white shadow">
+              <Button className="bg-black/80 hover:bg-black text-white shadow">
                 Login
               </Button>
               <Button
@@ -391,16 +391,21 @@ export default function Login() {
 
                 <Button
                   type="submit"
-                  className="w-full bg-cyan-500 hover:bg-cyan-600 text-white h-12 text-lg rounded-xl"
+                  className="w-full  bg-black/80 hover:bg-gray-800 text-white shadow h-12 text-lg rounded-xl"
                 >
                   Login
                 </Button>
               </form>
 
               {/* Forget password */}
-              <p className="text-sm text-gray-300 text-center mt-2 cursor-pointer hover:text-white transition">
-                Forgot your password?
-              </p>
+              <div className="text-sm mt-3 text-center">
+                <button
+                  onClick={() => navigate("/forgot-password")}
+                  className="text-cyan-400 hover:text-cyan-300 underline"
+                >
+                  Forgot password?
+                </button>
+              </div>
             </CardContent>
           </Card>
         </motion.div>
@@ -408,15 +413,103 @@ export default function Login() {
 
       {/* RIGHT IMAGE */}
       <div className="hidden lg:flex items-center justify-center relative">
-        <div className="h-[95vh] w-[90%] shadow-2xl rounded-3xl overflow-hidden relative">
+        <div className="h-[95vh] w-[90%] rounded-3xl overflow-hidden relative shadow-2xl">
           <img
-            src="https://images.unsplash.com/photo-1603881359318-e2bc03deaaee?q=80&w=765&auto=format&fit=crop"
+            src="https://images.unsplash.com/photo-1603881359318-e2bc03deaaee?q=80&w=1400&auto=format&fit=crop"
             alt="Car Rental"
-            className="w-full h-full object-cover"
+            className="w-full h-full object-cover transform scale-105 hover:scale-100 transition-transform duration-700"
           />
-          <div className="absolute inset-0 bg-black/20" />
+          <div className="absolute inset-0 bg-gradient-to-tr from-black/30 via-transparent to-black/30" />
+
+          <div className="absolute left-10 bottom-30 text-white z-20">
+            <h3 className="text-5xl font-semibold">Find the perfect ride</h3>
+            <br></br>
+            <p className="text-slate-200 mt-1 max-w-xs">
+              Rent fast, drive safe — curated picks for every journey.
+            </p>
+          </div>
         </div>
       </div>
     </section>
   );
 }
+
+// import { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import api from "../../utils/api";
+
+// import { Card, CardContent } from "@/components/ui/card";
+// import { Input } from "@/components/ui/input";
+// import { Button } from "@/components/ui/button";
+// import { Mail, Lock } from "lucide-react";
+
+// export default function Login() {
+//   const [email, setEmail] = useState("");
+//   const [password, setPassword] = useState("");
+//   const [error, setError] = useState("");
+//   const navigate = useNavigate();
+
+//   const handleSubmit = async (e) => {
+//     e.preventDefault();
+//     setError("");
+
+//     try {
+//       const res = await api.post("/auth/login", { email, password });
+//       localStorage.setItem("token", res.data.token);
+//       navigate("/");
+//     } catch (err) {
+//       setError(err.response?.data?.message || "Something went wrong");
+//     }
+//   };
+
+//   return (
+//     <Card className="bg-white/10 backdrop-blur-xl border-white/20 shadow-2xl py-6 rounded-2xl">
+//       <CardContent className="space-y-6">
+//         <div className="text-center mb-4">
+//           <h1 className="text-3xl font-bold text-white">Welcome Back</h1>
+//           <p className="text-gray-300">Login to continue</p>
+//         </div>
+
+//         {error && <p className="text-red-400 text-center -mt-3">{error}</p>}
+
+//         <form onSubmit={handleSubmit} className="space-y-6">
+//           <div>
+//             <label className="text-white text-sm mb-1 flex items-center gap-2">
+//               <Mail size={18} /> Email Address
+//             </label>
+//             <Input
+//               className="bg-white/20 border-white/30 text-white"
+//               placeholder="you@example.com"
+//               value={email}
+//               onChange={(e) => setEmail(e.target.value)}
+//             />
+//           </div>
+
+//           <div>
+//             <label className="text-white text-sm mb-1 flex items-center gap-2">
+//               <Lock size={18} /> Password
+//             </label>
+//             <Input
+//               type="password"
+//               className="bg-white/20 border-white/30 text-white"
+//               placeholder="••••••••"
+//               value={password}
+//               onChange={(e) => setPassword(e.target.value)}
+//             />
+//           </div>
+
+//           <Button
+//             type="submit"
+//             className="w-full bg-cyan-500 text-white h-12 text-lg rounded-xl"
+//           >
+//             Login
+//           </Button>
+//         </form>
+
+//         <p className="text-sm text-gray-300 text-center mt-2 hover:text-white transition cursor-pointer">
+//           Forgot your password?
+//         </p>
+//       </CardContent>
+//     </Card>
+//   );
+// }

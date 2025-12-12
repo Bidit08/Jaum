@@ -70,20 +70,54 @@
 
 // export default router;
 
+// import express from "express";
+// import {
+//   sendOtp,
+//   verifyOtp,
+//   loginUser,
+// } from "../controllers/authController.js";
+
+// const router = express.Router();
+
+// // Step 1 — User enters name/email/password → OTP sent to email
+// router.post("/send-otp", sendOtp);
+
+// // Step 2 — User enters OTP → account created
+// router.post("/verify-otp", verifyOtp);
+
+// // Login
+// router.post("/login", loginUser);
+
+// export default router;
+
+// backend/routes/authRoutes.js
 import express from "express";
 import {
   sendOtp,
   verifyOtp,
+  resendOtp,
   loginUser,
+  sendResetOtp,
+  verifyResetOtp,
+  resetPassword,
+  // maybe other exports (registerUser) if present
 } from "../controllers/authController.js";
 
 const router = express.Router();
 
-// Step 1 — User enters name/email/password → OTP sent to email
+// Step 1 — User begins signup -> OTP sent
 router.post("/send-otp", sendOtp);
 
-// Step 2 — User enters OTP → account created
+// Resend OTP
+router.post("/resend-otp", resendOtp);
+
+// Step 2 — User verifies OTP -> account created
 router.post("/verify-otp", verifyOtp);
+
+// Forgot password routes
+router.post("/send-reset-otp", sendResetOtp);
+router.post("/verify-reset-otp", verifyResetOtp);
+router.post("/reset-password", resetPassword);
 
 // Login
 router.post("/login", loginUser);

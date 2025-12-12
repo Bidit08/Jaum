@@ -22,7 +22,7 @@ const Navbar = () => {
         </div>
         <div className="text-center mt-6">
           <Link to="/signup">
-            <Button className="bg-cyan-500 hover:bg-cyan-600 text-white">
+            <Button className="bg-black/80 hover:bg-black/50 text-white">
               Sign In
             </Button>
           </Link>
