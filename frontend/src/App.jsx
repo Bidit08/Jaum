@@ -1,4 +1,6 @@
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 import Home from "./pages/user/home";
 import Login from "./pages/auth/login";
 import Signup from "./pages/auth/signup";
@@ -7,12 +9,14 @@ import VerifyOtp from "./pages/auth/VerifyOtp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyReset from "./pages/auth/VerifyReset";
 import ResetPassword from "./pages/auth/ResetPassword";
+import Profile from "./pages/user/Profile";
 // import "./App.css";
 // import "./globals.css";
 
 function App() {
   return (
     <Router>
+      <ToastContainer position="top-right" autoClose={3000} />
       <Routes>
         <Route path="/" element={<Home />} />
         <Route path="/login" element={<Login />} />
@@ -23,6 +27,8 @@ function App() {
         <Route path="/forgot-password" element={<ForgotPassword />} />
         <Route path="/verify-reset" element={<VerifyReset />} />
         <Route path="/reset-password" element={<ResetPassword />} />
+
+        <Route path="/profile" element={<Profile />} />
       </Routes>
     </Router>
   );

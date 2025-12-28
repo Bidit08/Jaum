@@ -3,6 +3,8 @@ import mongoose from "mongoose";
 import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js"; // auth routes
+import userRoutes from "./routes/userRoutes.js";
+import path from "path";
 
 dotenv.config();
 
@@ -25,6 +27,12 @@ app.get("/", (req, res) => {
 
 // Auth routes
 app.use("/api/auth", authRoutes);
+
+//User profile routes
+app.use("/api/user", userRoutes);
+
+// app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
