@@ -411,8 +411,8 @@ const Navbar = () => {
           <Link to="/" className="hover:text-white">
             Home
           </Link>
-          <Link to="/vehicles" className="hover:text-white">
-            Vehicles
+          <Link to="/listings" className="hover:text-white">
+            Listings
           </Link>
           <Link to="/services" className="hover:text-white">
             Services
@@ -461,7 +461,7 @@ const Navbar = () => {
             {user && (
               <>
                 <DropdownMenuItem
-                  onClick={() => navigate("/profile")}
+                  onClick={() => navigate("/dashboard/profile")}
                   className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
                 >
                   <User className="h-4 w-4" />

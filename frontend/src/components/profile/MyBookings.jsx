@@ -46,10 +46,39 @@
 
 // export default MyBookings;
 
+// const MyBookings = () => {
+//   return (
+//     <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 text-gray-300">
+//       My bookings will appear here.
+//     </div>
+//   );
+// };
+
+// export default MyBookings;
+
+import React from "react";
+import { CalendarSearch } from "lucide-react";
+
 const MyBookings = () => {
   return (
-    <div className="bg-white/10 backdrop-blur-xl border border-white/20 rounded-2xl p-6 text-gray-300">
-      My bookings will appear here.
+    <div className="bg-white border border-slate-200 rounded-3xl p-16 text-center space-y-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+      <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+        <CalendarSearch className="text-slate-300" size={40} />
+      </div>
+
+      <div className="space-y-2">
+        <h3 className="text-2xl font-bold text-slate-900">
+          No active bookings yet
+        </h3>
+        <p className="text-slate-500 max-w-sm mx-auto font-medium">
+          Ready to hit the road? Discover premium vehicles and start your first
+          rental journey today.
+        </p>
+      </div>
+
+      <button className="mt-6 px-10 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+        Explore Luxury Cars
+      </button>
     </div>
   );
 };

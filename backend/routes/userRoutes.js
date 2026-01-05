@@ -7,6 +7,7 @@ import {
 } from "../controllers/userController.js";
 import authMiddleware from "../middleware/authMiddleware.js";
 import upload from "../middleware/uploadMiddleware.js";
+import { deleteAccount } from "../controllers/userController.js";
 
 const router = express.Router();
 
@@ -21,5 +22,7 @@ router.post(
 );
 
 router.put("/change-password", authMiddleware, changePassword);
+
+router.delete("/delete-account", authMiddleware, deleteAccount);
 
 export default router;

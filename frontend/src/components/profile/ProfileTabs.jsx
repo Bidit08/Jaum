@@ -291,23 +291,53 @@
 
 // export default ProfileTabs;
 
+// const ProfileTabs = ({ activeTab, setActiveTab }) => {
+//   const tabs = [
+//     { id: "profile", label: "Profile" },
+//     { id: "security", label: "Security" },
+//     { id: "bookings", label: "My Bookings" },
+//   ];
+
+//   return (
+//     <div className="flex bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-1 mb-10">
+//       {tabs.map((tab) => (
+//         <button
+//           key={tab.id}
+//           onClick={() => setActiveTab(tab.id)}
+//           className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+//             activeTab === tab.id
+//               ? "bg-black/80 text-white"
+//               : "text-gray-300 hover:bg-white/10"
+//           }`}
+//         >
+//           {tab.label}
+//         </button>
+//       ))}
+//     </div>
+//   );
+// };
+
+// export default ProfileTabs;
+
+import React from "react";
+
 const ProfileTabs = ({ activeTab, setActiveTab }) => {
   const tabs = [
-    { id: "profile", label: "Profile" },
-    { id: "security", label: "Security" },
+    { id: "profile", label: "Profile Information" },
+    { id: "security", label: "Security Settings" },
     { id: "bookings", label: "My Bookings" },
   ];
 
   return (
-    <div className="flex bg-white/10 backdrop-blur-md border border-white/20 rounded-xl p-1 mb-10">
+    <div className="flex bg-white border border-slate-200 rounded-2xl p-1.5 mb-8 shadow-sm">
       {tabs.map((tab) => (
         <button
           key={tab.id}
           onClick={() => setActiveTab(tab.id)}
-          className={`flex-1 py-2 rounded-lg text-sm font-medium transition ${
+          className={`flex-1 py-3 rounded-xl text-sm font-bold transition-all ${
             activeTab === tab.id
-              ? "bg-black/80 text-white"
-              : "text-gray-300 hover:bg-white/10"
+              ? "bg-slate-900 text-white shadow-lg"
+              : "text-slate-500 hover:text-slate-900 hover:bg-slate-50"
           }`}
         >
           {tab.label}

@@ -4,6 +4,9 @@ import dotenv from "dotenv";
 import cors from "cors";
 import authRoutes from "./routes/authRoutes.js"; // auth routes
 import userRoutes from "./routes/userRoutes.js";
+// import vehicleRoutes from "./routes/vehicleRoutes.js";
+import listingRoutes from "./routes/listingRoutes.js";
+
 import path from "path";
 
 dotenv.config();
@@ -33,6 +36,11 @@ app.use("/api/user", userRoutes);
 
 // app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
+
+//Vehicle routes
+// app.use("/api/vehicles", vehicleRoutes);
+
+app.use("/api/listings", listingRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
