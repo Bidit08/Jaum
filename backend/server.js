@@ -6,6 +6,8 @@ import authRoutes from "./routes/authRoutes.js"; // auth routes
 import userRoutes from "./routes/userRoutes.js";
 // import vehicleRoutes from "./routes/vehicleRoutes.js";
 import listingRoutes from "./routes/listingRoutes.js";
+import adminRoutes from "./routes/adminRoutes.js";
+import bookingRoutes from "./routes/bookingRoutes.js";
 
 import path from "path";
 
@@ -41,6 +43,10 @@ app.use("/uploads", express.static(path.join(process.cwd(), "uploads")));
 // app.use("/api/vehicles", vehicleRoutes);
 
 app.use("/api/listings", listingRoutes);
+
+app.use("/api/bookings", bookingRoutes);
+
+app.use("/api/admin", adminRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;

@@ -938,14 +938,14 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
-import api from "../../utils/api";
+import api from "../../../utils/api";
 
-import StepListingType from "../../components/addVehicle/stepListingType";
-import StepBasicInfo from "../../components/addVehicle/stepBasicInfo";
-import StepSpecs from "../../components/addVehicle/stepSpecs";
-import StepListingDetails from "../../components/addVehicle/stepListingDetails";
-import StepPhotos from "../../components/addVehicle/stepPhotos";
-import StepReview from "../../components/addVehicle/stepReview";
+import StepListingType from "../../../components/addVehicle/stepListingType";
+import StepBasicInfo from "../../../components/addVehicle/stepBasicInfo";
+import StepSpecs from "../../../components/addVehicle/stepSpecs";
+import StepListingDetails from "../../../components/addVehicle/stepListingDetails";
+import StepPhotos from "../../../components/addVehicle/stepPhotos";
+import StepReview from "../../../components/addVehicle/stepReview";
 
 const steps = ["Type", "Vehicle", "Specs", "Details", "Photos", "Review"];
 

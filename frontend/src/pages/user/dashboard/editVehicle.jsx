@@ -2,14 +2,14 @@ import { useEffect, useState } from "react";
 import { useNavigate, useParams } from "react-router-dom";
 import { ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
 import { toast } from "react-toastify";
-import api from "../../utils/api";
+import api from "../../../utils/api";
 
-import StepListingType from "../../components/addVehicle/stepListingType";
-import StepBasicInfo from "../../components/addVehicle/stepBasicInfo";
-import StepSpecs from "../../components/addVehicle/stepSpecs";
-import StepListingDetails from "../../components/addVehicle/stepListingDetails";
-import StepPhotos from "../../components/addVehicle/stepPhotos";
-import StepReview from "../../components/addVehicle/stepReview";
+import StepListingType from "../../../components/addVehicle/stepListingType";
+import StepBasicInfo from "../../../components/addVehicle/stepBasicInfo";
+import StepSpecs from "../../../components/addVehicle/stepSpecs";
+import StepListingDetails from "../../../components/addVehicle/stepListingDetails";
+import StepPhotos from "../../../components/addVehicle/stepPhotos";
+import StepReview from "../../../components/addVehicle/stepReview";
 
 const steps = ["Type", "Vehicle", "Specs", "Details", "Photos", "Review"];
 
@@ -51,7 +51,8 @@ const EditVehicle = () => {
   useEffect(() => {
     const fetchListing = async () => {
       try {
-        const res = await api.get(`/listings/${id}`);
+        // const res = await api.get(`/listings/${id}`);
+        const res = await api.get(`/listings/my/${id}`);
         setFormData(res.data);
       } catch (err) {
         toast.error("Failed to load listing");

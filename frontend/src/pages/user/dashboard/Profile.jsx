@@ -1020,12 +1020,12 @@
 
 import React, { useEffect, useState } from "react";
 import { useNavigate } from "react-router-dom";
-import api from "../../utils/api";
+import api from "../../../utils/api";
 
-import ProfileTabs from "../../components/profile/ProfileTabs";
-import ProfileInfo from "../../components/profile/ProfileInfo";
-import SecuritySettings from "../../components/profile/SecuritySettings";
-import MyBookings from "../../components/profile/MyBookings";
+import ProfileTabs from "../../../components/profile/ProfileTabs";
+import ProfileInfo from "../../../components/profile/ProfileInfo";
+import SecuritySettings from "../../../components/profile/SecuritySettings";
+import MyBookings from "../../../components/profile/MyBookings";
 
 const ProfilePage = () => {
   const navigate = useNavigate();

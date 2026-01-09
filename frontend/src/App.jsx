@@ -123,19 +123,22 @@ import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
+import AdminDashboard from "./pages/admin/AdminDashboard";
+import PendingListings from "./pages/admin/PendingListings";
 import Home from "./pages/user/home";
 import Login from "./pages/auth/login";
 import Signup from "./pages/auth/signup";
-import Dashboard from "./pages/user/dashboard";
+import Dashboard from "./pages/user/dashboard/Dashboard";
 import VerifyOtp from "./pages/auth/VerifyOtp";
 import ForgotPassword from "./pages/auth/ForgotPassword";
 import VerifyReset from "./pages/auth/VerifyReset";
 import ResetPassword from "./pages/auth/ResetPassword";
-import Profile from "./pages/user/Profile";
-import AddVehicle from "./pages/user/AddVehicle";
-import MyVehicles from "./pages/user/MyListings";
-import EditVehicle from "./pages/user/editVehicle";
+import Profile from "./pages/user/dashboard/Profile";
+import AddVehicle from "./pages/user/dashboard/AddVehicle";
+import MyVehicles from "./pages/user/dashboard/MyListings";
+import EditVehicle from "./pages/user/dashboard/editVehicle";
 import AllListings from "./pages/user/AllListings";
+import ListingDetails from "./pages/user/ListingDetails";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -147,9 +150,14 @@ function App() {
       <ToastContainer position="top-right" autoClose={3000} />
 
       <Routes>
+        <Route path="/admin" element={<AdminDashboard />}>
+          <Route path="listings" element={<PendingListings />} />
+        </Route>
+
         {/* 🌍 Public Routes */}
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<AllListings />} />
+        <Route path="/listings/:id" element={<ListingDetails />} />
 
         {/* 🔐 Auth-only Routes (login/signup) */}
         <Route element={<AuthRoute />}>
@@ -168,7 +176,7 @@ function App() {
             <Route path="profile" element={<Profile />} />
             <Route path="vehicles" element={<MyVehicles />} />
             <Route path="add-vehicle" element={<AddVehicle />} />
-            <Route path="edit-vehicle" element={<EditVehicle />} />
+            <Route path="edit-vehicle/:id" element={<EditVehicle />} />
             {/* <Route path="edit-vehicle/:id" element={<EditVehicle />} /> */}
             {/* future routes */}
             {/* <Route path="vehicles" element={<MyVehicles />} /> */}
