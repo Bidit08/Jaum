@@ -56,29 +56,151 @@
 
 // export default MyBookings;
 
-import React from "react";
-import { CalendarSearch } from "lucide-react";
+// import React from "react";
+// import { CalendarSearch } from "lucide-react";
+
+// const MyBookings = () => {
+//   return (
+//     <div className="bg-white border border-slate-200 rounded-3xl p-16 text-center space-y-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+//       <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+//         <CalendarSearch className="text-slate-300" size={40} />
+//       </div>
+
+//       <div className="space-y-2">
+//         <h3 className="text-2xl font-bold text-slate-900">
+//           No active bookings yet
+//         </h3>
+//         <p className="text-slate-500 max-w-sm mx-auto font-medium">
+//           Ready to hit the road? Discover premium vehicles and start your first
+//           rental journey today.
+//         </p>
+//       </div>
+
+//       <button className="mt-6 px-10 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+//         Explore Luxury Cars
+//       </button>
+//     </div>
+//   );
+// };
+
+// export default MyBookings;
+
+import { useEffect, useState } from "react";
+import api from "../../utils/api";
+import { CalendarSearch, Car, Users, Calendar } from "lucide-react";
+
+const BACKEND_URL = "http://localhost:5000";
 
 const MyBookings = () => {
+  const [bookings, setBookings] = useState([]);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchBookings = async () => {
+      try {
+        const res = await api.get("/bookings/my");
+        setBookings(res.data);
+      } catch (err) {
+        console.error(err);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchBookings();
+  }, []);
+
+  if (loading) {
+    return <p className="text-slate-500">Loading bookings...</p>;
+  }
+
+  if (!bookings.length) {
+    return (
+      // <div className="bg-white border border-slate-200 rounded-3xl p-16 text-center space-y-5 shadow-sm">
+      //   <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+      //     <CalendarSearch className="text-slate-300" size={40} />
+      //   </div>
+
+      //   <h3 className="text-2xl font-bold text-slate-900">
+      //     No active bookings yet
+      //   </h3>
+      //   <p className="text-slate-500 max-w-sm mx-auto font-medium">
+      //     Ready to hit the road? Discover premium vehicles and start your first
+      //     rental journey today.
+      //   </p>
+      // </div>
+
+      <div className="bg-white border border-slate-200 rounded-3xl p-16 text-center space-y-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
+        <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
+          <CalendarSearch className="text-slate-300" size={40} />
+        </div>
+
+        <div className="space-y-2">
+          <h3 className="text-2xl font-bold text-slate-900">
+            No active bookings yet
+          </h3>
+          <p className="text-slate-500 max-w-sm mx-auto font-medium">
+            Ready to hit the road? Discover premium vehicles and start your
+            first rental journey today.
+          </p>
+        </div>
+
+        <button className="mt-6 px-10 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95">
+          Explore Luxury Cars
+        </button>
+      </div>
+    );
+  }
+
   return (
-    <div className="bg-white border border-slate-200 rounded-3xl p-16 text-center space-y-5 shadow-sm animate-in fade-in slide-in-from-bottom-4 duration-500">
-      <div className="w-20 h-20 bg-slate-50 rounded-3xl flex items-center justify-center mx-auto mb-4 border border-slate-100">
-        <CalendarSearch className="text-slate-300" size={40} />
-      </div>
+    <div className="space-y-6">
+      {bookings.map((b) => (
+        <div
+          key={b._id}
+          className="bg-white border border-slate-200 rounded-3xl p-6 flex gap-6 items-center shadow-sm"
+        >
+          <img
+            src={
+              b.listing?.photos?.length
+                ? `${BACKEND_URL}${b.listing.photos[0]}`
+                : "/placeholder-car.jpg"
+            }
+            className="w-32 h-24 object-cover rounded-xl"
+            alt={b.listing?.name}
+          />
 
-      <div className="space-y-2">
-        <h3 className="text-2xl font-bold text-slate-900">
-          No active bookings yet
-        </h3>
-        <p className="text-slate-500 max-w-sm mx-auto font-medium">
-          Ready to hit the road? Discover premium vehicles and start your first
-          rental journey today.
-        </p>
-      </div>
+          <div className="flex-1">
+            <h3 className="font-bold text-lg">{b.listing?.name}</h3>
 
-      <button className="mt-6 px-10 py-3.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-2xl transition-all shadow-lg shadow-blue-600/20 active:scale-95">
-        Explore Luxury Cars
-      </button>
+            <p className="text-sm text-slate-500 flex items-center gap-2">
+              {b.bookingType === "full" ? (
+                <>
+                  <Car size={14} /> Full Vehicle
+                </>
+              ) : (
+                <>
+                  <Users size={14} /> {b.seatsBooked} Seats
+                </>
+              )}
+            </p>
+
+            {b.startDate && (
+              <p className="text-xs text-slate-400 flex items-center gap-2 mt-1">
+                <Calendar size={12} />
+                {new Date(b.startDate).toLocaleDateString()} →{" "}
+                {new Date(b.endDate).toLocaleDateString()}
+              </p>
+            )}
+          </div>
+
+          <div className="text-right">
+            <p className="font-bold text-slate-900">₹{b.totalPrice}</p>
+            <span className="text-xs font-bold text-emerald-600">
+              {b.status}
+            </span>
+          </div>
+        </div>
+      ))}
     </div>
   );
 };

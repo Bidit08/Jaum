@@ -1018,8 +1018,79 @@
 
 // export default ProfilePage;
 
+// import React, { useEffect, useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import api from "../../../utils/api";
+
+// import ProfileTabs from "../../../components/profile/ProfileTabs";
+// import ProfileInfo from "../../../components/profile/ProfileInfo";
+// import SecuritySettings from "../../../components/profile/SecuritySettings";
+// import MyBookings from "../../../components/profile/MyBookings";
+
+// const ProfilePage = () => {
+//   const navigate = useNavigate();
+//   const [activeTab, setActiveTab] = useState("profile");
+//   const [user, setUser] = useState(null);
+//   const [loading, setLoading] = useState(true);
+
+//   useEffect(() => {
+//     setLoading(true);
+//     api
+//       .get("/user/profile")
+//       .then((res) => {
+//         setUser(res.data);
+//       })
+//       .finally(() => {
+//         setLoading(false);
+//       });
+//   }, []);
+
+//   if (loading) {
+//     return (
+//       <div className="flex items-center justify-center min-h-[400px]">
+//         <div className="w-10 h-10 border-4 border-blue-600 border-t-transparent rounded-full animate-spin"></div>
+//       </div>
+//     );
+//   }
+
+//   if (!user) {
+//     return (
+//       <div className="bg-red-50 border border-red-200 p-8 rounded-3xl text-red-600 text-center shadow-sm">
+//         Failed to load profile data. Please try again.
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="max-w-4xl mx-auto space-y-6">
+//       <div className="flex flex-col md:flex-row md:items-end justify-between gap-4 mb-4">
+//         <div>
+//           <h1 className="text-3xl font-extrabold text-slate-900 tracking-tight">
+//             Account Center
+//           </h1>
+//           <p className="text-slate-500 mt-1 font-medium">
+//             Manage your identity, security preferences, and bookings.
+//           </p>
+//         </div>
+//       </div>
+
+//       <ProfileTabs activeTab={activeTab} setActiveTab={setActiveTab} />
+
+//       <div className="transition-all duration-300">
+//         {activeTab === "profile" && (
+//           <ProfileInfo user={user} setUser={setUser} />
+//         )}
+//         {activeTab === "security" && <SecuritySettings />}
+//         {activeTab === "bookings" && <MyBookings />}
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default ProfilePage;
+
 import React, { useEffect, useState } from "react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import api from "../../../utils/api";
 
 import ProfileTabs from "../../../components/profile/ProfileTabs";
@@ -1029,10 +1100,14 @@ import MyBookings from "../../../components/profile/MyBookings";
 
 const ProfilePage = () => {
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams(); // ✅ added
   const [activeTab, setActiveTab] = useState("profile");
   const [user, setUser] = useState(null);
   const [loading, setLoading] = useState(true);
 
+  /* ======================
+     FETCH PROFILE
+  ====================== */
   useEffect(() => {
     setLoading(true);
     api
@@ -1044,6 +1119,16 @@ const ProfilePage = () => {
         setLoading(false);
       });
   }, []);
+
+  /* ======================
+     AUTO REDIRECT TO TAB
+  ====================== */
+  useEffect(() => {
+    const tab = searchParams.get("tab");
+    if (tab) {
+      setActiveTab(tab);
+    }
+  }, [searchParams]);
 
   if (loading) {
     return (
