@@ -379,6 +379,9 @@ const ListingDetails = () => {
 
   if (!listing) return null;
 
+  const isSeatListing = listing.listingType === "seats";
+  const isSoldOut = isSeatListing && Number(listing.availableSeats) === 0;
+
   return (
     <div className="min-h-screen bg-gradient-to-b from-slate-50 to-white">
       <Navbar />
@@ -455,6 +458,24 @@ const ListingDetails = () => {
                     <>
                       <Users size={16} /> Seat Listing
                     </>
+                  )}
+
+                  {isSeatListing && (
+                    <div className="absolute bottom-7 left-110">
+                      <div
+                        className={`px-4 py-2 rounded-2xl text-xs font-bold backdrop-blur-xl border shadow-lg flex items-center gap-2
+        ${
+          isSoldOut
+            ? "bg-rose-600/90 text-white border-rose-400"
+            : "bg-emerald-600/90 text-white border-emerald-400"
+        }`}
+                      >
+                        <Users size={14} />
+                        {isSoldOut
+                          ? "Fully Booked"
+                          : `${listing.availableSeats} Seats Available`}
+                      </div>
+                    </div>
                   )}
                 </div>
                 <div className="inline-flex items-center gap-2 px-4 py-2 bg-white/90 backdrop-blur-sm rounded-full text-sm font-bold text-slate-700 shadow-lg">
@@ -621,6 +642,22 @@ const ListingDetails = () => {
               )}
             </div>
 
+            {isSeatListing && (
+              <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-4 flex items-center justify-between">
+                <div>
+                  <p className="text-sm font-semibold text-emerald-700">
+                    Seat Availability
+                  </p>
+                  {/* <p className="text-xs text-emerald-600">
+                    Updated in real-time
+                  </p> */}
+                </div>
+                <span className="text-2xl font-bold text-emerald-800">
+                  {listing.availableSeats}
+                </span>
+              </div>
+            )}
+
             {/* Vehicle Features */}
             <div className="bg-white rounded-3xl border border-slate-200 p-6">
               <h3 className="text-xl font-bold text-slate-900 mb-4">
@@ -659,12 +696,26 @@ const ListingDetails = () => {
 
             {/* Book Button */}
             <button
-              onClick={() => setShowBooking(true)}
-              className="w-full bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white py-5 rounded-2xl text-lg font-bold shadow-xl hover:shadow-2xl hover:scale-[1.02] transition-all duration-300"
+              disabled={isSoldOut}
+              onClick={() => {
+                if (isSoldOut) {
+                  toast.error("No seats available for this ride");
+                  return;
+                }
+                setShowBooking(true);
+              }}
+              className={`w-full py-5 rounded-2xl text-lg font-bold shadow-xl transition-all duration-300
+    ${
+      isSoldOut
+        ? "bg-slate-300 text-slate-600 cursor-not-allowed"
+        : "bg-gradient-to-r from-blue-600 to-cyan-500 hover:from-blue-700 hover:to-cyan-600 text-white hover:shadow-2xl hover:scale-[1.02]"
+    }`}
             >
               {listing.listingType === "full"
                 ? "Book This Vehicle Now"
-                : "Book Seat Now"}
+                : isSoldOut
+                  ? "No Seats Available"
+                  : "Book Seat Now"}
             </button>
           </div>
         </div>

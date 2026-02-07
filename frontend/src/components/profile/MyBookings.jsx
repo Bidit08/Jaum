@@ -193,9 +193,29 @@ const MyBookings = () => {
             )}
           </div>
 
-          <div className="text-right">
+          {/* <div className="text-right">
             <p className="font-bold text-slate-900">₹{b.totalPrice}</p>
             <span className="text-xs font-bold text-emerald-600">
+              {b.status}
+            </span>
+          </div> */}
+
+          <div className="text-right">
+            <p className="font-bold text-slate-900">₹{b.totalPrice}</p>
+
+            <span
+              className={`inline-block mt-1 px-2.5 py-1 rounded-full text-[11px] font-bold uppercase tracking-wide
+      ${
+        b.status === "pending"
+          ? "bg-amber-100 text-amber-700"
+          : b.status === "confirmed"
+            ? "bg-emerald-100 text-emerald-700"
+            : b.status === "rejected"
+              ? "bg-rose-100 text-rose-700"
+              : "bg-slate-100 text-slate-600"
+      }
+    `}
+            >
               {b.status}
             </span>
           </div>

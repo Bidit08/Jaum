@@ -139,6 +139,7 @@ import MyVehicles from "./pages/user/dashboard/MyListings";
 import EditVehicle from "./pages/user/dashboard/editVehicle";
 import AllListings from "./pages/user/AllListings";
 import ListingDetails from "./pages/user/ListingDetails";
+import OwnerBookings from "./components/bookings/OwnerBookings";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -181,6 +182,7 @@ function App() {
             {/* future routes */}
             {/* <Route path="vehicles" element={<MyVehicles />} /> */}
             {/* <Route path="security" element={<SecuritySettings />} /> */}
+            <Route path="incoming-bookings" element={<OwnerBookings />} />
           </Route>
         </Route>
 

@@ -697,6 +697,7 @@ import {
   ShieldCheck,
   LogOut,
   Menu,
+  CalendarSearch,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -706,6 +707,11 @@ const navItems = [
   { name: "My Listings", path: "/dashboard/vehicles", icon: Car },
   { name: "Add Vehicle", path: "/dashboard/add-vehicle", icon: PlusCircle },
   { name: "Security", path: "/dashboard/security", icon: ShieldCheck },
+  {
+    name: "Incoming Bookings",
+    path: "/dashboard/incoming-bookings",
+    icon: CalendarSearch,
+  },
 ];
 
 const SidebarNavigation = ({
@@ -727,7 +733,7 @@ const SidebarNavigation = ({
     <aside
       className={cn(
         "h-full flex flex-col bg-white border-r border-slate-200 shadow-sm transition-all duration-300",
-        isMobile ? "w-64" : isCollapsed ? "w-20" : "w-64"
+        isMobile ? "w-64" : isCollapsed ? "w-20" : "w-64",
       )}
     >
       {/* Header */}
@@ -775,7 +781,7 @@ const SidebarNavigation = ({
                   isActive
                     ? "bg-blue-50 text-blue-600 font-semibold"
                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
-                  isCollapsed && "justify-center"
+                  isCollapsed && "justify-center",
                 )
               }
             >
@@ -800,7 +806,7 @@ const SidebarNavigation = ({
           onClick={logout}
           className={cn(
             "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition",
-            isCollapsed && !isMobile && "justify-center"
+            isCollapsed && !isMobile && "justify-center",
           )}
         >
           <LogOut size={20} />
@@ -810,7 +816,7 @@ const SidebarNavigation = ({
         <div
           className={cn(
             "flex items-center gap-3",
-            isCollapsed && !isMobile ? "justify-center" : ""
+            isCollapsed && !isMobile ? "justify-center" : "",
           )}
         >
           <img
