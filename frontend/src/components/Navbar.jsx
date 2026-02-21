@@ -414,6 +414,9 @@ const Navbar = () => {
           <Link to="/listings" className="hover:text-white">
             Listings
           </Link>
+          <Link to="/compare/select" className="hover:text-white">
+            Comparison
+          </Link>
           <Link to="/services" className="hover:text-white">
             Services
           </Link>

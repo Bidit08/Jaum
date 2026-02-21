@@ -139,6 +139,8 @@ import MyVehicles from "./pages/user/dashboard/MyListings";
 import EditVehicle from "./pages/user/dashboard/editVehicle";
 import AllListings from "./pages/user/AllListings";
 import ListingDetails from "./pages/user/ListingDetails";
+import ComparePage from "./pages/user/ComparePage";
+import CompareSelectPage from "./pages/user/CompareSelectPage";
 import OwnerBookings from "./components/bookings/OwnerBookings";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
@@ -159,6 +161,8 @@ function App() {
         <Route path="/" element={<Home />} />
         <Route path="/listings" element={<AllListings />} />
         <Route path="/listings/:id" element={<ListingDetails />} />
+        <Route path="/compare" element={<ComparePage />} />
+        <Route path="/compare/select" element={<CompareSelectPage />} />
 
         {/* 🔐 Auth-only Routes (login/signup) */}
         <Route element={<AuthRoute />}>

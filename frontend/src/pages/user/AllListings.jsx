@@ -923,6 +923,9 @@ import { useNavigate } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import api from "../../utils/api";
+import { Checkbox } from "@/components/ui/checkbox";
+import FloatingCompareBar from "../../components/FloatingCompareBar";
+import { useComparison } from "../../context/ComparisonContext";
 
 const BACKEND_URL = "http://localhost:5000";
 
@@ -944,6 +947,8 @@ const AllListings = () => {
   const [sortBy, setSortBy] = useState("newest"); // newest | price-asc | price-desc | popularity
 
   const navigate = useNavigate();
+  const { selectedVehicles, addToComparison, removeFromComparison } =
+    useComparison();
 
   /* ================= FETCH LISTINGS (UNCHANGED) ================= */
   useEffect(() => {
@@ -1303,6 +1308,30 @@ const AllListings = () => {
                         {isFull ? "Premium Rental" : "Seat Share"}
                       </span>
                     </div>
+
+                    {/* Compare Checkbox */}
+                    <div className="absolute top-4 right-4 z-20">
+                      <label className="flex items-center cursor-pointer gap-2 bg-black/40 backdrop-blur-md p-2 rounded-xl border border-white/10 hover:bg-black/60 transition group/check">
+                        <input
+                          type="checkbox"
+                          checked={selectedVehicles.some(
+                            (v) => v._id === listing._id,
+                          )}
+                          onChange={(e) => {
+                            e.stopPropagation();
+                            if (e.target.checked) {
+                              addToComparison(listing);
+                            } else {
+                              removeFromComparison(listing._id);
+                            }
+                          }}
+                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                        />
+                        <span className="text-[10px] uppercase font-bold text-white tracking-widest ml-1 opacity-0 group-hover/check:opacity-100 transition-opacity w-0 group-hover/check:w-auto overflow-hidden whitespace-nowrap">
+                          Compare
+                        </span>
+                      </label>
+                    </div>
                   </div>
 
                   {/* Content */}
@@ -1517,6 +1546,7 @@ const AllListings = () => {
         </div>
       )}
 
+      <FloatingCompareBar />
       <Footer />
     </div>
   );
