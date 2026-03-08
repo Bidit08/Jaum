@@ -687,6 +687,164 @@
 
 // export default SidebarNavigation;
 
+// import React from "react";
+// import { NavLink, useNavigate } from "react-router-dom";
+// import {
+//   LayoutDashboard,
+//   User,
+//   Car,
+//   PlusCircle,
+//   ShieldCheck,
+//   LogOut,
+//   Menu,
+//   CalendarSearch,
+//   Calendar,
+// } from "lucide-react";
+// import { cn } from "@/lib/utils";
+
+// const navItems = [
+//   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+//   { name: "Profile", path: "/dashboard/profile", icon: User },
+//   { name: "My Listings", path: "/dashboard/vehicles", icon: Car },
+//   { name: "Add Vehicle", path: "/dashboard/add-vehicle", icon: PlusCircle },
+//   { name: "Security", path: "/dashboard/security", icon: ShieldCheck },
+//   {
+//     name: "Incoming Bookings",
+//     path: "/dashboard/incoming-bookings",
+//     icon: CalendarSearch,
+//   },
+//   {
+//     name: "Incoming Visits",
+//     path: "/dashboard/incoming-visits",
+//     icon: Calendar,
+//   },
+// ];
+
+// const SidebarNavigation = ({
+//   isCollapsed,
+//   setIsCollapsed,
+//   isMobile = false,
+//   onClose,
+// }) => {
+//   const navigate = useNavigate();
+
+//   const logout = () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+//     window.dispatchEvent(new Event("authChanged"));
+//     navigate("/login");
+//   };
+
+//   return (
+//     <aside
+//       className={cn(
+//         "h-full flex flex-col bg-white border-r border-slate-200 shadow-sm transition-all duration-300",
+//         isMobile ? "w-64" : isCollapsed ? "w-20" : "w-64",
+//       )}
+//     >
+//       {/* Header */}
+//       <div className="h-20 flex items-center justify-between px-4 border-b border-slate-100">
+//         <NavLink
+//           to="/"
+//           className="flex items-center gap-3 overflow-hidden group"
+//         >
+//           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow group-hover:scale-105 transition">
+//             J
+//           </div>
+
+//           {!isCollapsed && (
+//             <span className="text-lg font-bold text-slate-900 whitespace-nowrap group-hover:text-blue-600 transition">
+//               Jaum
+//               {/* <span className="text-blue-600">Rental</span> */}
+//             </span>
+//           )}
+//         </NavLink>
+
+//         {/* Collapse button (desktop only) */}
+//         {!isMobile && (
+//           <button
+//             onClick={() => setIsCollapsed(!isCollapsed)}
+//             className="p-2 rounded-lg hover:bg-slate-100 text-slate-500"
+//           >
+//             <Menu size={18} />
+//           </button>
+//         )}
+//       </div>
+
+//       {/* Navigation */}
+//       <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
+//         {navItems.map((item) => {
+//           const Icon = item.icon;
+
+//           return (
+//             <NavLink
+//               key={item.path}
+//               to={item.path}
+//               onClick={() => isMobile && onClose?.()}
+//               className={({ isActive }) =>
+//                 cn(
+//                   "group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
+//                   isActive
+//                     ? "bg-blue-50 text-blue-600 font-semibold"
+//                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+//                   isCollapsed && "justify-center",
+//                 )
+//               }
+//             >
+//               <Icon size={22} className="shrink-0" />
+
+//               {!isCollapsed && <span className="truncate">{item.name}</span>}
+
+//               {/* Tooltip when collapsed */}
+//               {isCollapsed && !isMobile && (
+//                 <span className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
+//                   {item.name}
+//                 </span>
+//               )}
+//             </NavLink>
+//           );
+//         })}
+//       </nav>
+
+//       {/* Footer */}
+//       <div className="border-t border-slate-100 p-4 space-y-4">
+//         <button
+//           onClick={logout}
+//           className={cn(
+//             "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition",
+//             isCollapsed && !isMobile && "justify-center",
+//           )}
+//         >
+//           <LogOut size={20} />
+//           {!isCollapsed && <span className="font-medium">Logout</span>}
+//         </button>
+
+//         <div
+//           className={cn(
+//             "flex items-center gap-3",
+//             isCollapsed && !isMobile ? "justify-center" : "",
+//           )}
+//         >
+//           <img
+//             src="https://picsum.photos/seed/user/100/100"
+//             alt="User"
+//             className="w-9 h-9 rounded-full border border-slate-200"
+//           />
+
+//           {!isCollapsed && (
+//             <div className="min-w-0">
+//               <p className="text-sm font-semibold truncate">Alex Johnson</p>
+//               <p className="text-xs text-slate-500 truncate">Premium</p>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </aside>
+//   );
+// };
+
+// export default SidebarNavigation;
+
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
 import {
@@ -698,7 +856,10 @@ import {
   LogOut,
   Menu,
   CalendarSearch,
+  Eye,
+  Users,
 } from "lucide-react";
+
 import { cn } from "@/lib/utils";
 
 const navItems = [
@@ -711,6 +872,16 @@ const navItems = [
     name: "Incoming Bookings",
     path: "/dashboard/incoming-bookings",
     icon: CalendarSearch,
+  },
+  {
+    name: "My Visits",
+    path: "/dashboard/my-visits",
+    icon: Eye,
+  },
+  {
+    name: "Incoming Visits",
+    path: "/dashboard/incoming-visits",
+    icon: Users,
   },
 ];
 
