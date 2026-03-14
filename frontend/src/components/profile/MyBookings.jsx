@@ -236,9 +236,11 @@ import {
   Calendar,
   FileText,
   CreditCard,
+  Star,
 } from "lucide-react";
 import { toast } from "react-toastify";
 import PaymentMethodModal from "../bookings/PaymentMethodModal";
+import ReviewModal from "../reviews/ReviewModal";
 
 const BACKEND_URL = "http://localhost:5000";
 
@@ -247,6 +249,9 @@ const MyBookings = () => {
   const [loading, setLoading] = useState(true);
   const [showPayment, setShowPayment] = useState(false);
   const [selectedBooking, setSelectedBooking] = useState(null);
+  const [showReviewModal, setShowReviewModal] = useState(false);
+  const [selectedBookingForReview, setSelectedBookingForReview] =
+    useState(null);
 
   const handlePayment = (booking) => {
     setSelectedBooking(booking);
@@ -431,13 +436,29 @@ const MyBookings = () => {
 
               {/* Download Invoice Button (Show if paid or confirmed cash) */}
               {(b.paymentStatus === "paid" ||
-                (b.paymentMethod === "cash" && b.status === "confirmed")) && (
+                (b.paymentMethod === "cash" &&
+                  b.status === "confirmed" &&
+                  b.paymentStatus === "paid")) && (
                 <button
                   onClick={() => handleDownloadInvoice(b._id)}
                   className="px-6 py-2.5 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all text-xs flex items-center gap-2"
                 >
                   <FileText size={14} />
                   Invoice
+                </button>
+              )}
+
+              {/* Write Review Button (Show if completed) */}
+              {b.status === "completed" && (
+                <button
+                  onClick={() => {
+                    setSelectedBookingForReview(b);
+                    setShowReviewModal(true);
+                  }}
+                  className="px-6 py-2.5 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-xl transition-all text-xs flex items-center gap-2 shadow-lg shadow-purple-200"
+                >
+                  <Star size={14} />
+                  Write Review
                 </button>
               )}
             </div>
@@ -455,6 +476,17 @@ const MyBookings = () => {
             // Refresh bookings
             api.get("/bookings/my").then((res) => setBookings(res.data));
           }}
+        />
+      )}
+
+      {showReviewModal && selectedBookingForReview && (
+        <ReviewModal
+          isOpen={showReviewModal}
+          onClose={() => {
+            setShowReviewModal(false);
+            setSelectedBookingForReview(null);
+          }}
+          booking={selectedBookingForReview}
         />
       )}
     </div>

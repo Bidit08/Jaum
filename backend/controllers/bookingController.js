@@ -323,7 +323,7 @@ export const getOwnerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({
       owner: req.user.id,
-      status: "pending",
+      status: { $in: ["pending", "confirmed", "completed"] },
     })
       .populate(
         "listing",
@@ -444,5 +444,30 @@ export const getBlockedDates = async (req, res) => {
   } catch (err) {
     console.error("getBlockedDates error:", err);
     res.status(500).json({ message: "Failed to fetch blocked dates" });
+  }
+};
+
+/* =========================
+   COMPLETE BOOKING (OWNER)
+========================= */
+export const completeBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findOne({
+      _id: req.params.id,
+      owner: req.user.id,
+      status: "confirmed",
+    });
+
+    if (!booking) {
+      return res.status(404).json({ message: "Confirmed booking not found" });
+    }
+
+    booking.status = "completed";
+    await booking.save();
+
+    res.json({ message: "Booking marked as completed", booking });
+  } catch (err) {
+    console.error("completeBooking error:", err);
+    res.status(500).json({ message: "Failed to complete booking" });
   }
 };

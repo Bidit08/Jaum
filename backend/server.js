@@ -67,6 +67,7 @@ import adminRoutes from "./routes/adminRoutes.js";
 import bookingRoutes from "./routes/bookingRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
+import reviewRoutes from "./routes/reviewRoutes.js";
 
 import path from "path";
 
@@ -112,6 +113,7 @@ app.use("/api/bookings", bookingRoutes);
 app.use("/api/visits", visitRoutes);
 
 app.use("/api/payments", paymentRoutes);
+app.use("/api/reviews", reviewRoutes);
 
 app.use("/api/admin", adminRoutes);
 

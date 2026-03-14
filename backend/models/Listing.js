@@ -174,6 +174,16 @@ const listingSchema = new mongoose.Schema(
       validate: [(v) => v.length > 0, "At least one photo required"],
     },
 
+    // ===== REVIEWS & RATINGS =====
+    averageRating: {
+      type: Number,
+      default: 0,
+    },
+    reviewCount: {
+      type: Number,
+      default: 0,
+    },
+
     // ===== STATUS =====
     status: {
       type: String,
@@ -186,7 +196,7 @@ const listingSchema = new mongoose.Schema(
       default: false,
     },
   },
-  { timestamps: true }
+  { timestamps: true },
 );
 
 export default mongoose.model("Listing", listingSchema);

@@ -768,6 +768,7 @@ import BookingModal from "../../components/BookingModal";
 import VisitModal from "../../components/VisitModal";
 import PaymentMethodModal from "../../components/bookings/PaymentMethodModal";
 import Navbar from "../../components/Navbar";
+import ReviewCard from "../../components/reviews/ReviewCard";
 
 const BACKEND_URL = "http://localhost:5000";
 
@@ -788,12 +789,17 @@ const ListingDetails = () => {
   const [selectedImage, setSelectedImage] = useState(0);
   const [isFavorite, setIsFavorite] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
+  const [reviews, setReviews] = useState([]);
 
   useEffect(() => {
-    const fetchListing = async () => {
+    const fetchListingAndReviews = async () => {
       try {
-        const res = await api.get(`/listings/${id}`);
-        setListing(res.data);
+        const [listingRes, reviewsRes] = await Promise.all([
+          api.get(`/listings/${id}`),
+          api.get(`/reviews/listing/${id}`),
+        ]);
+        setListing(listingRes.data);
+        setReviews(reviewsRes.data);
       } catch (err) {
         toast.error("Listing not found");
         navigate("/listings");
@@ -802,7 +808,7 @@ const ListingDetails = () => {
       }
     };
 
-    fetchListing();
+    fetchListingAndReviews();
     window.scrollTo(0, 0);
   }, [id, navigate]);
 
@@ -970,10 +976,20 @@ const ListingDetails = () => {
                 <div className="space-y-2">
                   <div className="flex items-center gap-2">
                     <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
-                    <span className="font-bold text-slate-900">4.9</span>
-                    <span className="text-slate-400 font-medium">
-                      (48 reviews)
+                    <span className="font-bold text-slate-900">
+                      {listing.averageRating > 0
+                        ? listing.averageRating
+                        : "New"}
                     </span>
+                    {listing.reviewCount > 0 ? (
+                      <span className="text-slate-400 font-medium">
+                        ({listing.reviewCount} reviews)
+                      </span>
+                    ) : (
+                      <span className="text-slate-400 font-medium">
+                        (No reviews yet)
+                      </span>
+                    )}
                     <span className="text-slate-200 mx-1">•</span>
                     <span className="text-blue-600 font-semibold text-sm">
                       Most Popular
@@ -1090,6 +1106,48 @@ const ListingDetails = () => {
                     label="Leather Interior"
                   />
                 </div>
+              </div>
+
+              {/* Reviews Section */}
+              <div className="space-y-6 pt-8 border-t border-slate-100">
+                <div className="flex items-center justify-between">
+                  <div>
+                    <h3 className="text-2xl font-bold text-slate-900">
+                      Guest Reviews
+                    </h3>
+                    <div className="flex items-center gap-2 mt-2">
+                      <Star className="w-5 h-5 text-amber-400 fill-amber-400" />
+                      <span className="font-bold text-lg text-slate-900">
+                        {listing.averageRating > 0
+                          ? listing.averageRating
+                          : "New"}
+                      </span>
+                      {listing.reviewCount > 0 && (
+                        <span className="text-slate-500 font-medium">
+                          ({listing.reviewCount} reviews)
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {reviews.length > 0 ? (
+                  <div className="grid grid-cols-1 gap-4">
+                    {reviews.map((review) => (
+                      <ReviewCard key={review._id} review={review} />
+                    ))}
+                  </div>
+                ) : (
+                  <div className="text-center py-10 bg-slate-50 rounded-3xl border border-slate-100">
+                    <Star className="w-12 h-12 text-slate-300 mx-auto mb-3" />
+                    <h4 className="text-lg font-bold text-slate-900 mb-1">
+                      No reviews yet
+                    </h4>
+                    <p className="text-slate-500 text-sm">
+                      Be the first to share your experience after booking!
+                    </p>
+                  </div>
+                )}
               </div>
             </section>
           </div>
