@@ -89,21 +89,21 @@ router.get(
   "/listings/pending",
   authMiddleware,
   adminMiddleware,
-  getPendingListings
+  getPendingListings,
 );
 
 router.put(
   "/listings/:id/approve",
   authMiddleware,
   adminMiddleware,
-  approveListing
+  approveListing,
 );
 
 router.delete(
   "/listings/:id/reject",
   authMiddleware,
   adminMiddleware,
-  rejectListing
+  rejectListing,
 );
 
 export default router;

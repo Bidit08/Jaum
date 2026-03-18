@@ -19,10 +19,17 @@ export const selectPaymentMethod = async (req, res) => {
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
+    if (booking.status !== "approved-awaiting-payment") {
+      return res
+        .status(400)
+        .json({ message: "Payment can only be made for approved bookings." });
+    }
+
     booking.paymentMethod = method;
 
     if (method === "cash") {
       booking.paymentStatus = "pending";
+      booking.status = "confirmed";
       // Generate a simple receipt number for cash
       booking.receiptNumber = `CSH-${Date.now()}-${booking._id.toString().toUpperCase().slice(-4)}`;
       await booking.save();

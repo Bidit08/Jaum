@@ -392,14 +392,24 @@ const MyBookings = () => {
                   ${
                     b.status === "pending"
                       ? "bg-amber-100 text-amber-700"
-                      : b.status === "confirmed"
-                        ? "bg-emerald-100 text-emerald-700"
-                        : b.status === "rejected"
-                          ? "bg-rose-100 text-rose-700"
-                          : "bg-slate-100 text-slate-600"
+                      : b.status === "approved-awaiting-payment"
+                        ? "bg-blue-100 text-blue-700"
+                        : b.status === "confirmed"
+                          ? "bg-emerald-100 text-emerald-700"
+                          : b.status === "rejected"
+                            ? "bg-rose-100 text-rose-700"
+                            : "bg-slate-100 text-slate-600"
                   }`}
                 >
-                  {b.status}
+                  {b.status === "pending"
+                    ? "Waiting for owner approval"
+                    : b.status === "approved-awaiting-payment"
+                      ? "Approved"
+                      : b.status === "confirmed"
+                        ? "Booking confirmed"
+                        : b.status === "rejected"
+                          ? "Booking rejected by owner"
+                          : b.status}
                 </span>
 
                 {b.paymentStatus && (
@@ -422,9 +432,8 @@ const MyBookings = () => {
             </div>
 
             <div className="flex flex-col gap-2">
-              {b.paymentStatus !== "paid" &&
-                b.status !== "rejected" &&
-                b.status !== "cancelled" && (
+              {b.status === "approved-awaiting-payment" &&
+                b.paymentStatus !== "paid" && (
                   <button
                     onClick={() => handlePayment(b)}
                     className="px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl transition-all text-xs flex items-center gap-2 shadow-lg shadow-blue-200"

@@ -110,23 +110,51 @@ const OwnerBookings = () => {
 
           {/* Actions */}
           <div className="flex gap-3">
-            <button
-              onClick={() => handleAction(b._id, "approve")}
-              disabled={actionId === b._id}
-              className="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition disabled:opacity-50"
-            >
-              <CheckCircle size={18} />
-              Approve
-            </button>
+            {b.status === "pending" && (
+              <>
+                <button
+                  onClick={() => handleAction(b._id, "approve")}
+                  disabled={actionId === b._id}
+                  className="flex items-center gap-2 px-5 py-3 bg-emerald-600 hover:bg-emerald-700 text-white font-bold rounded-2xl transition disabled:opacity-50"
+                >
+                  <CheckCircle size={18} />
+                  Approve
+                </button>
 
-            <button
-              onClick={() => handleAction(b._id, "reject")}
-              disabled={actionId === b._id}
-              className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl transition disabled:opacity-50"
-            >
-              <XCircle size={18} />
-              Reject
-            </button>
+                <button
+                  onClick={() => handleAction(b._id, "reject")}
+                  disabled={actionId === b._id}
+                  className="flex items-center gap-2 px-5 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-2xl transition disabled:opacity-50"
+                >
+                  <XCircle size={18} />
+                  Reject
+                </button>
+              </>
+            )}
+
+            {b.status === "approved-awaiting-payment" && (
+              <span className="px-5 py-3 bg-blue-50 text-blue-600 font-bold rounded-2xl flex items-center gap-2 border border-blue-200">
+                Awaiting Payment
+              </span>
+            )}
+
+            {b.status === "confirmed" && (
+              <button
+                onClick={() => handleAction(b._id, "complete")}
+                disabled={actionId === b._id}
+                className="flex items-center gap-2 px-5 py-3 bg-purple-600 hover:bg-purple-700 text-white font-bold rounded-2xl transition disabled:opacity-50 shadow-lg shadow-purple-200"
+              >
+                <CheckCircle size={18} />
+                Mark as Completed
+              </button>
+            )}
+
+            {b.status === "completed" && (
+              <span className="px-5 py-3 bg-slate-100 text-slate-500 font-bold rounded-2xl flex items-center gap-2 border border-slate-200">
+                <CheckCircle size={18} className="text-emerald-500" />
+                Completed
+              </span>
+            )}
           </div>
         </div>
       ))}

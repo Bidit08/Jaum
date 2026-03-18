@@ -323,7 +323,7 @@ export const getOwnerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({
       owner: req.user.id,
-      status: { $in: ["pending", "confirmed", "completed"] },
+      status: { $in: ["pending", "approved-awaiting-payment", "confirmed", "completed"] },
     })
       .populate(
         "listing",
@@ -397,7 +397,7 @@ export const approveBooking = async (req, res) => {
       await booking.listing.save();
     }
 
-    booking.status = "confirmed";
+    booking.status = "approved-awaiting-payment";
     await booking.save();
 
     res.json({ message: "Booking approved", booking });
