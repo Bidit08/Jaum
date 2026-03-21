@@ -798,6 +798,7 @@ export default function Login() {
         _id: res.data._id,
         name: res.data.name,
         email: res.data.email,
+        role: res.data.role,
         profilePicture: res.data.profilePicture || null,
       };
 
@@ -805,7 +806,12 @@ export default function Login() {
       window.dispatchEvent(new Event("authChanged"));
 
       toast.success("Logged in successfully");
-      navigate("/");
+
+      if (res.data.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       const msg = err.response?.data?.message || "Something went wrong";
       setError(msg);

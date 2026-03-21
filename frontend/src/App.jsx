@@ -211,7 +211,11 @@ import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
 
 import AdminDashboard from "./pages/admin/AdminDashboard";
-import PendingListings from "./pages/admin/PendingListings";
+import AdminOverview from "./pages/admin/AdminOverview";
+import AdminListings from "./pages/admin/AdminListings";
+import AdminBookings from "./pages/admin/AdminBookings";
+import AdminPayments from "./pages/admin/AdminPayments";
+import AdminUsers from "./pages/admin/AdminUsers";
 import Home from "./pages/user/home";
 import Login from "./pages/auth/login";
 import Signup from "./pages/auth/signup";
@@ -244,7 +248,11 @@ function App() {
 
       <Routes>
         <Route path="/admin" element={<AdminDashboard />}>
-          <Route path="listings" element={<PendingListings />} />
+          <Route index element={<AdminOverview />} />
+          <Route path="listings" element={<AdminListings />} />
+          <Route path="bookings" element={<AdminBookings />} />
+          <Route path="payments" element={<AdminPayments />} />
+          <Route path="users" element={<AdminUsers />} />
         </Route>
 
         {/* 🌍 Public Routes */}

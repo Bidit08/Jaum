@@ -147,19 +147,36 @@ const bookingSchema = new mongoose.Schema(
 
     status: {
       type: String,
-      enum: ["pending", "approved-awaiting-payment", "confirmed", "rejected", "cancelled", "completed"],
+      enum: [
+        "pending",
+        "approved-awaiting-payment",
+        "confirmed",
+        "rejected",
+        "cancelled",
+        "completed",
+      ],
       default: "pending",
     },
 
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed"],
+      enum: ["pending", "paid", "failed", "refunded"],
       default: "pending",
     },
 
     paymentMethod: {
       type: String,
       enum: ["khalti", "cash"],
+    },
+
+    transactionId: {
+      type: String,
+    },
+
+    refundHandleStatus: {
+      type: String,
+      enum: ["none", "pending", "processed", "rejected"],
+      default: "none",
     },
 
     receiptNumber: {
@@ -174,6 +191,20 @@ const bookingSchema = new mongoose.Schema(
 
     pidx: {
       type: String,
+    },
+
+    isDisputed: {
+      type: Boolean,
+      default: false,
+    },
+
+    disputeReason: {
+      type: String,
+    },
+
+    isFlagged: {
+      type: Boolean,
+      default: false,
     },
   },
   { timestamps: true },

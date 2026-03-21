@@ -605,7 +605,13 @@ export default function VerifyOtp() {
       const userObj =
         res.data.user ||
         (res.data._id
-          ? { _id: res.data._id, name: res.data.name, email: res.data.email }
+          ? // ? { _id: res.data._id, name: res.data.name, email: res.data.email }
+            {
+              _id: res.data._id,
+              name: res.data.name,
+              email: res.data.email,
+              role: res.data.role,
+            }
           : null);
 
       if (userObj) {
@@ -614,7 +620,12 @@ export default function VerifyOtp() {
 
       window.dispatchEvent(new Event("authChanged"));
       toast.success("Account verified — logged in");
-      navigate("/");
+
+      if (userObj?.role === "admin") {
+        navigate("/admin");
+      } else {
+        navigate("/");
+      }
     } catch (err) {
       const msg = err.response?.data?.message || "Invalid OTP";
       setError(msg);

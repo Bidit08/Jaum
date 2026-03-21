@@ -817,7 +817,13 @@ export const verifyOtp = async (req, res) => {
 
     return res.status(201).json({
       message: "Registration successful",
-      user: { _id: user._id, name: user.name, email: user.email },
+      // user: { _id: user._id, name: user.name, email: user.email },
+      user: {
+        _id: user._id,
+        name: user.name,
+        email: user.email,
+        role: user.role,
+      },
       token,
     });
   } catch (err) {
@@ -840,7 +846,7 @@ export const resendOtp = async (req, res) => {
     const COOLDOWN = 60;
     if (latest) {
       const elapsed = Math.floor(
-        (Date.now() - latest.createdAt.getTime()) / 1000
+        (Date.now() - latest.createdAt.getTime()) / 1000,
       );
       if (elapsed < COOLDOWN) {
         return res.status(429).json({
@@ -889,6 +895,7 @@ export const loginUser = async (req, res) => {
         _id: user._id,
         name: user.name,
         email: user.email,
+        role: user.role,
         token: generateAuthToken(user._id),
       });
     }
