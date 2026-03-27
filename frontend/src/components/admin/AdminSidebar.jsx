@@ -10,13 +10,16 @@ import {
   Car,
   Calendar,
   CreditCard,
+  DollarSign,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
+
 const adminNavItems = [
   { name: "Overview", path: "/admin", icon: LayoutDashboard },
   { name: "Listings", path: "/admin/listings", icon: Car },
   { name: "Bookings", path: "/admin/bookings", icon: Calendar },
   { name: "Payments", path: "/admin/payments", icon: CreditCard },
+  { name: "Payouts", path: "/admin/payouts", icon: DollarSign },
   { name: "Users", path: "/admin/users", icon: Users },
 ];
 

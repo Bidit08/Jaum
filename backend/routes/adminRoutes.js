@@ -137,6 +137,8 @@ import {
   getPaymentStats,
   getAllPayments,
   updatePaymentStatus,
+  getPayouts,
+  updatePayoutStatus,
 } from "../controllers/adminController.js";
 
 const router = express.Router();
@@ -231,6 +233,15 @@ router.patch(
   authMiddleware,
   adminMiddleware,
   updatePaymentStatus,
+);
+
+// ── Payouts ──────────────────────────────────────────────────────────────────
+router.get("/payouts", authMiddleware, adminMiddleware, getPayouts);
+router.patch(
+  "/payouts/:id/status",
+  authMiddleware,
+  adminMiddleware,
+  updatePayoutStatus,
 );
 
 export default router;

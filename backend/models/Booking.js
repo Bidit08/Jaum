@@ -206,6 +206,22 @@ const bookingSchema = new mongoose.Schema(
       type: Boolean,
       default: false,
     },
+
+    commissionRate: {
+      type: Number,
+      default: 10,
+    },
+    commissionAmount: {
+      type: Number,
+    },
+    ownerAmount: {
+      type: Number,
+    },
+    payoutStatus: {
+      type: String,
+      enum: ["pending", "released", "failed"],
+      default: "pending",
+    },
   },
   { timestamps: true },
 );

@@ -205,9 +205,20 @@ export const getDashboardStats = async (req, res) => {
     // Aggregate total revenue for paid bookings
     const revenueAgg = await Booking.aggregate([
       { $match: { paymentStatus: "paid" } },
-      { $group: { _id: null, total: { $sum: "$totalPrice" } } },
+      {
+        $group: {
+          _id: null,
+          total: { $sum: "$totalPrice" },
+          totalCommission: { $sum: "$commissionAmount" },
+          totalOwnerPayout: { $sum: "$ownerAmount" },
+        },
+      },
     ]);
     const totalRevenue = revenueAgg.length > 0 ? revenueAgg[0].total : 0;
+    const totalCommission =
+      revenueAgg.length > 0 ? revenueAgg[0].totalCommission : 0;
+    const totalOwnerPayout =
+      revenueAgg.length > 0 ? revenueAgg[0].totalOwnerPayout : 0;
 
     // Recent items
     const recentUsers = await User.find()
@@ -237,6 +248,8 @@ export const getDashboardStats = async (req, res) => {
         rejectedBookings,
         completedRentals,
         totalRevenue,
+        totalCommission,
+        totalOwnerPayout,
       },
       latest: {
         recentUsers,
@@ -784,6 +797,17 @@ export const getPaymentStats = async (req, res) => {
           _id: "$paymentStatus",
           count: { $sum: 1 },
           totalAmount: { $sum: "$totalPrice" },
+          totalCommission: { $sum: "$commissionAmount" },
+        },
+      },
+    ]);
+
+    const payoutStats = await Booking.aggregate([
+      {
+        $group: {
+          _id: "$payoutStatus",
+          count: { $sum: 1 },
+          totalAmount: { $sum: "$ownerAmount" },
         },
       },
     ]);
@@ -791,15 +815,19 @@ export const getPaymentStats = async (req, res) => {
     // Format stats for easy frontend consumption
     const summary = {
       totalEarnings: 0,
+      totalCommission: 0,
       paidCount: 0,
       pendingCount: 0,
       failedCount: 0,
       refundedCount: 0,
+      pendingPayouts: 0,
+      releasedPayouts: 0,
     };
 
     stats.forEach((s) => {
       if (s._id === "paid") {
         summary.totalEarnings = s.totalAmount;
+        summary.totalCommission = s.totalCommission || 0;
         summary.paidCount = s.count;
       } else if (s._id === "pending") {
         summary.pendingCount = s.count;
@@ -807,6 +835,14 @@ export const getPaymentStats = async (req, res) => {
         summary.failedCount = s.count;
       } else if (s._id === "refunded") {
         summary.refundedCount = s.count;
+      }
+    });
+
+    payoutStats.forEach((p) => {
+      if (p._id === "pending") {
+        summary.pendingPayouts = p.totalAmount || 0;
+      } else if (p._id === "released") {
+        summary.releasedPayouts = p.totalAmount || 0;
       }
     });
 
@@ -883,5 +919,65 @@ export const updatePaymentStatus = async (req, res) => {
   } catch (err) {
     console.error("updatePaymentStatus error:", err);
     res.status(500).json({ message: "Failed to update payment status" });
+  }
+};
+
+/* ===============================
+   PAYOUT MANAGEMENT
+=============================== */
+
+/**
+ * GET ALL PAYOUTS
+ * GET /api/admin/payouts
+ */
+export const getPayouts = async (req, res) => {
+  try {
+    const { status = "all" } = req.query;
+
+    // We only care about bookings that are paid, as only they have legitimate payouts
+    let query = { paymentStatus: "paid" };
+    if (status !== "all") {
+      query.payoutStatus = status;
+    }
+
+    const payouts = await Booking.find(query)
+      .populate("owner", "name email profilePicture phoneNumber")
+      .populate("listing", "name brand model")
+      .sort({ updatedAt: -1 });
+
+    res.json(payouts);
+  } catch (err) {
+    console.error("getPayouts error:", err);
+    res.status(500).json({ message: "Failed to fetch payouts" });
+  }
+};
+
+/**
+ * UPDATE PAYOUT STATUS
+ * PATCH /api/admin/payouts/:id/status
+ */
+export const updatePayoutStatus = async (req, res) => {
+  try {
+    const { payoutStatus } = req.body;
+    const allowed = ["pending", "released", "failed"];
+
+    if (!allowed.includes(payoutStatus)) {
+      return res.status(400).json({ message: "Invalid payout status" });
+    }
+
+    const booking = await Booking.findById(req.params.id);
+    if (!booking) return res.status(404).json({ message: "Booking not found" });
+
+    booking.payoutStatus = payoutStatus;
+    await booking.save();
+
+    const updated = await Booking.findById(booking._id)
+      .populate("owner", "name email profilePicture phoneNumber")
+      .populate("listing", "name brand model");
+
+    res.json({ message: `Payout marked as ${payoutStatus}`, payout: updated });
+  } catch (err) {
+    console.error("updatePayoutStatus error:", err);
+    res.status(500).json({ message: "Failed to update payout status" });
   }
 };

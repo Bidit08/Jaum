@@ -215,6 +215,7 @@ import AdminOverview from "./pages/admin/AdminOverview";
 import AdminListings from "./pages/admin/AdminListings";
 import AdminBookings from "./pages/admin/AdminBookings";
 import AdminPayments from "./pages/admin/AdminPayments";
+import AdminPayouts from "./pages/admin/AdminPayouts";
 import AdminUsers from "./pages/admin/AdminUsers";
 import Home from "./pages/user/home";
 import Login from "./pages/auth/login";
@@ -253,6 +254,7 @@ function App() {
           <Route path="bookings" element={<AdminBookings />} />
           <Route path="payments" element={<AdminPayments />} />
           <Route path="users" element={<AdminUsers />} />
+          <Route path="payouts" element={<AdminPayouts />} />
         </Route>
 
         {/* 🌍 Public Routes */}

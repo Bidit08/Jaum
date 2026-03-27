@@ -104,8 +104,13 @@ const OwnerBookings = () => {
             </div>
 
             <p className="font-semibold text-slate-900">
-              Total: Rs. {b.totalPrice}
+              Amount to Collect: Rs. {b.totalPrice}
             </p>
+            {b.ownerAmount && (
+              <p className="text-sm font-bold text-emerald-600">
+                Your Payout: Rs. {b.ownerAmount}
+              </p>
+            )}
           </div>
 
           {/* Actions */}

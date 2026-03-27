@@ -30,6 +30,10 @@ export const selectPaymentMethod = async (req, res) => {
     if (method === "cash") {
       booking.paymentStatus = "pending";
       booking.status = "confirmed";
+      booking.commissionRate = 10;
+      booking.commissionAmount = (booking.totalPrice * 10) / 100;
+      booking.ownerAmount = booking.totalPrice - booking.commissionAmount;
+      booking.payoutStatus = "pending";
       // Generate a simple receipt number for cash
       booking.receiptNumber = `CSH-${Date.now()}-${booking._id.toString().toUpperCase().slice(-4)}`;
       await booking.save();
@@ -143,6 +147,10 @@ export const verifyKhaltiPayment = async (req, res) => {
 
       booking.paymentStatus = "paid";
       booking.status = "confirmed";
+      booking.commissionRate = 10;
+      booking.commissionAmount = (booking.totalPrice * 10) / 100;
+      booking.ownerAmount = booking.totalPrice - booking.commissionAmount;
+      booking.payoutStatus = "pending";
       booking.receiptNumber = `KHT-${data.transaction_id || Date.now()}`;
       await booking.save();
 
