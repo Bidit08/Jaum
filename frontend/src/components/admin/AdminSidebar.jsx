@@ -21,6 +21,11 @@ const adminNavItems = [
   { name: "Payments", path: "/admin/payments", icon: CreditCard },
   { name: "Payouts", path: "/admin/payouts", icon: DollarSign },
   { name: "Users", path: "/admin/users", icon: Users },
+  {
+    name: "Damage Reports",
+    path: "/admin/damage-reports",
+    icon: ClipboardList,
+  },
 ];
 
 const AdminSidebar = ({

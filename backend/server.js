@@ -68,6 +68,7 @@ import bookingRoutes from "./routes/bookingRoutes.js";
 import visitRoutes from "./routes/visitRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
+import damageRoutes from "./routes/damageRoutes.js";
 
 import path from "path";
 
@@ -102,6 +103,10 @@ app.use(
   "/uploads/invoices",
   express.static(path.join(process.cwd(), "uploads", "invoices")),
 );
+app.use(
+  "/uploads/damage",
+  express.static(path.join(process.cwd(), "uploads", "damage")),
+);
 
 //Vehicle routes
 // app.use("/api/vehicles", vehicleRoutes);
@@ -114,6 +119,7 @@ app.use("/api/visits", visitRoutes);
 
 app.use("/api/payments", paymentRoutes);
 app.use("/api/reviews", reviewRoutes);
+app.use("/api/damage", damageRoutes);
 
 app.use("/api/admin", adminRoutes);
 

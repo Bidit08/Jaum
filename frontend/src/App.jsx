@@ -217,6 +217,8 @@ import AdminBookings from "./pages/admin/AdminBookings";
 import AdminPayments from "./pages/admin/AdminPayments";
 import AdminPayouts from "./pages/admin/AdminPayouts";
 import AdminUsers from "./pages/admin/AdminUsers";
+import AdminDamageReports from "./pages/admin/AdminDamageReports";
+
 import Home from "./pages/user/home";
 import Login from "./pages/auth/login";
 import Signup from "./pages/auth/signup";
@@ -237,6 +239,7 @@ import OwnerBookings from "./components/bookings/OwnerBookings";
 import MyVisits from "./pages/user/dashboard/MyVisits";
 import IncomingVisits from "./pages/user/dashboard/IncomingVisits";
 import PaymentSuccess from "./pages/user/PaymentSuccess";
+import DamageReportPage from "./pages/user/dashboard/DamageReportPage";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -255,6 +258,7 @@ function App() {
           <Route path="payments" element={<AdminPayments />} />
           <Route path="users" element={<AdminUsers />} />
           <Route path="payouts" element={<AdminPayouts />} />
+          <Route path="damage-reports" element={<AdminDamageReports />} />
         </Route>
 
         {/* 🌍 Public Routes */}
@@ -290,6 +294,10 @@ function App() {
             <Route path="incoming-bookings" element={<OwnerBookings />} />
             <Route path="my-visits" element={<MyVisits />} />
             <Route path="incoming-visits" element={<IncomingVisits />} />
+            <Route
+              path="damage-report/:bookingId"
+              element={<DamageReportPage />}
+            />
           </Route>
         </Route>
 

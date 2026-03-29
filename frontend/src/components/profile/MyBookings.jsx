@@ -237,7 +237,10 @@ import {
   FileText,
   CreditCard,
   Star,
+  Camera,
 } from "lucide-react";
+import { Link } from "react-router-dom";
+
 import { toast } from "react-toastify";
 import PaymentMethodModal from "../bookings/PaymentMethodModal";
 import ReviewModal from "../reviews/ReviewModal";
@@ -455,6 +458,19 @@ const MyBookings = () => {
                   <FileText size={14} />
                   Invoice
                 </button>
+              )}
+
+              {/* Damage Report Button (Show if confirmed or completed) */}
+              {(b.status === "confirmed" || b.status === "completed") && (
+                <Link
+                  to={`/dashboard/damage-report/${b._id}`}
+                  className="px-6 py-2.5 bg-indigo-50 hover:bg-indigo-100 text-indigo-700 font-bold rounded-xl transition-all text-xs flex items-center gap-2 border border-indigo-100"
+                >
+                  <Camera size={14} />
+                  {b.status === "confirmed"
+                    ? "Pickup Photos"
+                    : "Return Photos / Report"}
+                </Link>
               )}
 
               {/* Write Review Button (Show if completed) */}
