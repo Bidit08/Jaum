@@ -845,8 +845,174 @@
 
 // export default SidebarNavigation;
 
+// import React from "react";
+// import { NavLink, useNavigate } from "react-router-dom";
+// import {
+//   LayoutDashboard,
+//   User,
+//   Car,
+//   PlusCircle,
+//   ShieldCheck,
+//   LogOut,
+//   Menu,
+//   CalendarSearch,
+//   Eye,
+//   Users,
+// } from "lucide-react";
+
+// import { cn } from "@/lib/utils";
+
+// const navItems = [
+//   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
+//   { name: "Profile", path: "/dashboard/profile", icon: User },
+//   { name: "My Listings", path: "/dashboard/vehicles", icon: Car },
+//   { name: "Add Vehicle", path: "/dashboard/add-vehicle", icon: PlusCircle },
+//   { name: "Security", path: "/dashboard/security", icon: ShieldCheck },
+//   {
+//     name: "Incoming Bookings",
+//     path: "/dashboard/incoming-bookings",
+//     icon: CalendarSearch,
+//   },
+//   {
+//     name: "My Visits",
+//     path: "/dashboard/my-visits",
+//     icon: Eye,
+//   },
+//   {
+//     name: "Incoming Visits",
+//     path: "/dashboard/incoming-visits",
+//     icon: Users,
+//   },
+// ];
+
+// const SidebarNavigation = ({
+//   isCollapsed,
+//   setIsCollapsed,
+//   isMobile = false,
+//   onClose,
+// }) => {
+//   const navigate = useNavigate();
+
+//   const logout = () => {
+//     localStorage.removeItem("token");
+//     localStorage.removeItem("user");
+//     window.dispatchEvent(new Event("authChanged"));
+//     navigate("/login");
+//   };
+
+//   return (
+//     <aside
+//       className={cn(
+//         "h-full flex flex-col bg-white border-r border-slate-200 shadow-sm transition-all duration-300",
+//         isMobile ? "w-64" : isCollapsed ? "w-20" : "w-64",
+//       )}
+//     >
+//       {/* Header */}
+//       <div className="h-20 flex items-center justify-between px-4 border-b border-slate-100">
+//         <NavLink
+//           to="/"
+//           className="flex items-center gap-3 overflow-hidden group"
+//         >
+//           <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow group-hover:scale-105 transition">
+//             J
+//           </div>
+
+//           {!isCollapsed && (
+//             <span className="text-lg font-bold text-slate-900 whitespace-nowrap group-hover:text-blue-600 transition">
+//               Jaum
+//               {/* <span className="text-blue-600">Rental</span> */}
+//             </span>
+//           )}
+//         </NavLink>
+
+//         {/* Collapse button (desktop only) */}
+//         {!isMobile && (
+//           <button
+//             onClick={() => setIsCollapsed(!isCollapsed)}
+//             className="p-2 rounded-lg hover:bg-slate-100 text-slate-500"
+//           >
+//             <Menu size={18} />
+//           </button>
+//         )}
+//       </div>
+
+//       {/* Navigation */}
+//       <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
+//         {navItems.map((item) => {
+//           const Icon = item.icon;
+
+//           return (
+//             <NavLink
+//               key={item.path}
+//               to={item.path}
+//               onClick={() => isMobile && onClose?.()}
+//               className={({ isActive }) =>
+//                 cn(
+//                   "group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
+//                   isActive
+//                     ? "bg-blue-50 text-blue-600 font-semibold"
+//                     : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
+//                   isCollapsed && "justify-center",
+//                 )
+//               }
+//             >
+//               <Icon size={22} className="shrink-0" />
+
+//               {!isCollapsed && <span className="truncate">{item.name}</span>}
+
+//               {/* Tooltip when collapsed */}
+//               {isCollapsed && !isMobile && (
+//                 <span className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
+//                   {item.name}
+//                 </span>
+//               )}
+//             </NavLink>
+//           );
+//         })}
+//       </nav>
+
+//       {/* Footer */}
+//       <div className="border-t border-slate-100 p-4 space-y-4">
+//         <button
+//           onClick={logout}
+//           className={cn(
+//             "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition",
+//             isCollapsed && !isMobile && "justify-center",
+//           )}
+//         >
+//           <LogOut size={20} />
+//           {!isCollapsed && <span className="font-medium">Logout</span>}
+//         </button>
+
+//         <div
+//           className={cn(
+//             "flex items-center gap-3",
+//             isCollapsed && !isMobile ? "justify-center" : "",
+//           )}
+//         >
+//           <img
+//             src="https://picsum.photos/seed/user/100/100"
+//             alt="User"
+//             className="w-9 h-9 rounded-full border border-slate-200"
+//           />
+
+//           {!isCollapsed && (
+//             <div className="min-w-0">
+//               <p className="text-sm font-semibold truncate">Alex Johnson</p>
+//               <p className="text-xs text-slate-500 truncate">Premium</p>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </aside>
+//   );
+// };
+
+// export default SidebarNavigation;
+
 import React from "react";
 import { NavLink, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
 import {
   LayoutDashboard,
   User,
@@ -859,8 +1025,31 @@ import {
   Eye,
   Users,
 } from "lucide-react";
-
 import { cn } from "@/lib/utils";
+
+const BACKEND = "http://localhost:5000";
+
+const useAuthUser = () => {
+  const [user, setUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || {};
+    } catch {
+      return {};
+    }
+  });
+  useEffect(() => {
+    const sync = () => {
+      try {
+        setUser(JSON.parse(localStorage.getItem("user")) || {});
+      } catch {
+        setUser({});
+      }
+    };
+    window.addEventListener("authChanged", sync);
+    return () => window.removeEventListener("authChanged", sync);
+  }, []);
+  return user;
+};
 
 const navItems = [
   { name: "Dashboard", path: "/dashboard", icon: LayoutDashboard },
@@ -892,6 +1081,7 @@ const SidebarNavigation = ({
   onClose,
 }) => {
   const navigate = useNavigate();
+  const authUser = useAuthUser();
 
   const logout = () => {
     localStorage.removeItem("token");
@@ -903,24 +1093,26 @@ const SidebarNavigation = ({
   return (
     <aside
       className={cn(
-        "h-full flex flex-col bg-white border-r border-slate-200 shadow-sm transition-all duration-300",
-        isMobile ? "w-64" : isCollapsed ? "w-20" : "w-64",
+        "h-full flex flex-col bg-white border-r border-slate-200/80 shadow-sm transition-all duration-300 z-50",
+        isMobile ? "w-64" : isCollapsed ? "w-24" : "w-72",
       )}
     >
       {/* Header */}
-      <div className="h-20 flex items-center justify-between px-4 border-b border-slate-100">
+      <div className="h-24 flex items-center justify-between px-6 border-b border-slate-100">
         <NavLink
           to="/"
-          className="flex items-center gap-3 overflow-hidden group"
+          className={cn(
+            "flex items-center gap-4 overflow-hidden group",
+            isCollapsed && !isMobile && "mx-auto",
+          )}
         >
-          <div className="w-10 h-10 bg-blue-600 rounded-xl flex items-center justify-center text-white font-bold shadow group-hover:scale-105 transition">
+          {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 shrink-0">
             J
-          </div>
+          </div> */}
 
           {!isCollapsed && (
-            <span className="text-lg font-bold text-slate-900 whitespace-nowrap group-hover:text-blue-600 transition">
+            <span className="text-2xl font-black text-slate-900 whitespace-nowrap group-hover:text-blue-600 transition-colors tracking-tight uppercase">
               Jaum
-              {/* <span className="text-blue-600">Rental</span> */}
             </span>
           )}
         </NavLink>
@@ -929,15 +1121,15 @@ const SidebarNavigation = ({
         {!isMobile && (
           <button
             onClick={() => setIsCollapsed(!isCollapsed)}
-            className="p-2 rounded-lg hover:bg-slate-100 text-slate-500"
+            className="p-2 rounded-xl hover:bg-slate-100 text-slate-400 hover:text-slate-900 transition-colors hidden lg:flex"
           >
-            <Menu size={18} />
+            <Menu size={20} />
           </button>
         )}
       </div>
 
       {/* Navigation */}
-      <nav className="flex-1 px-3 py-6 space-y-2 overflow-y-auto">
+      <nav className="flex-1 px-4 py-8 space-y-2 overflow-y-auto hide-scrollbar">
         {navItems.map((item) => {
           const Icon = item.icon;
 
@@ -946,23 +1138,34 @@ const SidebarNavigation = ({
               key={item.path}
               to={item.path}
               onClick={() => isMobile && onClose?.()}
+              end={item.path === "/dashboard"} // Ensure strict matching for dashboard root
               className={({ isActive }) =>
                 cn(
-                  "group relative flex items-center gap-3 px-3 py-3 rounded-xl transition-all",
+                  "group relative flex items-center gap-4 py-3.5 rounded-2xl transition-all duration-300 font-medium",
                   isActive
-                    ? "bg-blue-50 text-blue-600 font-semibold"
-                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900",
-                  isCollapsed && "justify-center",
+                    ? "bg-gradient-to-r from-blue-600 to-blue-500 text-white shadow-md shadow-blue-500/20 scale-[1.02] pl-5"
+                    : "text-slate-500 hover:bg-slate-50 hover:text-slate-900 hover:pl-5 px-4",
+                  isCollapsed && !isMobile
+                    ? "justify-center px-0 hover:pl-0 pl-0 scale-100"
+                    : "",
                 )
               }
             >
-              <Icon size={22} className="shrink-0" />
+              <Icon
+                size={isCollapsed && !isMobile ? 24 : 20}
+                className={cn(
+                  "shrink-0 transition-transform duration-300",
+                  !isCollapsed && "group-hover:scale-110",
+                )}
+              />
 
-              {!isCollapsed && <span className="truncate">{item.name}</span>}
+              {!isCollapsed && (
+                <span className="truncate text-sm">{item.name}</span>
+              )}
 
               {/* Tooltip when collapsed */}
               {isCollapsed && !isMobile && (
-                <span className="absolute left-full ml-3 px-2 py-1 bg-slate-900 text-white text-xs rounded-md opacity-0 group-hover:opacity-100 transition whitespace-nowrap z-50">
+                <span className="absolute left-full ml-4 px-3 py-1.5 bg-slate-900 text-white text-xs font-bold uppercase tracking-widest rounded-lg opacity-0 group-hover:opacity-100 transition-all pointer-events-none whitespace-nowrap z-50 shadow-xl">
                   {item.name}
                 </span>
               )}
@@ -972,37 +1175,20 @@ const SidebarNavigation = ({
       </nav>
 
       {/* Footer */}
-      <div className="border-t border-slate-100 p-4 space-y-4">
+      <div className="px-6 py-2 border-t border-slate-100">
         <button
           onClick={logout}
           className={cn(
-            "w-full flex items-center gap-3 px-3 py-3 rounded-xl text-slate-500 hover:bg-red-50 hover:text-red-600 transition",
-            isCollapsed && !isMobile && "justify-center",
-          )}
-        >
-          <LogOut size={20} />
-          {!isCollapsed && <span className="font-medium">Logout</span>}
-        </button>
-
-        <div
-          className={cn(
-            "flex items-center gap-3",
+            "w-full flex items-center gap-3 p-3.5 rounded-2xl text-slate-500 hover:bg-rose-50 hover:text-rose-600 transition-all font-bold group mb-4",
             isCollapsed && !isMobile ? "justify-center" : "",
           )}
         >
-          <img
-            src="https://picsum.photos/seed/user/100/100"
-            alt="User"
-            className="w-9 h-9 rounded-full border border-slate-200"
+          <LogOut
+            size={20}
+            className="group-hover:-translate-x-1 transition-transform"
           />
-
-          {!isCollapsed && (
-            <div className="min-w-0">
-              <p className="text-sm font-semibold truncate">Alex Johnson</p>
-              <p className="text-xs text-slate-500 truncate">Premium</p>
-            </div>
-          )}
-        </div>
+          {!isCollapsed && <span className="text-sm">Logout</span>}
+        </button>
       </div>
     </aside>
   );

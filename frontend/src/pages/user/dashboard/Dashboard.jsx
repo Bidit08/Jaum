@@ -451,165 +451,823 @@
 
 // export default Dashboard;
 
-import React from "react";
-import { TrendingUp, Users, Car, CreditCard, ArrowUpRight } from "lucide-react";
+// import React from "react";
+// import { TrendingUp, Users, Car, CreditCard, ArrowUpRight } from "lucide-react";
 
-const stats = [
-  {
-    label: "Active Bookings",
-    value: "12",
-    icon: Car,
-    color: "text-blue-600",
-    bg: "bg-blue-100/50",
-  },
-  {
-    label: "Profile Views",
-    value: "1,284",
-    icon: Users,
-    color: "text-purple-600",
-    bg: "bg-purple-100/50",
-  },
-  {
-    label: "Total Earnings",
-    value: "$4,250",
-    icon: CreditCard,
-    color: "text-emerald-600",
-    bg: "bg-emerald-100/50",
-  },
-  {
-    label: "Growth",
-    value: "+24%",
-    icon: TrendingUp,
-    color: "text-orange-600",
-    bg: "bg-orange-100/50",
-  },
-];
+// const stats = [
+//   {
+//     label: "Active Bookings",
+//     value: "12",
+//     icon: Car,
+//     color: "text-blue-600",
+//     bg: "bg-blue-100/50",
+//   },
+//   {
+//     label: "Profile Views",
+//     value: "1,284",
+//     icon: Users,
+//     color: "text-purple-600",
+//     bg: "bg-purple-100/50",
+//   },
+//   {
+//     label: "Total Earnings",
+//     value: "$4,250",
+//     icon: CreditCard,
+//     color: "text-emerald-600",
+//     bg: "bg-emerald-100/50",
+//   },
+//   {
+//     label: "Growth",
+//     value: "+24%",
+//     icon: TrendingUp,
+//     color: "text-orange-600",
+//     bg: "bg-orange-100/50",
+//   },
+// ];
 
-const DashboardHome = () => {
+// const DashboardHome = () => {
+//   return (
+//     <div className="space-y-8">
+//       {/* Stats Grid */}
+//       <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
+//         {stats.map((stat, idx) => (
+//           <div
+//             key={idx}
+//             className="bg-white border border-slate-200 rounded-3xl p-6 hover:border-blue-200 transition-all shadow-sm hover:shadow-md group"
+//           >
+//             <div className="flex items-start justify-between">
+//               <div
+//                 className={`p-3 rounded-2xl ${stat.bg} transition-transform group-hover:scale-110`}
+//               >
+//                 <stat.icon className={stat.color} size={24} />
+//               </div>
+//               <button className="text-slate-400 hover:text-slate-900 transition-colors">
+//                 <ArrowUpRight size={18} />
+//               </button>
+//             </div>
+
+//             <div className="mt-5">
+//               <h3 className="text-slate-500 text-sm font-medium">
+//                 {stat.label}
+//               </h3>
+//               <p className="text-2xl font-bold text-slate-900 mt-1">
+//                 {stat.value}
+//               </p>
+//             </div>
+//           </div>
+//         ))}
+//       </div>
+
+//       {/* Main Sections */}
+//       <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
+//         {/* Recent Activity */}
+//         <div className="lg:col-span-2 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
+//           <div className="p-6 border-b border-slate-100 flex justify-between items-center">
+//             <h2 className="text-lg font-bold text-slate-900">
+//               Recent Vehicle Activity
+//             </h2>
+//             <button className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
+//               View All
+//             </button>
+//           </div>
+
+//           <div className="divide-y divide-slate-50">
+//             {[1, 2, 3, 4].map((item) => (
+//               <div
+//                 key={item}
+//                 className="p-6 flex items-center gap-4 hover:bg-slate-50 transition-colors"
+//               >
+//                 <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0">
+//                   <img
+//                     src={`https://picsum.photos/seed/car${item}/100/100`}
+//                     alt="Car"
+//                     className="w-full h-full object-cover"
+//                   />
+//                 </div>
+
+//                 <div className="flex-1 min-w-0">
+//                   <h4 className="text-sm font-bold text-slate-900 truncate">
+//                     Tesla Model 3 Performance
+//                   </h4>
+//                   <p className="text-xs text-slate-500">
+//                     Reserved by James Miller • 2 hours ago
+//                   </p>
+//                 </div>
+
+//                 <div className="text-right">
+//                   <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
+//                     Confirmed
+//                   </span>
+//                 </div>
+//               </div>
+//             ))}
+//           </div>
+//         </div>
+
+//         {/* Right Side */}
+//         <div className="space-y-6">
+//           {/* CTA */}
+//           <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 relative overflow-hidden group shadow-xl shadow-blue-500/10">
+//             <div className="relative z-10">
+//               <h3 className="text-xl font-bold text-white">List your car</h3>
+//               <p className="text-blue-100 text-sm mt-2 opacity-90">
+//                 Start earning passive income today by listing your spare
+//                 vehicle.
+//               </p>
+//               <button className="mt-8 w-full py-3.5 bg-white text-blue-600 font-bold rounded-2xl hover:bg-blue-50 transition-colors shadow-lg shadow-black/10">
+//                 Add New Vehicle
+//               </button>
+//             </div>
+
+//             <Car
+//               size={140}
+//               className="absolute -bottom-10 -right-10 text-white opacity-10 group-hover:rotate-12 transition-transform duration-700"
+//             />
+//           </div>
+
+//           {/* Earnings */}
+//           <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
+//             <h3 className="text-lg font-bold text-slate-900 mb-4">
+//               Earnings This Week
+//             </h3>
+
+//             <div className="flex items-end justify-between">
+//               <div>
+//                 <span className="text-3xl font-extrabold text-slate-900">
+//                   $1,420.00
+//                 </span>
+//                 <p className="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
+//                   <TrendingUp size={12} /> +12% from last week
+//                 </p>
+//               </div>
+
+//               <div className="flex gap-1.5 items-end h-20">
+//                 {[4, 7, 5, 8, 6, 9, 7].map((h, i) => (
+//                   <div
+//                     key={i}
+//                     className="w-2.5 bg-blue-100 rounded-full hover:bg-blue-600 transition-all cursor-pointer"
+//                     style={{ height: `${h * 10}%` }}
+//                   />
+//                 ))}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default DashboardHome;
+
+import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import {
+  TrendingUp,
+  Car,
+  CreditCard,
+  ArrowUpRight,
+  TrendingDown,
+  PlusCircle,
+  Clock,
+  CheckCircle2,
+  XCircle,
+  HelpCircle,
+  List,
+  Loader2,
+  AlertCircle,
+  Download,
+} from "lucide-react";
+import {
+  AreaChart,
+  Area,
+  XAxis,
+  YAxis,
+  CartesianGrid,
+  Tooltip,
+  ResponsiveContainer,
+} from "recharts";
+import api from "../../../utils/api";
+
+// ── helpers ───────────────────────────────────────────────────────────────────
+
+const BACKEND = "http://localhost:5000";
+
+const imgSrc = (photos) =>
+  photos?.[0]
+    ? photos[0].startsWith("http")
+      ? photos[0]
+      : `${BACKEND}${photos[0]}`
+    : null;
+
+const relativeTime = (dateStr) => {
+  const diff = Date.now() - new Date(dateStr).getTime();
+  const m = Math.floor(diff / 60000);
+  if (m < 1) return "Just now";
+  if (m < 60) return `${m}m ago`;
+  const h = Math.floor(m / 60);
+  if (h < 24) return `${h}h ago`;
+  const d = Math.floor(h / 24);
+  return d === 1 ? "Yesterday" : `${d}d ago`;
+};
+
+const StatusBadge = ({ status }) => {
+  const map = {
+    confirmed: {
+      icon: CheckCircle2,
+      label: "Confirmed",
+      cls: "bg-emerald-50 text-emerald-600 border-emerald-100/50",
+      iconCls: "text-emerald-500",
+    },
+    "approved-awaiting-payment": {
+      icon: Clock,
+      label: "Awaiting Payment",
+      cls: "bg-amber-50 text-amber-600 border-amber-100/50",
+      iconCls: "text-amber-500",
+    },
+    pending: {
+      icon: Clock,
+      label: "Pending",
+      cls: "bg-blue-50 text-blue-600 border-blue-100/50",
+      iconCls: "text-blue-500",
+    },
+    completed: {
+      icon: CheckCircle2,
+      label: "Completed",
+      cls: "bg-indigo-50 text-indigo-600 border-indigo-100/50",
+      iconCls: "text-indigo-500",
+    },
+    cancelled: {
+      icon: XCircle,
+      label: "Cancelled",
+      cls: "bg-rose-50 text-rose-600 border-rose-100/50",
+      iconCls: "text-rose-500",
+    },
+    rejected: {
+      icon: XCircle,
+      label: "Rejected",
+      cls: "bg-slate-50 text-slate-600 border-slate-100/50",
+      iconCls: "text-slate-500",
+    },
+  };
+  const cfg = map[status] || {
+    icon: HelpCircle,
+    label: status,
+    cls: "bg-slate-50 text-slate-500 border-slate-100",
+    iconCls: "text-slate-400",
+  };
+  const Icon = cfg.icon;
   return (
-    <div className="space-y-8">
-      {/* Stats Grid */}
-      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4 md:gap-6">
-        {stats.map((stat, idx) => (
-          <div
-            key={idx}
-            className="bg-white border border-slate-200 rounded-3xl p-6 hover:border-blue-200 transition-all shadow-sm hover:shadow-md group"
-          >
-            <div className="flex items-start justify-between">
-              <div
-                className={`p-3 rounded-2xl ${stat.bg} transition-transform group-hover:scale-110`}
-              >
-                <stat.icon className={stat.color} size={24} />
-              </div>
-              <button className="text-slate-400 hover:text-slate-900 transition-colors">
-                <ArrowUpRight size={18} />
-              </button>
-            </div>
+    <span
+      className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[9px] font-black uppercase tracking-widest border transition-colors ${cfg.cls}`}
+    >
+      <Icon size={10} className={cfg.iconCls} />
+      {cfg.label}
+    </span>
+  );
+};
 
-            <div className="mt-5">
-              <h3 className="text-slate-500 text-sm font-medium">
-                {stat.label}
-              </h3>
-              <p className="text-2xl font-bold text-slate-900 mt-1">
-                {stat.value}
-              </p>
-            </div>
-          </div>
-        ))}
+// ── skeleton card ─────────────────────────────────────────────────────────────
+
+const SkeletonCard = () => (
+  <div className="bg-white border border-slate-200/60 rounded-2xl p-4 animate-pulse">
+    <div className="flex items-center gap-3">
+      <div className="w-10 h-10 bg-slate-100 rounded-xl" />
+      <div className="space-y-2">
+        <div className="h-2 w-16 bg-slate-100 rounded" />
+        <div className="h-4 w-12 bg-slate-100 rounded" />
+      </div>
+    </div>
+  </div>
+);
+
+// ── sparkline (simple) ─────────────────────────────────────────────────────────
+
+const Sparkline = ({ data, color }) => (
+  <div className="flex items-end gap-[1.5px] h-6">
+    {data.map((val, i) => (
+      <div
+        key={i}
+        className={`w-1 rounded-full ${color}`}
+        style={{ height: `${20 + val * 60}%` }}
+      />
+    ))}
+  </div>
+);
+
+// ── main component ────────────────────────────────────────────────────────────
+
+const Dashboard = () => {
+  const navigate = useNavigate();
+
+  // raw data
+  const [myBookings, setMyBookings] = useState([]);
+  const [ownerBookings, setOwnerBookings] = useState([]);
+  const [myListings, setMyListings] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    const fetchAll = async () => {
+      setLoading(true);
+      try {
+        const [bookRes, ownerRes, listRes] = await Promise.all([
+          api.get("/bookings/my"),
+          api.get("/bookings/owner"),
+          api.get("/listings/my"),
+        ]);
+        setMyBookings(bookRes.data || []);
+        setOwnerBookings(ownerRes.data || []);
+        setMyListings(listRes.data || []);
+      } catch (err) {
+        setError("Failed to load dashboard data. Please try again.");
+      } finally {
+        setLoading(false);
+      }
+    };
+    fetchAll();
+  }, []);
+
+  // ── derived stats ──────────────────────────────────────────────────────────
+
+  const activeBookings = myBookings.filter((b) =>
+    ["confirmed", "approved-awaiting-payment"].includes(b.status),
+  );
+
+  const activeListings = myListings.filter(
+    (l) => l.status === "active" && l.isApproved,
+  );
+
+  const totalEarnings = ownerBookings
+    .filter((b) => b.paymentStatus === "paid")
+    .reduce((sum, b) => sum + (b.ownerAmount ?? b.totalPrice ?? 0), 0);
+
+  // week earnings (owner bookings paid in last 7 days)
+  const sevenDaysAgo = Date.now() - 7 * 24 * 60 * 60 * 1000;
+  const weekEarnings = ownerBookings
+    .filter(
+      (b) =>
+        b.paymentStatus === "paid" &&
+        new Date(b.updatedAt).getTime() > sevenDaysAgo,
+    )
+    .reduce((sum, b) => sum + (b.ownerAmount ?? b.totalPrice ?? 0), 0);
+
+  // daily bar data (last 7 days)
+  const dailyBars = Array.from({ length: 7 }, (_, i) => {
+    const day = new Date();
+    day.setDate(day.getDate() - (6 - i));
+    const start = new Date(day.setHours(0, 0, 0, 0)).getTime();
+    const end = start + 86400000;
+    return ownerBookings
+      .filter(
+        (b) =>
+          b.paymentStatus === "paid" &&
+          new Date(b.updatedAt).getTime() >= start &&
+          new Date(b.updatedAt).getTime() < end,
+      )
+      .reduce((s, b) => s + (b.ownerAmount ?? b.totalPrice ?? 0), 0);
+  });
+
+  const maxBar = Math.max(...dailyBars, 1);
+  // processed stats for Area Chart (last 7 days)
+  const chartData = Array.from({ length: 7 }, (_, i) => {
+    const day = new Date();
+    day.setDate(day.getDate() - (6 - i));
+    const dayStr = day.toLocaleDateString("en-US", { weekday: "short" });
+    const start = new Date(day.setHours(0, 0, 0, 0)).getTime();
+    const end = start + 86400000;
+
+    const daysBookings = ownerBookings.filter((b) => {
+      const bTime = new Date(b.createdAt).getTime();
+      return bTime >= start && bTime < end;
+    });
+
+    return {
+      name: dayStr,
+      requests: daysBookings.length,
+      confirmed: daysBookings.filter(
+        (b) => b.status === "confirmed" || b.status === "completed",
+      ).length,
+    };
+  });
+
+  // compare this week vs last week earnings
+  const prevWeekSevenDaysAgo = sevenDaysAgo - 7 * 24 * 60 * 60 * 1000;
+  const prevWeekEarnings = ownerBookings
+    .filter(
+      (b) =>
+        b.paymentStatus === "paid" &&
+        new Date(b.updatedAt).getTime() > prevWeekSevenDaysAgo &&
+        new Date(b.updatedAt).getTime() <= sevenDaysAgo,
+    )
+    .reduce((sum, b) => sum + (b.ownerAmount ?? b.totalPrice ?? 0), 0);
+
+  const growth =
+    prevWeekEarnings === 0
+      ? 100
+      : Math.round(
+          ((weekEarnings - prevWeekEarnings) / prevWeekEarnings) * 100,
+        );
+
+  // build recent activity
+  const recentActivity = [...ownerBookings]
+    .sort((a, b) => new Date(b.createdAt) - new Date(a.createdAt))
+    .slice(0, 5);
+
+  const stats = [
+    {
+      label: "Active Bookings",
+      value: loading ? "—" : activeBookings.length,
+      icon: Car,
+      color: "text-blue-500",
+      bg: "bg-blue-50/50 border-blue-100/50",
+      spark: [0.3, 0.5, 0.4, 0.8, 0.6, 0.9, 0.7],
+    },
+    {
+      label: "Active Listings",
+      value: loading ? "—" : activeListings.length,
+      icon: List,
+      color: "text-indigo-500",
+      bg: "bg-indigo-50/50 border-indigo-100/50",
+      spark: [0.4, 0.4, 0.5, 0.4, 0.6, 0.5, 0.7],
+    },
+    {
+      label: "Total Earnings",
+      value: loading ? "—" : `Rs.${(totalEarnings / 1000).toFixed(1)}k`,
+      icon: CreditCard,
+      color: "text-emerald-500",
+      bg: "bg-emerald-50/50 border-emerald-100/50",
+      spark: [0.2, 0.4, 0.3, 0.7, 0.5, 0.8, 0.9],
+    },
+    {
+      label: "Pending",
+      value: loading
+        ? "—"
+        : ownerBookings.filter((b) => b.status === "pending").length,
+      icon: Clock,
+      color: "text-amber-500",
+      bg: "bg-amber-50/50 border-amber-100/50",
+      spark: [0.8, 0.6, 0.7, 0.4, 0.3, 0.2, 0.1],
+    },
+  ];
+
+  // ── render ─────────────────────────────────────────────────────────────────
+
+  return (
+    <div className="space-y-6 font-sans pb-10">
+      {/* Top Banner / Actions */}
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+        <div>
+          <h1 className="text-2xl font-black text-slate-900 tracking-tight">
+            Overview
+          </h1>
+          <p className="text-sm text-slate-500 font-medium tracking-tight">
+            Welcome back! Here's what's happening today.
+          </p>
+        </div>
+        <div className="flex items-center gap-2">
+          <button
+            onClick={() => navigate("/dashboard/add-vehicle")}
+            className="flex items-center gap-2 px-4 py-2 bg-indigo-600 text-white rounded-xl font-bold text-xs shadow-sm hover:bg-indigo-700 hover:shadow-indigo-200 hover:shadow-lg transition-all active:scale-95"
+          >
+            <PlusCircle size={14} /> Add Vehicle
+          </button>
+          <button
+            onClick={() => navigate("/dashboard/vehicles")}
+            className="flex items-center gap-2 px-4 py-2 bg-white border border-slate-200 text-slate-700 rounded-xl font-bold text-xs shadow-sm hover:border-slate-300 hover:bg-slate-50 transition-all active:scale-95"
+          >
+            Manage Fleet
+          </button>
+        </div>
       </div>
 
-      {/* Main Sections */}
-      <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-        {/* Recent Activity */}
-        <div className="lg:col-span-2 bg-white border border-slate-200 rounded-3xl overflow-hidden shadow-sm">
-          <div className="p-6 border-b border-slate-100 flex justify-between items-center">
-            <h2 className="text-lg font-bold text-slate-900">
-              Recent Vehicle Activity
-            </h2>
-            <button className="text-sm text-blue-600 hover:text-blue-700 font-semibold">
-              View All
-            </button>
-          </div>
+      {/* Error Banner */}
+      {error && (
+        <div className="flex items-center gap-3 bg-rose-50 border border-rose-200 text-rose-700 rounded-2xl px-6 py-4 text-sm font-medium">
+          <AlertCircle size={18} className="shrink-0" />
+          {error}
+        </div>
+      )}
 
-          <div className="divide-y divide-slate-50">
-            {[1, 2, 3, 4].map((item) => (
+      {/* Stats Grid - Slim Horizontal Cards */}
+      <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
+        {loading
+          ? Array(4)
+              .fill(0)
+              .map((_, i) => <SkeletonCard key={i} />)
+          : stats.map((stat, idx) => (
               <div
-                key={item}
-                className="p-6 flex items-center gap-4 hover:bg-slate-50 transition-colors"
+                key={idx}
+                className="group flex items-center justify-between bg-white border border-slate-200/60 rounded-2xl p-4 transition-all duration-300 hover:-translate-y-1 hover:shadow-md cursor-default overflow-hidden relative"
               >
-                <div className="w-12 h-12 rounded-xl bg-slate-100 overflow-hidden flex-shrink-0">
-                  <img
-                    src={`https://picsum.photos/seed/car${item}/100/100`}
-                    alt="Car"
-                    className="w-full h-full object-cover"
+                <div className="flex items-center gap-3">
+                  <div className={`p-2.5 rounded-xl border ${stat.bg}`}>
+                    <stat.icon className={stat.color} size={18} />
+                  </div>
+                  <div>
+                    <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      {stat.label}
+                    </p>
+                    <p className="text-xl font-black text-slate-900 tracking-tight">
+                      {stat.value}
+                    </p>
+                  </div>
+                </div>
+                <div className="opacity-40 group-hover:opacity-100 transition-opacity">
+                  <Sparkline
+                    data={stat.spark}
+                    color={
+                      stat.label === "Pending"
+                        ? "bg-rose-400"
+                        : "bg-emerald-400"
+                    }
                   />
-                </div>
-
-                <div className="flex-1 min-w-0">
-                  <h4 className="text-sm font-bold text-slate-900 truncate">
-                    Tesla Model 3 Performance
-                  </h4>
-                  <p className="text-xs text-slate-500">
-                    Reserved by James Miller • 2 hours ago
-                  </p>
-                </div>
-
-                <div className="text-right">
-                  <span className="inline-block px-3 py-1 rounded-full bg-blue-50 text-blue-600 text-[10px] font-bold uppercase tracking-wider">
-                    Confirmed
-                  </span>
                 </div>
               </div>
             ))}
-          </div>
-        </div>
+      </div>
 
-        {/* Right Side */}
-        <div className="space-y-6">
-          {/* CTA */}
-          <div className="bg-gradient-to-br from-blue-600 to-indigo-700 rounded-3xl p-8 relative overflow-hidden group shadow-xl shadow-blue-500/10">
-            <div className="relative z-10">
-              <h3 className="text-xl font-bold text-white">List your car</h3>
-              <p className="text-blue-100 text-sm mt-2 opacity-90">
-                Start earning passive income today by listing your spare
-                vehicle.
-              </p>
-              <button className="mt-8 w-full py-3.5 bg-white text-blue-600 font-bold rounded-2xl hover:bg-blue-50 transition-colors shadow-lg shadow-black/10">
-                Add New Vehicle
+      {/* Main Content Grid */}
+      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6 items-start">
+        <div className="xl:col-span-2 space-y-6">
+          {/* Booking Analytics Chart */}
+          <div className="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm overflow-hidden group">
+            <div className="flex items-center justify-between mb-6">
+              <div>
+                <h2 className="text-base font-black text-slate-900 tracking-tight">
+                  Booking Analytics
+                </h2>
+                <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                  Market Activity Trend
+                </p>
+              </div>
+              <div className="flex items-center gap-2">
+                <div className="flex items-center gap-3 px-3 py-1.5 bg-slate-50 rounded-lg border border-slate-100">
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-blue-500" />
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      Requests
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-1.5">
+                    <div className="w-2 h-2 rounded-full bg-emerald-500" />
+                    <span className="text-[10px] font-bold text-slate-500 uppercase tracking-widest">
+                      Confirmed
+                    </span>
+                  </div>
+                </div>
+                <button className="p-2 hover:bg-slate-50 rounded-lg border border-slate-100 text-slate-400 hover:text-indigo-600 transition-all">
+                  <Download size={14} />
+                </button>
+              </div>
+            </div>
+
+            <div className="h-[260px] w-full">
+              {loading ? (
+                <div className="h-full w-full flex items-center justify-center">
+                  <Loader2 className="animate-spin text-slate-200" size={24} />
+                </div>
+              ) : (
+                <ResponsiveContainer width="100%" height="100%">
+                  <AreaChart
+                    data={chartData}
+                    margin={{ top: 0, right: 0, left: -25, bottom: 0 }}
+                  >
+                    <defs>
+                      <linearGradient id="gReq" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor="#3B82F6"
+                          stopOpacity={0.12}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#3B82F6"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                      <linearGradient id="gConf" x1="0" y1="0" x2="0" y2="1">
+                        <stop
+                          offset="5%"
+                          stopColor="#10B981"
+                          stopOpacity={0.12}
+                        />
+                        <stop
+                          offset="95%"
+                          stopColor="#10B981"
+                          stopOpacity={0}
+                        />
+                      </linearGradient>
+                    </defs>
+                    <CartesianGrid
+                      strokeDasharray="3 3"
+                      vertical={false}
+                      stroke="#f1f5f9"
+                    />
+                    <XAxis
+                      dataKey="name"
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
+                      dy={10}
+                    />
+                    <YAxis
+                      axisLine={false}
+                      tickLine={false}
+                      tick={{ fill: "#94a3b8", fontSize: 10, fontWeight: 700 }}
+                    />
+                    <Tooltip
+                      contentStyle={{
+                        backgroundColor: "#1e293b",
+                        border: "none",
+                        borderRadius: "12px",
+                        boxShadow: "0 10px 15px -3px rgba(0,0,0,0.5)",
+                      }}
+                      itemStyle={{
+                        color: "#fff",
+                        fontSize: "11px",
+                        fontWeight: "bold",
+                      }}
+                      labelStyle={{ display: "none" }}
+                      cursor={{ stroke: "#e2e8f0", strokeWidth: 1 }}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="requests"
+                      stroke="#3B82F6"
+                      strokeWidth={2.5}
+                      fillOpacity={1}
+                      fill="url(#gReq)"
+                      animationDuration={1000}
+                    />
+                    <Area
+                      type="monotone"
+                      dataKey="confirmed"
+                      stroke="#10B981"
+                      strokeWidth={2.5}
+                      fillOpacity={1}
+                      fill="url(#gConf)"
+                      animationDuration={1200}
+                    />
+                  </AreaChart>
+                </ResponsiveContainer>
+              )}
+            </div>
+          </div>
+
+          {/* Incoming Bookings Section */}
+          <div className="bg-white border border-slate-200/60 rounded-3xl overflow-hidden shadow-sm">
+            <div className="px-6 py-5 border-b border-slate-100 flex items-center justify-between">
+              <h2 className="text-base font-black text-slate-900 tracking-tight">
+                Recent Activity
+              </h2>
+              <button
+                onClick={() => navigate("/dashboard/incoming-bookings")}
+                className="text-[10px] font-bold uppercase tracking-widest text-slate-400 hover:text-indigo-600 transition-colors flex items-center gap-1 group"
+              >
+                View all requests{" "}
+                <ArrowUpRight
+                  size={12}
+                  className="group-hover:translate-x-0.5 group-hover:-translate-y-0.5 transition-transform"
+                />
               </button>
             </div>
 
-            <Car
-              size={140}
-              className="absolute -bottom-10 -right-10 text-white opacity-10 group-hover:rotate-12 transition-transform duration-700"
-            />
+            <div className="p-2 space-y-1">
+              {loading ? (
+                Array(3)
+                  .fill(0)
+                  .map((_, i) => (
+                    <div
+                      key={i}
+                      className="flex items-center gap-4 p-4 animate-pulse"
+                    >
+                      <div className="w-12 h-12 bg-slate-100 rounded-xl" />
+                      <div className="flex-1 space-y-2">
+                        <div className="h-3 bg-slate-100 rounded w-1/4" />
+                        <div className="h-2 bg-slate-100 rounded w-1/2" />
+                      </div>
+                    </div>
+                  ))
+              ) : recentActivity.length > 0 ? (
+                recentActivity.map((bk) => (
+                  <div
+                    key={bk._id}
+                    className="flex items-center gap-4 p-4 rounded-2xl hover:bg-slate-50/80 group transition-all cursor-pointer"
+                    onClick={() => navigate("/dashboard/incoming-bookings")}
+                  >
+                    <img
+                      src={imgSrc(bk.listing?.photos)}
+                      className="w-12 h-12 rounded-xl object-cover shadow-sm group-hover:scale-105 transition-transform"
+                      alt={bk.listing?.name}
+                    />
+                    <div className="flex-1 min-w-0">
+                      <h4 className="text-sm font-bold text-slate-900 truncate tracking-tight">
+                        {bk.listing?.name}
+                      </h4>
+                      <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest">
+                        By {bk.user?.name} • {relativeTime(bk.createdAt)}
+                      </p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-xs font-black text-slate-900 tracking-tight">
+                        Rs.{bk.totalPrice?.toLocaleString()}
+                      </p>
+                      <div className="mt-1 flex justify-end">
+                        <StatusBadge status={bk.status} />
+                      </div>
+                    </div>
+                  </div>
+                ))
+              ) : (
+                <div className="py-12 text-center">
+                  <p className="text-sm text-slate-400 font-bold">
+                    No active requests.
+                  </p>
+                </div>
+              )}
+            </div>
+          </div>
+        </div>
+
+        {/* Right Column */}
+        <div className="space-y-6">
+          {/* Expand Fleet CTA */}
+          <div className="relative bg-gradient-to-tr from-slate-950 via-indigo-950 to-indigo-900 rounded-3xl p-6 overflow-hidden shadow-xl group border border-white/5">
+            <div className="absolute top-0 right-0 w-32 h-32 bg-indigo-500/10 blur-[60px] rounded-full group-hover:bg-indigo-500/20 transition-all duration-700" />
+            <div className="relative z-10">
+              <div className="w-8 h-8 rounded-lg bg-white/10 flex items-center justify-center mb-4 border border-white/10">
+                <Car className="text-indigo-400" size={16} />
+              </div>
+              <h3 className="text-lg font-black text-white tracking-tight leading-tight">
+                Scale Your <br /> Earnings
+              </h3>
+              <p className="mt-2 text-xs font-bold text-indigo-300 uppercase tracking-widest opacity-80">
+                List Another Vehicle
+              </p>
+              <button
+                onClick={() => navigate("/dashboard/add-vehicle")}
+                className="mt-6 w-full py-3 bg-white text-indigo-950 text-[10px] font-black uppercase tracking-widest rounded-xl hover:bg-slate-50 hover:shadow-[0_0_20px_rgba(255,255,255,0.2)] transition-all active:scale-95 flex items-center justify-center gap-2"
+              >
+                Start Listing <ArrowUpRight size={14} />
+              </button>
+            </div>
+            <div className="absolute -bottom-6 -right-6 opacity-5 group-hover:opacity-10 transition-opacity duration-700 transform rotate-[-15deg]">
+              <Car size={160} />
+            </div>
           </div>
 
-          {/* Earnings */}
-          <div className="bg-white border border-slate-200 rounded-3xl p-6 shadow-sm">
-            <h3 className="text-lg font-bold text-slate-900 mb-4">
-              Earnings This Week
-            </h3>
-
-            <div className="flex items-end justify-between">
-              <div>
-                <span className="text-3xl font-extrabold text-slate-900">
-                  $1,420.00
-                </span>
-                <p className="text-xs text-emerald-600 font-semibold mt-1 flex items-center gap-1">
-                  <TrendingUp size={12} /> +12% from last week
-                </p>
+          {/* Revenue Summary */}
+          <div className="bg-white border border-slate-200/60 rounded-3xl p-6 shadow-sm flex flex-col group">
+            <div className="flex items-center justify-between mb-2">
+              <h3 className="text-sm font-black text-slate-900 tracking-tight uppercase tracking-widest">
+                Revenue
+              </h3>
+              <div
+                className={`flex items-center gap-1.5 px-2 py-1 rounded-lg text-[10px] font-bold ${weekEarnings > 0 ? "bg-emerald-50 text-emerald-600" : "bg-slate-50 text-slate-400"}`}
+              >
+                <TrendingUp size={12} /> {growth}%
               </div>
+            </div>
+            <div className="mb-6">
+              <p className="text-2xl font-black text-slate-900 tracking-tight">
+                Rs.{weekEarnings.toLocaleString()}
+              </p>
+              <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mt-1">
+                Generated this week
+              </p>
+            </div>
 
-              <div className="flex gap-1.5 items-end h-20">
-                {[4, 7, 5, 8, 6, 9, 7].map((h, i) => (
+            <div className="flex items-end justify-between h-20 gap-1.5 mt-auto">
+              {dailyBars.map((val, i) => {
+                const pct = maxBar > 0 ? Math.max((val / maxBar) * 100, 5) : 5;
+                return (
                   <div
                     key={i}
-                    className="w-2.5 bg-blue-100 rounded-full hover:bg-blue-600 transition-all cursor-pointer"
-                    style={{ height: `${h * 10}%` }}
-                  />
-                ))}
-              </div>
+                    className="flex-1 group/bar relative flex flex-col justify-end h-full"
+                  >
+                    <div
+                      className={`w-full rounded-t-lg transition-all duration-500 cursor-pointer ${val > 0 ? "bg-indigo-500 group-hover/bar:bg-indigo-400 group-hover/bar:shadow-[0_0_15px_rgba(99,102,241,0.3)]" : "bg-slate-100"}`}
+                      style={{ height: `${pct}%` }}
+                    />
+                    {val > 0 && (
+                      <div className="absolute -top-8 left-1/2 -translate-x-1/2 bg-slate-900 text-white text-[9px] font-bold px-1.5 py-0.5 rounded opacity-0 group-hover/bar:opacity-100 transition-opacity whitespace-nowrap z-20 pointer-events-none">
+                        Rs.{val.toLocaleString()}
+                      </div>
+                    )}
+                  </div>
+                );
+              })}
+            </div>
+            <div className="flex justify-between mt-3">
+              {["M", "T", "W", "T", "F", "S", "S"].map((d, i) => (
+                <span
+                  key={i}
+                  className="text-[9px] font-bold text-slate-400 w-full text-center"
+                >
+                  {d}
+                </span>
+              ))}
             </div>
           </div>
         </div>
@@ -618,4 +1276,4 @@ const DashboardHome = () => {
   );
 };
 
-export default DashboardHome;
+export default Dashboard;

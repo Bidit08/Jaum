@@ -815,12 +815,47 @@
 
 // export default HeroSection;
 
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-import { Calendar, MapPin, Users, Search, Sparkles } from "lucide-react";
+// import { Calendar, MapPin, Users, Search, Sparkles } from "lucide-react";
+import { Calendar, MapPin, Users, Search, Car, User } from "lucide-react";
 
 const HeroSection = () => {
+  const navigate = useNavigate();
+  const [searchMode, setSearchMode] = useState("car"); // "car" or "seat"
+
+  // Car search states
+  const [carLocation, setCarLocation] = useState("");
+  const [carDate, setCarDate] = useState("");
+  const [carPassengers, setCarPassengers] = useState("");
+
+  // Seat search states
+  const [seatFrom, setSeatFrom] = useState("");
+  const [seatTo, setSeatTo] = useState("");
+  const [seatDate, setSeatDate] = useState("");
+  const [seatCount, setSeatCount] = useState("");
+
+  const handleCarSearch = () => {
+    const params = new URLSearchParams();
+    if (carLocation) params.append("location", carLocation);
+    if (carDate) params.append("date", carDate);
+    if (carPassengers) params.append("passengers", carPassengers);
+
+    navigate(`/listings?${params.toString()}`);
+  };
+
+  const handleSeatSearch = () => {
+    const params = new URLSearchParams();
+    if (seatFrom) params.append("departure", seatFrom);
+    if (seatTo) params.append("destination", seatTo);
+    if (seatDate) params.append("date", seatDate);
+    if (seatCount) params.append("seats", seatCount);
+
+    navigate(`/listings?${params.toString()}`);
+  };
   return (
     <section className="min-h-screen relative overflow-hidden bg-black">
       {/* Background Image */}
@@ -862,87 +897,201 @@ const HeroSection = () => {
             <h1 className="text-5xl md:text-7xl font-bold text-white">
               Drive Your <span className="text-blue-400">Dreams</span>
             </h1>
-            <p className="text-lg md:text-xl text-white/90 max-w-2xl mx-auto mt-4 font-light">
+            <p className="mt-8 text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto mt-4 font-light">
               Find the perfect ride for business, adventure or luxury travel.
             </p>
           </div>
 
           {/* 👇 Clean Search Card */}
           <Card className="bg-black/70 backdrop-blur-lg border-white/20 shadow-xl rounded-2xl">
-            <CardContent className="p-6">
-              <div className="grid grid-cols-1 lg:grid-cols-4 gap-4">
-                {/* Location */}
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-white">
-                    Pick-up Location
-                  </label>
-                  <div className="relative">
-                    <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
-                    <Input
-                      placeholder="City or Airport"
-                      className="bg-white/10 border-white/20 text-white h-12 pl-10"
-                    />
-                  </div>
-                </div>
+            <CardContent className="p-6 py-1.5">
+              {/* Service Selection Toggle */}
+              <div className="w-full flex justify-start mb-7">
+                <div className="grid grid-cols-2 w-full md:w-[1200px] bg-white/10 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg">
+                  <button
+                    onClick={() => setSearchMode("car")}
+                    className={`flex justify-center items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 ${
+                      searchMode === "car"
+                        ? "bg-blue-500 text-white shadow-lg"
+                        : "text-slate-300 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <Car className="w-5 h-5" />
+                    Rent a Car
+                  </button>
 
-                {/* Date */}
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-white">
-                    Dates
-                  </label>
-                  <div className="relative">
-                    <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
-                    <Input
-                      type="date"
-                      className="bg-white/10 border-white/20 text-white h-12 pl-10"
-                    />
-                  </div>
+                  <button
+                    onClick={() => setSearchMode("seat")}
+                    className={`flex justify-center items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 ${
+                      searchMode === "seat"
+                        ? "bg-blue-500 text-white shadow-lg"
+                        : "text-slate-300 hover:text-white hover:bg-white/10"
+                    }`}
+                  >
+                    <User className="w-5 h-5" />
+                    Book a Seat
+                  </button>
                 </div>
+              </div>
 
-                {/* Passengers */}
-                <div className="space-y-1">
-                  <label className="text-sm font-medium text-white">
-                    Passengers
-                  </label>
-                  <div className="relative">
-                    <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
-                    <Input
-                      type="number"
-                      min="1"
-                      placeholder="2"
-                      className="bg-white/10 border-white/20 text-white h-12 pl-10"
-                    />
-                  </div>
-                </div>
+              {/* Form Grid */}
+              <div
+                className={
+                  searchMode === "car"
+                    ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+                    : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+                }
+              >
+                {searchMode === "car" ? (
+                  <>
+                    {/* Location */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        Pick-up Location
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          placeholder="City or Airport"
+                          value={carLocation}
+                          onChange={(e) => setCarLocation(e.target.value)}
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
 
-                {/* Button */}
-                <div className="flex items-end">
-                  <Button className="w-full h-12 bg-blue-400 hover:bg-cyan-600 text-white font-semibold rounded-xl">
-                    <Search className="w-5 mr-2" />
-                    Find Your Car
-                  </Button>
-                </div>
+                    {/* Date */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        Dates
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          type="date"
+                          value={carDate}
+                          onChange={(e) => setCarDate(e.target.value)}
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10"
+                          style={{ colorScheme: "dark" }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Passengers */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        Passengers
+                      </label>
+                      <div className="relative">
+                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          type="number"
+                          value={carPassengers}
+                          onChange={(e) => setCarPassengers(e.target.value)}
+                          min="1"
+                          placeholder="2"
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Button */}
+                    <div className="flex items-end">
+                      <Button
+                        onClick={handleCarSearch}
+                        className="w-full h-12 bg-blue-400 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors"
+                      >
+                        <Search className="w-5 mr-2" />
+                        Find Vehicle
+                      </Button>
+                    </div>
+                  </>
+                ) : (
+                  <>
+                    {/* From Location */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        From
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          placeholder="Departure City"
+                          value={seatFrom}
+                          onChange={(e) => setSeatFrom(e.target.value)}
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* To Location */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        To
+                      </label>
+                      <div className="relative">
+                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          placeholder="Destination City"
+                          value={seatTo}
+                          onChange={(e) => setSeatTo(e.target.value)}
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Date */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        Travel Date
+                      </label>
+                      <div className="relative">
+                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          type="date"
+                          value={seatDate}
+                          onChange={(e) => setSeatDate(e.target.value)}
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10"
+                          style={{ colorScheme: "dark" }}
+                        />
+                      </div>
+                    </div>
+
+                    {/* Seats */}
+                    <div className="space-y-1">
+                      <label className="text-sm font-medium text-white">
+                        Seats Needed
+                      </label>
+                      <div className="relative">
+                        <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Input
+                          type="number"
+                          min="1"
+                          placeholder="1"
+                          value={seatCount}
+                          onChange={(e) => setSeatCount(e.target.value)}
+                          className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+                        />
+                      </div>
+                    </div>
+
+                    {/* Button */}
+                    <div className="flex items-end">
+                      <Button
+                        onClick={handleSeatSearch}
+                        className="w-full h-12 bg-blue-400 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors"
+                      >
+                        <Search className="w-5 mr-2" />
+                        Find Seats
+                      </Button>
+                    </div>
+                  </>
+                )}
               </div>
             </CardContent>
           </Card>
         </div>
       </div>
-
-      {/* Floating Animation */}
-      {/* <style jsx>{`
-        @keyframes float {
-          0%,
-          100% {
-            transform: translateY(0);
-          }
-          50% {
-            transform: translateY(-12px);
-          }
-        }
-        .animate-float {
-          animation: float 6s ease-in-out infinite;
-        }
-      `}</style> */}
     </section>
   );
 };

@@ -1,4 +1,5 @@
 import HeroSection from "@/components/HeroSection";
+import HowItWorksSection from "@/components/HowItWorksSection";
 import FeatureSection from "@/components/FeatureSection";
 import CarShowcase from "@/components/CarShowcase";
 import Footer from "@/components/Footer";
@@ -6,11 +7,14 @@ import Navbar from "@/components/Navbar";
 
 export default function Home() {
   return (
-    <div className="overflow-x-hidden">
+    // <div className="overflow-x-hidden">
+    <div className="overflow-x-hidden bg-white selection:bg-cyan-500/30 selection:text-slate-900">
       <Navbar />
       <HeroSection />
-      <FeatureSection />
       <CarShowcase />
+      <HowItWorksSection />
+      <FeatureSection />
+
       <Footer />
     </div>
   );

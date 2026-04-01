@@ -399,28 +399,46 @@ const Navbar = () => {
   };
 
   return (
-    <nav className="w-full fixed top-0 left-0 z-50 bg-slate-900/60 backdrop-blur-lg border-b border-white/10">
+    // <nav className="w-full fixed top-0 left-0 z-50 bg-slate-900/60 backdrop-blur-lg border-b border-white/10">
+    <nav className="w-full fixed top-0 left-0 z-50 bg-slate-950/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
         <Link to="/">
-          <h1 className="text-2xl font-bold text-white">Jaum</h1>
+          <h1 className="text-2xl font-black text-white tracking-widest uppercase">
+            Jaum
+          </h1>
         </Link>
 
         {/* Nav Links */}
-        <div className="hidden md:flex space-x-6 text-gray-300">
-          <Link to="/" className="hover:text-white">
+        <div className="hidden md:flex space-x-8 text-sm font-semibold text-gray-300">
+          <Link
+            to="/"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Home
           </Link>
-          <Link to="/listings" className="hover:text-white">
+          <Link
+            to="/listings"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Listings
           </Link>
-          <Link to="/compare/select" className="hover:text-white">
+          <Link
+            to="/compare/select"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Comparison
           </Link>
-          <Link to="/services" className="hover:text-white">
+          <Link
+            to="/services"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Services
           </Link>
-          <Link to="/contact" className="hover:text-white">
+          <Link
+            to="/contact"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Contact
           </Link>
         </div>
@@ -429,7 +447,7 @@ const Navbar = () => {
         <DropdownMenu>
           <DropdownMenuTrigger asChild>
             <button className="flex items-center gap-2 rounded-full border border-white/20 p-1 hover:bg-white/10 transition">
-              <Avatar className="h-8 w-8">
+              <Avatar className="h-10 w-10">
                 <AvatarImage
                   src={
                     user?.profilePicture

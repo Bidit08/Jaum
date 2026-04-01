@@ -32,6 +32,7 @@ import {
   getOwnerBookings,
   approveBooking,
   rejectBooking,
+  completeBooking,
   getBlockedDates,
 } from "../controllers/bookingController.js";
 
@@ -59,6 +60,9 @@ router.put("/:id/approve", authMiddleware, approveBooking);
 
 // ❌ Reject booking
 router.put("/:id/reject", authMiddleware, rejectBooking);
+
+// ✅ Complete booking (mark as finished)
+router.put("/:id/complete", authMiddleware, completeBooking);
 
 router.get("/blocked/:listingId", getBlockedDates);
 
