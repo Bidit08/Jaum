@@ -240,6 +240,7 @@ import MyVisits from "./pages/user/dashboard/MyVisits";
 import IncomingVisits from "./pages/user/dashboard/IncomingVisits";
 import PaymentSuccess from "./pages/user/PaymentSuccess";
 import DamageReportPage from "./pages/user/dashboard/DamageReportPage";
+import DamageReportsList from "./pages/user/dashboard/DamageReportsList";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -298,6 +299,7 @@ function App() {
               path="damage-report/:bookingId"
               element={<DamageReportPage />}
             />
+            <Route path="reports" element={<DamageReportsList />} />
           </Route>
         </Route>
 

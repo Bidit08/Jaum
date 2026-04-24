@@ -2226,7 +2226,7 @@ import {
   ChevronDown,
   Fuel,
 } from "lucide-react";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
 import Footer from "@/components/Footer";
 import api from "../../utils/api";
@@ -2242,6 +2242,7 @@ const AllListings = () => {
 
   const [activeFilter, setActiveFilter] = useState("all");
   const [searchQuery, setSearchQuery] = useState("");
+  const [toQuery, setToQuery] = useState("");
 
   const [showFilters, setShowFilters] = useState(false);
   const [fuelType, setFuelType] = useState([]);
@@ -2251,8 +2252,29 @@ const AllListings = () => {
   const [sortBy, setSortBy] = useState("newest");
 
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
   const { selectedVehicles, addToComparison, removeFromComparison } =
     useComparison();
+
+  // Load criteria from URL on mount
+  useEffect(() => {
+    const mode = searchParams.get("mode");
+    const departure =
+      searchParams.get("departure") || searchParams.get("location") || "";
+    const destination = searchParams.get("destination");
+    const fuel = searchParams.get("fuelType");
+    const pass = searchParams.get("passengers") || searchParams.get("seats");
+
+    if (mode) setActiveFilter(mode);
+    if (departure) setSearchQuery(departure);
+    if (destination) setToQuery(destination);
+    if (fuel) setFuelType([fuel]);
+    if (pass) setMinSeats(parseInt(pass, 10));
+
+    // Note: Trip-specific date filtering for seats could be added to the state logic
+    // but the current AllListings state doesn't have a specific global 'travelDate' filter,
+    // so we apply general filters for now.
+  }, [searchParams]);
 
   useEffect(() => {
     const fetchListings = async () => {
@@ -2284,9 +2306,13 @@ const AllListings = () => {
           l.name?.toLowerCase().includes(q) ||
           l.brand?.toLowerCase().includes(q) ||
           l.location?.toLowerCase().includes(q) ||
-          l.departure?.toLowerCase().includes(q) ||
-          l.destination?.toLowerCase().includes(q),
+          l.departure?.toLowerCase().includes(q),
       );
+    }
+
+    if (toQuery) {
+      const q = toQuery.toLowerCase();
+      result = result.filter((l) => l.destination?.toLowerCase().includes(q));
     }
 
     if (fuelType.length > 0) {
@@ -2302,7 +2328,11 @@ const AllListings = () => {
     }
 
     if (minSeats !== null) {
-      result = result.filter((l) => (l.seats || 0) >= minSeats);
+      result = result.filter((l) => {
+        const capacity =
+          l.listingType === "seats" ? l.availableSeats || 0 : l.seats || 0;
+        return Number(capacity) >= minSeats;
+      });
     }
 
     result = result.filter((l) => {
@@ -2334,6 +2364,7 @@ const AllListings = () => {
   }, [
     activeFilter,
     searchQuery,
+    toQuery,
     listings,
     fuelType,
     transmission,
@@ -2343,6 +2374,8 @@ const AllListings = () => {
   ]);
 
   const clearAllAdvanced = () => {
+    setSearchQuery("");
+    setToQuery("");
     setFuelType([]);
     setTransmission([]);
     setMinSeats(null);
@@ -2477,6 +2510,14 @@ const AllListings = () => {
           maxPrice < 100000 ||
           sortBy !== "newest") && (
           <div className="flex flex-wrap gap-2 mb-10">
+            {toQuery && (
+              <button
+                onClick={() => setToQuery("")}
+                className="px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-rose-300 hover:bg-rose-50 text-[10px] font-bold uppercase text-slate-600 hover:text-rose-600 tracking-widest flex items-center gap-2 transition-all"
+              >
+                Destination: {toQuery} <X size={12} />
+              </button>
+            )}
             {fuelType.map((f) => (
               <button
                 key={f}
@@ -2639,8 +2680,10 @@ const AllListings = () => {
                           <div className="p-1.5 rounded-lg bg-slate-50 text-slate-400">
                             <Users size={16} />
                           </div>
-                          <span className="text-xs font-bold text-slate-600">
-                            {listing.seats || 5} Seats
+                                                    <span className="text-xs font-bold text-slate-600">
+                            {listing.listingType === "seats" 
+                              ? `${listing.availableSeats || 0} Seats Left` 
+                              : `${listing.seats || 5} Seats`}
                           </span>
                         </div>
                         <div className="flex items-center gap-2">

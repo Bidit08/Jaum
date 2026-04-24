@@ -1056,7 +1056,7 @@ const navItems = [
   { name: "Profile", path: "/dashboard/profile", icon: User },
   { name: "My Listings", path: "/dashboard/vehicles", icon: Car },
   { name: "Add Vehicle", path: "/dashboard/add-vehicle", icon: PlusCircle },
-  { name: "Security", path: "/dashboard/security", icon: ShieldCheck },
+  // { name: "Security", path: "/dashboard/security", icon: ShieldCheck },
   {
     name: "Incoming Bookings",
     path: "/dashboard/incoming-bookings",
@@ -1071,6 +1071,11 @@ const navItems = [
     name: "Incoming Visits",
     path: "/dashboard/incoming-visits",
     icon: Users,
+  },
+  {
+    name: "Damage Reporting",
+    path: "/dashboard/reports",
+    icon: ShieldCheck,
   },
 ];
 

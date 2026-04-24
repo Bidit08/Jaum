@@ -821,7 +821,15 @@ import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
 // import { Calendar, MapPin, Users, Search, Sparkles } from "lucide-react";
-import { Calendar, MapPin, Users, Search, Car, User } from "lucide-react";
+import {
+  Calendar,
+  MapPin,
+  Users,
+  Search,
+  Car,
+  User,
+  ChevronDown,
+} from "lucide-react";
 
 const HeroSection = () => {
   const navigate = useNavigate();
@@ -829,7 +837,7 @@ const HeroSection = () => {
 
   // Car search states
   const [carLocation, setCarLocation] = useState("");
-  const [carDate, setCarDate] = useState("");
+  const [carFuelType, setCarFuelType] = useState("");
   const [carPassengers, setCarPassengers] = useState("");
 
   // Seat search states
@@ -840,8 +848,9 @@ const HeroSection = () => {
 
   const handleCarSearch = () => {
     const params = new URLSearchParams();
+    params.append("mode", "full");
     if (carLocation) params.append("location", carLocation);
-    if (carDate) params.append("date", carDate);
+    if (carFuelType) params.append("fuelType", carFuelType);
     if (carPassengers) params.append("passengers", carPassengers);
 
     navigate(`/listings?${params.toString()}`);
@@ -849,6 +858,7 @@ const HeroSection = () => {
 
   const handleSeatSearch = () => {
     const params = new URLSearchParams();
+    params.append("mode", "seats");
     if (seatFrom) params.append("departure", seatFrom);
     if (seatTo) params.append("destination", seatTo);
     if (seatDate) params.append("date", seatDate);
@@ -960,20 +970,35 @@ const HeroSection = () => {
                       </div>
                     </div>
 
-                    {/* Date */}
+                    {/* Fuel Type */}
                     <div className="space-y-1">
-                      <label className="text-sm font-medium text-white">
-                        Dates
+                      <label className="text-sm font-medium text-white flex items-center gap-2">
+                        Fuel Type
                       </label>
                       <div className="relative">
-                        <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
-                        <Input
-                          type="date"
-                          value={carDate}
-                          onChange={(e) => setCarDate(e.target.value)}
-                          className="bg-white/10 border-white/20 text-white h-12 pl-10"
-                          style={{ colorScheme: "dark" }}
-                        />
+                        <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300 pointer-events-none" />
+                        <select
+                          value={carFuelType}
+                          onChange={(e) => setCarFuelType(e.target.value)}
+                          className="w-full bg-white/10 border border-white/20 text-white h-12 pl-10 pr-4 rounded-md outline-none appearance-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+                        >
+                          <option value="" className="bg-slate-900">
+                            All Fuel Types
+                          </option>
+                          <option value="Gasoline" className="bg-slate-900">
+                            Gasoline
+                          </option>
+                          <option value="Diesel" className="bg-slate-900">
+                            Diesel
+                          </option>
+                          <option value="Electric" className="bg-slate-900">
+                            Electric
+                          </option>
+                          <option value="Hybrid" className="bg-slate-900">
+                            Hybrid
+                          </option>
+                        </select>
+                        <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 text-white/40 pointer-events-none" />
                       </div>
                     </div>
 
@@ -986,10 +1011,10 @@ const HeroSection = () => {
                         <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
                         <Input
                           type="number"
-                          value={carPassengers}
-                          onChange={(e) => setCarPassengers(e.target.value)}
                           min="1"
                           placeholder="2"
+                          value={carPassengers}
+                          onChange={(e) => setCarPassengers(e.target.value)}
                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
                         />
                       </div>

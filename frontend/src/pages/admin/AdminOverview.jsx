@@ -80,16 +80,50 @@ const AdminOverview = () => {
     (metrics.totalRevenue || 0) - (metrics.totalCommission || 0);
 
   // --- Mock Data for Charts ---
-  const MOCK_REVENUE_DATA = [
-    { name: "Jan", revenue: 12000 },
-    { name: "Feb", revenue: 19000 },
-    { name: "Mar", revenue: 15000 },
-    { name: "Apr", revenue: 22000 },
-    { name: "May", revenue: 28000 },
-    { name: "Jun", revenue: 35000 },
-    { name: "Jul", revenue: 32000 },
-    { name: "Aug", revenue: Math.max(0, metrics.totalRevenue || 40000) },
+  // const MOCK_REVENUE_DATA = [
+  //   { name: "Jan", revenue: 12000 },
+  //   { name: "Feb", revenue: 19000 },
+  //   { name: "Mar", revenue: 15000 },
+  //   { name: "Apr", revenue: 22000 },
+  //   { name: "May", revenue: 28000 },
+  //   { name: "Jun", revenue: 35000 },
+  //   { name: "Jul", revenue: 32000 },
+  //   { name: "Aug", revenue: Math.max(0, metrics.totalRevenue || 40000) },
+  // ];
+  // --- Revenue Data for Charts ---
+  const allMonths = [
+    "Jan",
+    "Feb",
+    "Mar",
+    "Apr",
+    "May",
+    "Jun",
+    "Jul",
+    "Aug",
+    "Sep",
+    "Oct",
+    "Nov",
+    "Dec",
   ];
+  const currentMonthIdx = new Date().getMonth(); // 3 for April (0-indexed)
+
+  const baseRevenue = [
+    12000, 19000, 15000, 22000, 28000, 35000, 32000, 40000, 45000, 50000, 55000,
+    60000,
+  ];
+
+  const MOCK_REVENUE_DATA = allMonths
+    .slice(0, currentMonthIdx + 1)
+    .map((month, idx) => {
+      // For the current month, use the actual metrics if available, otherwise fallback
+      if (idx === currentMonthIdx) {
+        return {
+          name: month,
+          revenue: Math.max(0, metrics.totalRevenue || baseRevenue[idx]),
+        };
+      }
+      return { name: month, revenue: baseRevenue[idx] };
+    });
 
   const MOCK_PAYMENT_METHOD_DATA = [
     { name: "Khalti", value: 65, color: "#7c3aed" }, // violet-600

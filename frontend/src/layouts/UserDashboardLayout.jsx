@@ -251,10 +251,10 @@ const UserDashboardLayout = () => {
             </div>
 
             {/* Notifications */}
-            <button className="relative p-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 group">
+            {/* <button className="relative p-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 group">
               <Bell size={20} className="group-hover:animate-swing" />
               <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white shadow-sm shadow-rose-500/40"></span>
-            </button>
+            </button> */}
 
             <div className="h-8 w-px bg-slate-200 hidden sm:block"></div>
 

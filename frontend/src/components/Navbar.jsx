@@ -429,7 +429,7 @@ const Navbar = () => {
           >
             Comparison
           </Link>
-          <Link
+          {/* <Link
             to="/services"
             className="hover:text-cyan-400 transition-colors duration-300"
           >
@@ -440,89 +440,99 @@ const Navbar = () => {
             className="hover:text-cyan-400 transition-colors duration-300"
           >
             Contact
-          </Link>
+          </Link> */}
         </div>
 
-        {/* Profile / Guest Dropdown */}
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <button className="flex items-center gap-2 rounded-full border border-white/20 p-1 hover:bg-white/10 transition">
-              <Avatar className="h-10 w-10">
-                <AvatarImage
-                  src={
-                    user?.profilePicture
-                      ? `${BACKEND_URL}${user.profilePicture}`
-                      : undefined
-                  }
-                />
-                <AvatarFallback>
-                  {user?.name ? user.name.charAt(0).toUpperCase() : "G"}
-                </AvatarFallback>
-              </Avatar>
-            </button>
-          </DropdownMenuTrigger>
-
-          <DropdownMenuContent
-            align="end"
-            className="w-56 rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl p-2"
+        {/* Actions & Profile */}
+        <div className="flex items-center gap-6">
+          <Link
+            to="/dashboard/add-vehicle"
+            className="hidden md:block text-[10px] font-black uppercase tracking-[0.2em] text-white border border-white/20 px-5 py-2.5 rounded-full hover:bg-white/10 hover:border-white transition-all active:scale-95"
           >
-            {/* HEADER */}
-            <div className="px-3 py-3">
-              <p className="text-sm font-semibold text-white">
-                {user ? user.username || user.name : "Guest"}
-              </p>
-              <p className="text-xs text-gray-400 truncate">
-                {user ? user.email : "Not logged in"}
-              </p>
-            </div>
+            List Vehicles
+          </Link>
 
-            <DropdownMenuSeparator className="bg-white/10" />
+          {/* Profile / Guest Dropdown */}
+          <DropdownMenu>
+            <DropdownMenuTrigger asChild>
+              <button className="flex items-center gap-2 rounded-full border border-white/20 p-1 hover:bg-white/10 transition">
+                <Avatar className="h-10 w-10">
+                  <AvatarImage
+                    src={
+                      user?.profilePicture
+                        ? `${BACKEND_URL}${user.profilePicture}`
+                        : undefined
+                    }
+                  />
+                  <AvatarFallback className="bg-slate-800 text-white font-black text-sm border border-white/10 group-hover:border-white/30 transition-colors">
+                    {user?.name ? user.name.charAt(0).toUpperCase() : "G"}
+                  </AvatarFallback>
+                </Avatar>
+              </button>
+            </DropdownMenuTrigger>
 
-            {/* Logged-in options */}
-            {user && (
-              <>
-                <DropdownMenuItem
-                  onClick={() => navigate("/dashboard/profile")}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
-                >
-                  <User className="h-4 w-4" />
-                  Profile
-                </DropdownMenuItem>
+            <DropdownMenuContent
+              align="end"
+              className="w-56 rounded-xl border border-white/10 bg-slate-900/95 backdrop-blur-xl p-2"
+            >
+              {/* HEADER */}
+              <div className="px-3 py-3">
+                <p className="text-sm font-semibold text-white">
+                  {user ? user.username || user.name : "Guest"}
+                </p>
+                <p className="text-xs text-gray-400 truncate">
+                  {user ? user.email : "Not logged in"}
+                </p>
+              </div>
 
-                <DropdownMenuItem
-                  onClick={() => navigate("/dashboard")}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
-                >
-                  <LayoutDashboard className="h-4 w-4" />
-                  Dashboard
-                </DropdownMenuItem>
+              <DropdownMenuSeparator className="bg-white/10" />
 
-                <DropdownMenuSeparator className="bg-white/10 my-1" />
+              {/* Logged-in options */}
+              {user && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/dashboard/profile")}
+                    className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+                  >
+                    <User className="h-4 w-4" />
+                    Profile
+                  </DropdownMenuItem>
 
-                <DropdownMenuItem
-                  onClick={logout}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-red-400 hover:bg-red-500/10 cursor-pointer"
-                >
-                  <LogOut className="h-4 w-4" />
-                  Logout
-                </DropdownMenuItem>
-              </>
-            )}
+                  <DropdownMenuItem
+                    onClick={() => navigate("/dashboard")}
+                    className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+                  >
+                    <LayoutDashboard className="h-4 w-4" />
+                    Dashboard
+                  </DropdownMenuItem>
 
-            {/* Logged-out options */}
-            {!user && (
-              <>
-                <DropdownMenuItem
-                  onClick={() => navigate("/login")}
-                  className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
-                >
-                  <LogIn className="h-4 w-4" />
-                  Login
-                </DropdownMenuItem>
-              </>
-            )}
-          </DropdownMenuContent>
-        </DropdownMenu>
+                  <DropdownMenuSeparator className="bg-white/10 my-1" />
+
+                  <DropdownMenuItem
+                    onClick={logout}
+                    className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-red-400 hover:bg-red-500/10 cursor-pointer"
+                  >
+                    <LogOut className="h-4 w-4" />
+                    Logout
+                  </DropdownMenuItem>
+                </>
+              )}
+
+              {/* Logged-out options */}
+              {!user && (
+                <>
+                  <DropdownMenuItem
+                    onClick={() => navigate("/login")}
+                    className="flex items-center gap-2 rounded-md px-2 py-2 text-sm text-gray-300 hover:bg-white/10 hover:text-white cursor-pointer"
+                  >
+                    <LogIn className="h-4 w-4" />
+                    Login
+                  </DropdownMenuItem>
+                </>
+              )}
+            </DropdownMenuContent>
+          </DropdownMenu>
+        </div>
       </div>
     </nav>
   );
