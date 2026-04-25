@@ -131,8 +131,17 @@ const listingSchema = new mongoose.Schema(
     location: {
       type: String,
       required: function () {
-        return this.listingType === "full";
+        return (
+          this.listingType === "full" &&
+          (this.latitude === undefined || this.longitude === undefined)
+        );
       },
+    },
+    latitude: {
+      type: Number,
+    },
+    longitude: {
+      type: Number,
     },
 
     // ===== SEAT SHARING =====

@@ -335,7 +335,8 @@ const CarShowcase = () => {
 
   return (
     <section className="py-24 bg-white relative">
-      <div className="container mx-auto px-4 z-10 relative">
+      {/* <div className="container mx-auto px-4 z-10 relative"> */}
+      <div className="container mx-auto px-8 md:px-16 lg:px-24 z-10 relative">
         <div className="flex flex-col md:flex-row justify-between items-end mb-16 gap-6">
           <div className="max-w-xl">
             <h2 className="text-4xl md:text-5xl font-extrabold text-slate-900 tracking-tight mb-4">

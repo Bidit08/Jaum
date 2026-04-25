@@ -206,6 +206,115 @@
 
 // export default App;
 
+// import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+// import { ToastContainer } from "react-toastify";
+// import "react-toastify/dist/ReactToastify.css";
+
+// import AdminDashboard from "./pages/admin/AdminDashboard";
+// import AdminOverview from "./pages/admin/AdminOverview";
+// import AdminListings from "./pages/admin/AdminListings";
+// import AdminBookings from "./pages/admin/AdminBookings";
+// import AdminPayments from "./pages/admin/AdminPayments";
+// import AdminPayouts from "./pages/admin/AdminPayouts";
+// import AdminUsers from "./pages/admin/AdminUsers";
+// import AdminDamageReports from "./pages/admin/AdminDamageReports";
+
+// import Home from "./pages/user/home";
+// import Login from "./pages/auth/login";
+// import Signup from "./pages/auth/signup";
+// import Dashboard from "./pages/user/dashboard/Dashboard";
+// import VerifyOtp from "./pages/auth/VerifyOtp";
+// import ForgotPassword from "./pages/auth/ForgotPassword";
+// import VerifyReset from "./pages/auth/VerifyReset";
+// import ResetPassword from "./pages/auth/ResetPassword";
+// import Profile from "./pages/user/dashboard/Profile";
+// import AddVehicle from "./pages/user/dashboard/AddVehicle";
+// import MyVehicles from "./pages/user/dashboard/MyListings";
+// import EditVehicle from "./pages/user/dashboard/editVehicle";
+// import AllListings from "./pages/user/AllListings";
+// import ListingDetails from "./pages/user/ListingDetails";
+// import ComparePage from "./pages/user/ComparePage";
+// import CompareSelectPage from "./pages/user/CompareSelectPage";
+// import OwnerBookings from "./components/bookings/OwnerBookings";
+// import MyVisits from "./pages/user/dashboard/MyVisits";
+// import IncomingVisits from "./pages/user/dashboard/IncomingVisits";
+// import PaymentSuccess from "./pages/user/PaymentSuccess";
+// import DamageReportPage from "./pages/user/dashboard/DamageReportPage";
+// import DamageReportsList from "./pages/user/dashboard/DamageReportsList";
+
+// import UserDashboardLayout from "./layouts/UserDashboardLayout";
+// import ProtectedRoute from "./routes/ProtectedRoute";
+// import AuthRoute from "./routes/AuthRoute";
+
+// function App() {
+//   return (
+//     <Router>
+//       <ToastContainer position="top-right" autoClose={3000} />
+
+//       <Routes>
+//         <Route path="/admin" element={<AdminDashboard />}>
+//           <Route index element={<AdminOverview />} />
+//           <Route path="listings" element={<AdminListings />} />
+//           <Route path="bookings" element={<AdminBookings />} />
+//           <Route path="payments" element={<AdminPayments />} />
+//           <Route path="users" element={<AdminUsers />} />
+//           <Route path="payouts" element={<AdminPayouts />} />
+//           <Route path="damage-reports" element={<AdminDamageReports />} />
+//         </Route>
+
+//         {/* 🌍 Public Routes */}
+//         <Route path="/" element={<Home />} />
+//         <Route path="/listings" element={<AllListings />} />
+//         <Route path="/listings/:id" element={<ListingDetails />} />
+//         <Route path="/compare" element={<ComparePage />} />
+//         <Route path="/compare/select" element={<CompareSelectPage />} />
+//         <Route path="/payment/success" element={<PaymentSuccess />} />
+
+//         {/* 🔐 Auth-only Routes (login/signup) */}
+//         <Route element={<AuthRoute />}>
+//           <Route path="/login" element={<Login />} />
+//           <Route path="/signup" element={<Signup />} />
+//           <Route path="/verify-otp" element={<VerifyOtp />} />
+//           <Route path="/forgot-password" element={<ForgotPassword />} />
+//           <Route path="/verify-reset" element={<VerifyReset />} />
+//           <Route path="/reset-password" element={<ResetPassword />} />
+//         </Route>
+
+//         {/* 🛡️ Protected Dashboard Routes */}
+//         <Route element={<ProtectedRoute />}>
+//           <Route path="/dashboard" element={<UserDashboardLayout />}>
+//             <Route index element={<Dashboard />} />
+//             <Route path="profile" element={<Profile />} />
+//             <Route path="vehicles" element={<MyVehicles />} />
+//             <Route path="add-vehicle" element={<AddVehicle />} />
+//             <Route path="edit-vehicle/:id" element={<EditVehicle />} />
+//             {/* <Route path="edit-vehicle/:id" element={<EditVehicle />} /> */}
+//             {/* future routes */}
+//             {/* <Route path="vehicles" element={<MyVehicles />} /> */}
+//             {/* <Route path="security" element={<SecuritySettings />} /> */}
+//             <Route path="incoming-bookings" element={<OwnerBookings />} />
+//             <Route path="my-visits" element={<MyVisits />} />
+//             <Route path="incoming-visits" element={<IncomingVisits />} />
+//             <Route
+//               path="damage-report/:bookingId"
+//               element={<DamageReportPage />}
+//             />
+//             <Route path="reports" element={<DamageReportsList />} />
+//           </Route>
+//         </Route>
+
+//         {/* ❌ 404 */}
+//         <Route
+//           path="*"
+//           element={<h2 className="text-center mt-20">404 - Page Not Found</h2>}
+//         />
+//       </Routes>
+//     </Router>
+//   );
+// }
+
+// export default App;
+
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import { ToastContainer } from "react-toastify";
 import "react-toastify/dist/ReactToastify.css";
@@ -239,6 +348,7 @@ import OwnerBookings from "./components/bookings/OwnerBookings";
 import MyVisits from "./pages/user/dashboard/MyVisits";
 import IncomingVisits from "./pages/user/dashboard/IncomingVisits";
 import PaymentSuccess from "./pages/user/PaymentSuccess";
+import PaymentFailure from "./pages/user/PaymentFailure";
 import DamageReportPage from "./pages/user/dashboard/DamageReportPage";
 import DamageReportsList from "./pages/user/dashboard/DamageReportsList";
 
@@ -269,6 +379,7 @@ function App() {
         <Route path="/compare" element={<ComparePage />} />
         <Route path="/compare/select" element={<CompareSelectPage />} />
         <Route path="/payment/success" element={<PaymentSuccess />} />
+        <Route path="/payment/failure" element={<PaymentFailure />} />
 
         {/* 🔐 Auth-only Routes (login/signup) */}
         <Route element={<AuthRoute />}>

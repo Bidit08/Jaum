@@ -1072,6 +1072,245 @@
 
 // export default AddVehiclePage;
 
+// import { useState, useEffect } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
+// import { toast } from "react-toastify";
+// import api from "../../../utils/api";
+
+// import StepListingType from "../../../components/addVehicle/stepListingType";
+// import StepBasicInfo from "../../../components/addVehicle/stepBasicInfo";
+// import StepSpecs from "../../../components/addVehicle/stepSpecs";
+// import StepListingDetails from "../../../components/addVehicle/stepListingDetails";
+// import StepPhotos from "../../../components/addVehicle/stepPhotos";
+// import StepReview from "../../../components/addVehicle/stepReview";
+
+// const steps = ["Type", "Vehicle", "Specs", "Details", "Photos", "Review"];
+
+// const AddVehiclePage = () => {
+//   const navigate = useNavigate();
+//   const [currentStep, setCurrentStep] = useState(1);
+//   const [loading, setLoading] = useState(false);
+
+//   const [formData, setFormData] = useState({
+//     listingType: "full",
+//     name: "",
+//     brand: "",
+//     model: "",
+//     year: "",
+//     description: "",
+//     fuelType: "Gasoline",
+//     transmission: "Automatic",
+//     seats: 5,
+//     mileage: "",
+//     features: [],
+//     pricePerDay: 50,
+//     deposit: 200,
+//     location: "",
+//     availableSeats: 3,
+//     pricePerSeat: 15,
+//     departure: "",
+//     destination: "",
+//     departureTime: "",
+//     rules: "",
+//     photos: [], // <-- SERVER URLs ONLY
+//   });
+
+//   /* Load draft */
+//   useEffect(() => {
+//     const draft = localStorage.getItem("vehicle_listing_draft");
+//     if (draft) {
+//       try {
+//         setFormData(JSON.parse(draft));
+//       } catch {
+//         localStorage.removeItem("vehicle_listing_draft");
+//       }
+//     }
+//   }, []);
+
+//   /* Save draft */
+//   useEffect(() => {
+//     localStorage.setItem("vehicle_listing_draft", JSON.stringify(formData));
+//   }, [formData]);
+
+//   const updateFormData = (data) =>
+//     setFormData((prev) => ({ ...prev, ...data }));
+
+//   /* SUBMIT */
+//   const handleSubmit = async () => {
+//     // ✅ FRONTEND VALIDATION
+//     if (!formData.photos.length) {
+//       toast.error("Please upload at least one photo");
+//       return;
+//     }
+
+//     setLoading(true);
+//     try {
+//       await api.post("/listings", formData);
+//       toast.success("Listing published successfully 🚀");
+//       localStorage.removeItem("vehicle_listing_draft");
+//       navigate("/dashboard/vehicles");
+//     } catch (err) {
+//       toast.error(err.response?.data?.message || "Failed to publish listing");
+//     } finally {
+//       setLoading(false);
+//     }
+//   };
+
+//   const renderStep = () => {
+//     const props = { formData, updateFormData };
+//     return [
+//       <StepListingType {...props} />,
+//       <StepBasicInfo {...props} />,
+//       <StepSpecs {...props} />,
+//       <StepListingDetails {...props} />,
+//       <StepPhotos {...props} />,
+//       <StepReview formData={formData} />,
+//     ][currentStep - 1];
+//   };
+
+//   return (
+//     <div className="max-w-4xl mx-auto pb-20 px-4">
+//       <div className="mb-10 pt-4 text-center">
+//         <h1 className="text-4xl font-black text-slate-900 tracking-tight">
+//           Create New Listing
+//         </h1>
+//         <p className="text-slate-500 mt-2 font-medium">
+//           Follow the simple steps below to list your vehicle on Jaum.
+//         </p>
+//       </div>
+
+//       {/* Premium Multi-step Progress Bar (Stripe/Airbnb Style) */}
+//       <div className="max-w-4xl mx-auto mb-16 relative">
+//         <div className="bg-white/90 backdrop-blur-md rounded-[2rem] border border-slate-200/60 p-6 shadow-sm relative group min-h-[110px] flex items-center">
+//           {/* Background Line */}
+//           <div className="absolute top-[40%] left-12 right-12 h-[2px] bg-slate-100 -translate-y-1/2 z-0" />
+
+//           {/* Active Progress Line */}
+//           <div
+//             className="absolute top-[40%] left-12 h-[2px] bg-blue-600 z-0 transition-all duration-700 ease-in-out shadow-[0_0_15px_rgba(37,99,235,0.25)]"
+//             style={{
+//               width: `${((currentStep - 1) / (steps.length - 1)) * (100 - (100 / steps.length) * 1.5)}%`,
+//               maxWidth: "calc(100% - 6rem)",
+//             }}
+//           />
+
+//           <div className="flex justify-between items-center w-full relative z-10 px-2 lg:px-6">
+//             {steps.map((step, index) => {
+//               const stepNumber = index + 1;
+//               const isActive = stepNumber === currentStep;
+//               const isCompleted = stepNumber < currentStep;
+
+//               return (
+//                 <div
+//                   key={index}
+//                   className="flex flex-col items-center relative h-16"
+//                 >
+//                   {/* Circular Indicator */}
+//                   <button
+//                     onClick={() => isCompleted && setCurrentStep(stepNumber)}
+//                     disabled={!isCompleted}
+//                     className={`w-10 h-10 rounded-full flex items-center justify-center font-bold text-sm transition-all duration-500 border-2 ${
+//                       isActive
+//                         ? "bg-blue-600 border-blue-500 text-white shadow-xl shadow-blue-500/30 scale-110 z-20"
+//                         : isCompleted
+//                           ? "bg-blue-50 border-blue-200 text-blue-600 scale-95"
+//                           : "bg-white border-slate-200 text-slate-400 cursor-not-allowed"
+//                     }`}
+//                   >
+//                     {isCompleted ? (
+//                       <CheckIcon size={18} />
+//                     ) : (
+//                       <span
+//                         className={
+//                           isActive ? "animate-in zoom-in-50 duration-300" : ""
+//                         }
+//                       >
+//                         {stepNumber}
+//                       </span>
+//                     )}
+//                   </button>
+
+//                   {/* Step Name */}
+//                   <div className="absolute top-12 left-1/2 -translate-x-1/2">
+//                     <p
+//                       className={`whitespace-nowrap text-[10px] font-black uppercase tracking-[0.15em] transition-all duration-500 ${
+//                         isActive
+//                           ? "text-slate-900 opacity-100"
+//                           : "text-slate-400 opacity-60"
+//                       }`}
+//                     >
+//                       {step}
+//                     </p>
+//                   </div>
+//                 </div>
+//               );
+//             })}
+//           </div>
+//         </div>
+//       </div>
+
+//       <div className="bg-white p-8 md:p-12 rounded-[2.5rem] shadow-2xl border border-slate-100 min-h-[500px] relative">
+//         {renderStep()}
+
+//         <div className="flex justify-between items-center mt-12 pt-8 border-t border-slate-100">
+//           <button
+//             onClick={() => {
+//               setCurrentStep((s) => Math.max(1, s - 1));
+//               window.scrollTo({ top: 0, behavior: "smooth" });
+//             }}
+//             disabled={currentStep === 1 || loading}
+//             className="flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-slate-400 hover:text-slate-900 transition-colors disabled:opacity-0"
+//           >
+//             <ChevronLeft size={20} /> Previous Phase
+//           </button>
+
+//           {currentStep === steps.length ? (
+//             <button
+//               onClick={handleSubmit}
+//               disabled={loading}
+//               className="bg-[#007EA7] hover:bg-[#005f7d] text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-1 active:scale-95 disabled:opacity-50"
+//             >
+//               {loading ? (
+//                 <Loader2 className="animate-spin" size={18} />
+//               ) : (
+//                 "Publish Listing"
+//               )}
+//             </button>
+//           ) : (
+//             <button
+//               onClick={() => {
+//                 setCurrentStep((s) => s + 1);
+//                 window.scrollTo({ top: 0, behavior: "smooth" });
+//               }}
+//               className="bg-blue-600 hover:bg-blue-700 text-white px-10 py-4 rounded-2xl font-black uppercase tracking-widest text-xs flex items-center gap-3 shadow-lg shadow-blue-500/20 transition-all hover:-translate-y-1 active:scale-95"
+//             >
+//               Continue <ChevronRight size={18} />
+//             </button>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AddVehiclePage;
+
+// const CheckIcon = ({ size = 20 }) => (
+//   <svg
+//     width={size}
+//     height={size}
+//     viewBox="0 0 24 24"
+//     fill="none"
+//     stroke="currentColor"
+//     strokeWidth="3.5"
+//     strokeLinecap="round"
+//     strokeLinejoin="round"
+//   >
+//     <path d="M20 6 9 17l-5-5" />
+//   </svg>
+// );
+
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { ChevronRight, ChevronLeft, Loader2 } from "lucide-react";
@@ -1107,6 +1346,8 @@ const AddVehiclePage = () => {
     pricePerDay: 50,
     deposit: 200,
     location: "",
+    latitude: "",
+    longitude: "",
     availableSeats: 3,
     pricePerSeat: 15,
     departure: "",
@@ -1139,6 +1380,19 @@ const AddVehiclePage = () => {
   /* SUBMIT */
   const handleSubmit = async () => {
     // ✅ FRONTEND VALIDATION
+    if (formData.listingType === "full") {
+      const hasLocationName =
+        formData.location && formData.location.trim() !== "";
+      const hasCoordinates =
+        formData.latitude !== "" && formData.longitude !== "";
+      if (!hasLocationName && !hasCoordinates) {
+        toast.error(
+          "Please provide either a pickup location name or map coordinates (latitude/longitude).",
+        );
+        return;
+      }
+    }
+
     if (!formData.photos.length) {
       toast.error("Please upload at least one photo");
       return;

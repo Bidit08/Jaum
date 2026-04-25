@@ -192,12 +192,217 @@
 
 // export default StepListingDetails;
 
-import React from "react";
-import { DollarSign, MapPin, Calendar } from "lucide-react";
+// import React from "react";
+// import { DollarSign, MapPin, Calendar } from "lucide-react";
+
+// const StepListingDetails = ({ formData, updateFormData }) => {
+//   const handleChange = (e) => {
+//     updateFormData({ [e.target.name]: e.target.value });
+//   };
+
+//   if (formData.listingType === "full") {
+//     return (
+//       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+//         <div className="space-y-2">
+//           <h2 className="text-xl font-bold text-slate-900">Rental Terms</h2>
+//           <p className="text-slate-500 text-sm">
+//             Define how much you want to charge and where the vehicle is located.
+//           </p>
+//         </div>
+
+//         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//           <div className="space-y-2 md:col-span-2">
+//             <label className="text-sm font-semibold text-slate-700">
+//               Vehicle Location (Pick-up Point)
+//             </label>
+//             <div className="relative">
+//               <MapPin
+//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+//                 size={18}
+//               />
+//               <input
+//                 name="location"
+//                 value={formData.location || ""}
+//                 onChange={handleChange}
+//                 placeholder="e.g. 123 Luxury Ave, Beverly Hills, CA"
+//                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3"
+//               />
+//             </div>
+//           </div>
+
+//           <div className="space-y-2">
+//             <label className="text-sm font-semibold text-slate-700">
+//               Price per Day (Rs.)
+//             </label>
+//             <div className="relative">
+//               <DollarSign
+//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+//                 size={18}
+//               />
+//               <input
+//                 type="number"
+//                 name="pricePerDay"
+//                 value={formData.pricePerDay}
+//                 onChange={handleChange}
+//                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3 font-bold"
+//               />
+//             </div>
+//           </div>
+
+//           <div className="space-y-2">
+//             <label className="text-sm font-semibold text-slate-700">
+//               Security Deposit (Rs.)
+//             </label>
+//             <div className="relative">
+//               <DollarSign
+//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+//                 size={18}
+//               />
+//               <input
+//                 type="number"
+//                 name="deposit"
+//                 value={formData.deposit}
+//                 onChange={handleChange}
+//                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3 font-bold"
+//               />
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   return (
+//     <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
+//       <div className="space-y-2">
+//         <h2 className="text-xl font-bold text-slate-900">Trip Details</h2>
+//         <p className="text-slate-500 text-sm">
+//           Where are you going and how many seats are available?
+//         </p>
+//       </div>
+
+//       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+//         {[
+//           { name: "departure", label: "Departure Location" },
+//           { name: "destination", label: "Destination" },
+//         ].map((f) => (
+//           <div key={f.name} className="space-y-2">
+//             <label className="text-sm font-semibold text-slate-700">
+//               {f.label}
+//             </label>
+//             <div className="relative">
+//               <MapPin
+//                 className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+//                 size={18}
+//               />
+//               <input
+//                 name={f.name}
+//                 value={formData[f.name]}
+//                 onChange={handleChange}
+//                 className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3"
+//               />
+//             </div>
+//           </div>
+//         ))}
+
+//         <div className="space-y-2">
+//           <label className="text-sm font-semibold text-slate-700">
+//             Departure Date & Time
+//           </label>
+//           <div className="relative">
+//             <Calendar
+//               className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+//               size={18}
+//             />
+//             <input
+//               type="datetime-local"
+//               name="departureTime"
+//               value={formData.departureTime}
+//               onChange={handleChange}
+//               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3"
+//             />
+//           </div>
+//         </div>
+
+//         <div className="space-y-2">
+//           <label className="text-sm font-semibold text-slate-700">
+//             Price per Seat (Rs.)
+//           </label>
+//           <input
+//             type="number"
+//             name="pricePerSeat"
+//             value={formData.pricePerSeat}
+//             onChange={handleChange}
+//             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
+//           />
+//         </div>
+
+//         <div className="space-y-2">
+//           <label className="text-sm font-semibold text-slate-700">
+//             Available Seats
+//           </label>
+//           <input
+//             type="number"
+//             name="availableSeats"
+//             value={formData.availableSeats}
+//             onChange={handleChange}
+//             max={formData.seats}
+//             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
+//           />
+//         </div>
+
+//         <div className="md:col-span-2 space-y-2">
+//           <label className="text-sm font-semibold text-slate-700">
+//             Trip Rules & Notes
+//           </label>
+//           <textarea
+//             name="rules"
+//             value={formData.rules}
+//             onChange={handleChange}
+//             rows={3}
+//             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
+//           />
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default StepListingDetails;
+
+import React, { useState } from "react";
+import { DollarSign, MapPin, Calendar, Navigation, Map } from "lucide-react";
 
 const StepListingDetails = ({ formData, updateFormData }) => {
+  const [isLocating, setIsLocating] = useState(false);
+
   const handleChange = (e) => {
     updateFormData({ [e.target.name]: e.target.value });
+  };
+
+  const handleGetLocation = (e) => {
+    e.preventDefault();
+    if (!("geolocation" in navigator)) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        updateFormData({
+          latitude: position.coords.latitude,
+          longitude: position.coords.longitude,
+        });
+        setIsLocating(false);
+      },
+      (error) => {
+        console.error("Error obtaining location", error);
+        alert(
+          "Could not get your location. Please ensure location access is allowed.",
+        );
+        setIsLocating(false);
+      },
+    );
   };
 
   if (formData.listingType === "full") {
@@ -211,22 +416,72 @@ const StepListingDetails = ({ formData, updateFormData }) => {
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-          <div className="space-y-2 md:col-span-2">
-            <label className="text-sm font-semibold text-slate-700">
-              Vehicle Location (Pick-up Point)
-            </label>
-            <div className="relative">
-              <MapPin
-                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
-                size={18}
-              />
-              <input
-                name="location"
-                value={formData.location || ""}
-                onChange={handleChange}
-                placeholder="e.g. 123 Luxury Ave, Beverly Hills, CA"
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3"
-              />
+          <div className="space-y-4 md:col-span-2 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+            <div className="flex items-center justify-between">
+              <h3 className="font-bold text-slate-900 flex items-center gap-2">
+                <Map size={18} className="text-blue-600" /> Pickup Location
+              </h3>
+              <button
+                onClick={handleGetLocation}
+                disabled={isLocating}
+                className="flex items-center gap-2 text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50"
+              >
+                <Navigation
+                  size={14}
+                  className={isLocating ? "animate-pulse" : ""}
+                />
+                {isLocating ? "Locating..." : "Use My Location"}
+              </button>
+            </div>
+
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Location Name / Address
+              </label>
+              <div className="relative">
+                <MapPin
+                  className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                  size={18}
+                />
+                <input
+                  name="location"
+                  value={formData.location || ""}
+                  onChange={handleChange}
+                  placeholder="e.g. 123 Luxury Ave, Beverly Hills, CA"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-10 py-3"
+                />
+              </div>
+            </div>
+
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Latitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="latitude"
+                  value={formData.latitude || ""}
+                  onChange={handleChange}
+                  placeholder="e.g. 34.0522"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3"
+                />
+              </div>
+              <div className="space-y-2">
+                <label className="text-sm font-semibold text-slate-700">
+                  Longitude
+                </label>
+                <input
+                  type="number"
+                  step="any"
+                  name="longitude"
+                  value={formData.longitude || ""}
+                  onChange={handleChange}
+                  placeholder="e.g. -118.2437"
+                  className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3"
+                />
+              </div>
             </div>
           </div>
 

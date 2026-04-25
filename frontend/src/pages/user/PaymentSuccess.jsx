@@ -208,6 +208,192 @@
 
 // export default PaymentSuccess;
 
+// import React, { useEffect, useState } from "react";
+// import { useSearchParams, useNavigate } from "react-router-dom";
+// import api from "../../utils/api";
+// import { toast } from "react-toastify";
+// import { XCircle, Loader2, ShieldCheck, Sparkles } from "lucide-react";
+// // import Navbar from "../../components/Navbar";
+// import ReceiptCard from "../../components/bookings/ReceiptCard";
+
+// const PaymentSuccess = () => {
+//   const [searchParams] = useSearchParams();
+//   const navigate = useNavigate();
+//   const [loading, setLoading] = useState(true);
+//   const [status, setStatus] = useState("verifying"); // verifying, success, error
+//   const [booking, setBooking] = useState(null);
+
+//   const pidx = searchParams.get("pidx");
+
+//   useEffect(() => {
+//     const verifyPayment = async () => {
+//       if (!pidx) {
+//         setStatus("error");
+//         setLoading(false);
+//         return;
+//       }
+
+//       try {
+//         const res = await api.post("/payments/khalti/verify", { pidx });
+//         if (res.data) {
+//           setBooking(res.data.booking);
+//           setStatus("success");
+//           toast.success("Payment successful!");
+//         }
+//       } catch (err) {
+//         console.error("Verification Error:", err);
+//         setStatus("error");
+//         toast.error(
+//           err.response?.data?.message || "Payment verification failed",
+//         );
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     verifyPayment();
+//   }, [pidx]);
+
+//   return (
+//     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 text-slate-900 font-sans relative overflow-hidden animate-in fade-in duration-1000">
+//       {/* Soft Ambient Glow Elements */}
+//       <div className="pointer-events-none absolute inset-0 overflow-hidden">
+//         <div className="absolute -top-24 -left-24 h-96 w-96 rounded-full bg-blue-400/10 blur-[120px]" />
+//         <div className="absolute top-1/2 -right-48 h-[500px] w-[500px] rounded-full bg-indigo-400/10 blur-[150px]" />
+//       </div>
+
+//       <div className="relative min-h-screen flex flex-col items-center justify-center px-4 py-20">
+//         <div className="w-full max-w-5xl">
+//           {loading ? (
+//             <div className="flex flex-col items-center text-center">
+//               <div className="relative mb-10 flex h-32 w-32 items-center justify-center rounded-full bg-white shadow-2xl border border-slate-100 p-8">
+//                 <Loader2 className="h-16 w-16 text-blue-600 animate-spin" />
+//               </div>
+//               <h2 className="text-4xl font-extrabold text-slate-900 tracking-tight mb-4">
+//                 Verifying Payment
+//               </h2>
+//               <p className="text-slate-500 font-medium max-w-md text-lg">
+//                 We're confirming your transaction with the payment gateway. Hang
+//                 tight, this won't take long.
+//               </p>
+//             </div>
+//           ) : status === "success" ? (
+//             <div className="grid md:grid-cols-[1.2fr_1fr] gap-12 lg:gap-20 items-center">
+//               {/* LEFT SIDE: Success Content */}
+//               {/* <div className="space-y-10 animate-in slide-in-from-left-8 duration-700"> */}
+//               <div className="space-y-10">
+//                 <div className="space-y-6">
+//                   <div className="w-20 h-20 bg-emerald-500 rounded-2xl shadow-xl shadow-emerald-500/30 flex items-center justify-center text-white">
+//                     <ShieldCheck size={44} strokeWidth={2.5} />
+//                   </div>
+//                   <div className="space-y-2">
+//                     <h1 className="text-5xl font-black text-slate-900 tracking-tighter">
+//                       Booking Confirmed{" "}
+//                       <span className="animate-pulse">🎉</span>
+//                     </h1>
+//                     <p className="text-xl text-slate-500 font-medium leading-relaxed">
+//                       Everything is set! Your ride is ready for pick-up. A
+//                       confirmation has been sent to your dashboard.
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 {/* Status Highlight Card */}
+//                 <div className="bg-emerald-50 border border-emerald-100 rounded-[2.5rem] p-6 flex lg:items-center gap-5 shadow-sm">
+//                   <div className="shrink-0 w-12 h-12 bg-white rounded-2xl flex items-center justify-center text-emerald-600 shadow-sm">
+//                     <ShieldCheck size={24} />
+//                   </div>
+//                   <div>
+//                     <p className="font-bold text-emerald-900 text-lg">
+//                       Fully Verified & Paid
+//                     </p>
+//                     <p className="text-emerald-700/80 font-medium text-sm">
+//                       Your transaction with Khalti was successful and the
+//                       booking is now active.
+//                     </p>
+//                   </div>
+//                 </div>
+
+//                 {/* Main Actions */}
+//                 <div className="flex flex-col sm:flex-row gap-4 pt-4">
+//                   <button
+//                     onClick={() => navigate("/dashboard/profile?tab=bookings")}
+//                     className="px-10 py-4.5 bg-gradient-to-r from-blue-600 to-indigo-600 text-white font-bold rounded-2xl shadow-xl shadow-blue-500/20 hover:scale-[1.03] transition-all duration-300 active:scale-95"
+//                   >
+//                     Manage Bookings
+//                   </button>
+//                   <button
+//                     onClick={() => navigate("/listings")}
+//                     className="px-10 py-4.5 bg-white border border-slate-200 text-slate-700 font-bold rounded-2xl hover:bg-slate-50 transition-all active:scale-95 shadow-sm"
+//                   >
+//                     Rent More
+//                   </button>
+//                 </div>
+//               </div>
+
+//               {/* RIGHT SIDE: Receipt Card */}
+//               <div className="animate-in slide-in-from-right-8 duration-700 delay-200">
+//                 <ReceiptCard booking={booking} />
+//               </div>
+//             </div>
+//           ) : (
+//             <div className="max-w-xl mx-auto text-center space-y-10 animate-in zoom-in-95 duration-500">
+//               <div className="w-24 h-24 bg-rose-500 rounded-[2rem] shadow-2xl shadow-rose-500/30 flex items-center justify-center text-white mx-auto">
+//                 <XCircle size={48} strokeWidth={2.5} />
+//               </div>
+
+//               <div className="space-y-4">
+//                 <h1 className="text-4xl font-black text-slate-900 tracking-tight italic">
+//                   Oops! Payment Failed.
+//                 </h1>
+//                 <p className="text-slate-500 text-lg font-medium leading-relaxed">
+//                   We couldn't confirm your transaction. This might be due to a
+//                   timeout or a service interruption with the gateway.
+//                 </p>
+//               </div>
+
+//               <div className="bg-white border border-slate-200 rounded-[2.5rem] p-8 text-left shadow-sm space-y-4">
+//                 <p className="font-black uppercase tracking-widest text-slate-400 text-[10px]">
+//                   Recommended Steps
+//                 </p>
+//                 <ul className="space-y-3">
+//                   <li className="flex items-center gap-3 text-slate-700 font-bold">
+//                     <div className="w-6 h-6 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
+//                       1
+//                     </div>
+//                     Check your bank / Khalti app for deductions
+//                   </li>
+//                   <li className="flex items-center gap-3 text-slate-700 font-bold">
+//                     <div className="w-6 h-6 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
+//                       2
+//                     </div>
+//                     Wait 5-10 minutes for sync
+//                   </li>
+//                   <li className="flex items-center gap-3 text-slate-700 font-bold">
+//                     <div className="w-6 h-6 rounded-lg bg-rose-50 text-rose-500 flex items-center justify-center text-xs">
+//                       3
+//                     </div>
+//                     Contact Jaum support if money was deducted
+//                   </li>
+//                 </ul>
+//               </div>
+
+//               <button
+//                 onClick={() => navigate("/listings")}
+//                 className="px-10 py-4 bg-slate-900 text-white rounded-2xl font-bold shadow-xl shadow-slate-900/20 hover:scale-105 transition-all duration-300"
+//               >
+//                 Back to Marketplace
+//               </button>
+//             </div>
+//           )}
+//         </div>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default PaymentSuccess;
+
 import React, { useEffect, useState } from "react";
 import { useSearchParams, useNavigate } from "react-router-dom";
 import api from "../../utils/api";
@@ -224,21 +410,32 @@ const PaymentSuccess = () => {
   const [booking, setBooking] = useState(null);
 
   const pidx = searchParams.get("pidx");
+  const esewaData = searchParams.get("data");
 
   useEffect(() => {
     const verifyPayment = async () => {
-      if (!pidx) {
+      if (!pidx && !esewaData) {
         setStatus("error");
         setLoading(false);
         return;
       }
 
       try {
-        const res = await api.post("/payments/khalti/verify", { pidx });
-        if (res.data) {
+        let res;
+        if (pidx) {
+          res = await api.post("/payments/khalti/verify", { pidx });
+        } else if (esewaData) {
+          res = await api.post("/payments/esewa/verify", { data: esewaData });
+        }
+
+        if (res?.data) {
           setBooking(res.data.booking);
           setStatus("success");
-          toast.success("Payment successful!");
+          toast.success(
+            pidx
+              ? "Payment successful via Khalti!"
+              : "Payment successful via eSewa!",
+          );
         }
       } catch (err) {
         console.error("Verification Error:", err);
@@ -252,7 +449,7 @@ const PaymentSuccess = () => {
     };
 
     verifyPayment();
-  }, [pidx]);
+  }, [pidx, esewaData]);
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 to-blue-50 text-slate-900 font-sans relative overflow-hidden animate-in fade-in duration-1000">
@@ -308,8 +505,8 @@ const PaymentSuccess = () => {
                       Fully Verified & Paid
                     </p>
                     <p className="text-emerald-700/80 font-medium text-sm">
-                      Your transaction with Khalti was successful and the
-                      booking is now active.
+                      Your transaction with {pidx ? "Khalti" : "eSewa"} was
+                      successful and the booking is now active.
                     </p>
                   </div>
                 </div>
