@@ -1,7 +1,7 @@
-import HeroSection from "@/components/HeroSection";
-import HowItWorksSection from "@/components/HowItWorksSection";
-import FeatureSection from "@/components/FeatureSection";
-import CarShowcase from "@/components/CarShowcase";
+import HeroSection from "@/components/home/HeroSection";
+import HowItWorksSection from "@/components/home/HowItWorksSection";
+import FeatureSection from "@/components/home/FeatureSection";
+import CarShowcase from "@/components/home/CarShowcase";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 

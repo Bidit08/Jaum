@@ -103,6 +103,8 @@ const AdminDashboard = () => {
         return "Booking Management";
       case "/admin/payments":
         return "Payment Management";
+      case "/admin/refunds":
+        return "Refund Management";
       case "/admin/users":
         return "User Management";
       default:

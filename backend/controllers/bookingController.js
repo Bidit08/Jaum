@@ -317,13 +317,87 @@ export const getMyBookings = async (req, res) => {
 };
 
 /* =========================
+   CANCEL BOOKING (USER)
+========================= */
+export const cancelBooking = async (req, res) => {
+  try {
+    const booking = await Booking.findOne({
+      _id: req.params.id,
+      user: req.user.id,
+    }).populate("listing");
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    const invalidStatuses = ["completed", "cancelled", "rejected"];
+    if (invalidStatuses.includes(booking.status)) {
+      return res.status(400).json({
+        message: `Booking cannot be cancelled because it is already ${booking.status}.`,
+      });
+    }
+
+    // 1. Revert availableSeats if booking was already approved and is a seat listing
+    if (
+      booking.bookingType === "seats" &&
+      (booking.status === "approved-awaiting-payment" ||
+        booking.status === "confirmed")
+    ) {
+      booking.listing.availableSeats += booking.seatsBooked;
+      await booking.listing.save();
+    }
+
+    // 2. Handle Payment/Refund Logic
+    if (booking.paymentStatus === "paid") {
+      const penalty = booking.totalPrice * 0.2;
+      const refund = booking.totalPrice - penalty;
+
+      booking.penaltyAmount = penalty;
+      booking.refundAmount = refund;
+      booking.paymentStatus = "refund-pending";
+      booking.refundHandleStatus = "pending";
+
+      // Platform keeps the entire penalty; owner gets nothing.
+      booking.commissionAmount = penalty;
+      booking.ownerAmount = 0;
+      booking.payoutStatus = "failed";
+    }
+
+    // 3. Mark as cancelled
+    booking.status = "cancelled";
+
+    await booking.save();
+
+    res.json({
+      message:
+        booking.paymentStatus === "refund-pending"
+          ? "Booking cancelled. Refund will be processed."
+          : "Booking cancelled successfully.",
+      booking,
+    });
+  } catch (err) {
+    console.error("cancelBooking error:", err);
+    res.status(500).json({ message: "Failed to cancel booking" });
+  }
+};
+
+/* =========================
    GET OWNER INCOMING BOOKINGS
 ========================= */
 export const getOwnerBookings = async (req, res) => {
   try {
     const bookings = await Booking.find({
       owner: req.user.id,
-      status: { $in: ["pending", "approved-awaiting-payment", "confirmed", "completed"] },
+      status: {
+        $in: [
+          "pending",
+          "approved-awaiting-payment",
+          "confirmed",
+          "completed",
+          "cancelled",
+          "rejected",
+        ],
+      },
     })
       .populate(
         "listing",

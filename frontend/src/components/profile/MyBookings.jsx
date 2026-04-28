@@ -238,6 +238,7 @@ import {
   CreditCard,
   Star,
   Camera,
+  XCircle,
 } from "lucide-react";
 import { Link } from "react-router-dom";
 
@@ -255,6 +256,10 @@ const MyBookings = () => {
   const [showReviewModal, setShowReviewModal] = useState(false);
   const [selectedBookingForReview, setSelectedBookingForReview] =
     useState(null);
+
+  const [showCancelModal, setShowCancelModal] = useState(false);
+  const [selectedBookingToCancel, setSelectedBookingToCancel] = useState(null);
+  const [cancelLoading, setCancelLoading] = useState(false);
 
   const handlePayment = (booking) => {
     setSelectedBooking(booking);
@@ -276,6 +281,26 @@ const MyBookings = () => {
       toast.success("Invoice downloaded!");
     } catch (err) {
       toast.error("Failed to download invoice");
+    }
+  };
+
+  const handleCancelBooking = async () => {
+    if (!selectedBookingToCancel) return;
+    setCancelLoading(true);
+    try {
+      const res = await api.put(
+        `/bookings/${selectedBookingToCancel._id}/cancel`,
+      );
+      toast.success(res.data.message || "Booking cancelled successfully");
+      setShowCancelModal(false);
+      setSelectedBookingToCancel(null);
+      // Refresh bookings
+      const fetchRes = await api.get("/bookings/my");
+      setBookings(fetchRes.data);
+    } catch (err) {
+      toast.error(err.response?.data?.message || "Failed to cancel booking");
+    } finally {
+      setCancelLoading(false);
     }
   };
 
@@ -486,6 +511,22 @@ const MyBookings = () => {
                   Write Review
                 </button>
               )}
+
+              {/* Cancel Booking Button */}
+              {["pending", "approved-awaiting-payment", "confirmed"].includes(
+                b.status,
+              ) && (
+                <button
+                  onClick={() => {
+                    setSelectedBookingToCancel(b);
+                    setShowCancelModal(true);
+                  }}
+                  className="px-6 py-2.5 bg-white hover:bg-rose-50 text-rose-600 font-bold rounded-xl transition-all text-xs flex items-center justify-center gap-2 border border-rose-200"
+                >
+                  <XCircle size={14} />
+                  Cancel Booking
+                </button>
+              )}
             </div>
           </div>
         </div>
@@ -513,6 +554,56 @@ const MyBookings = () => {
           }}
           booking={selectedBookingForReview}
         />
+      )}
+
+      {/* Cancel Confirmation Modal */}
+      {showCancelModal && selectedBookingToCancel && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4">
+          <div className="bg-white rounded-3xl p-8 max-w-md w-full shadow-2xl relative">
+            <h3 className="text-2xl font-bold text-slate-900 mb-4">
+              Cancel Booking
+            </h3>
+            <p className="text-slate-600 mb-6">
+              Are you sure you want to cancel this booking?
+            </p>
+
+            {selectedBookingToCancel.paymentStatus === "paid" && (
+              <div className="bg-rose-50 p-4 rounded-xl mb-6 border border-rose-100">
+                <p className="text-rose-700 font-medium text-sm flex items-start gap-2">
+                  <XCircle className="w-5 h-5 shrink-0" />
+                  <span>
+                    <strong>Cancellation Fee:</strong> A 20% cancellation fee
+                    will be deducted from your payment.
+                  </span>
+                </p>
+              </div>
+            )}
+
+            <div className="flex items-center gap-3 mt-8">
+              <button
+                onClick={() => {
+                  setShowCancelModal(false);
+                  setSelectedBookingToCancel(null);
+                }}
+                className="flex-1 py-3 bg-slate-100 hover:bg-slate-200 text-slate-700 font-bold rounded-xl transition-all"
+                disabled={cancelLoading}
+              >
+                Keep Booking
+              </button>
+              <button
+                onClick={handleCancelBooking}
+                disabled={cancelLoading}
+                className="flex-1 py-3 bg-rose-600 hover:bg-rose-700 text-white font-bold rounded-xl transition-all flex justify-center items-center gap-2"
+              >
+                {cancelLoading ? (
+                  <div className="w-5 h-5 border-2 border-white/30 border-t-white rounded-full animate-spin"></div>
+                ) : (
+                  "Yes, Cancel"
+                )}
+              </button>
+            </div>
+          </div>
+        </div>
       )}
     </div>
   );

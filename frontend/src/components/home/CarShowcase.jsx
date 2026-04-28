@@ -306,7 +306,7 @@ import { Card, CardContent } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Star, Users, Fuel, ArrowRight } from "lucide-react";
 import { Link } from "react-router-dom";
-import api from "../utils/api";
+import api from "../../utils/api";
 
 const BACKEND_URL = "http://localhost:5000";
 

@@ -160,7 +160,7 @@ const bookingSchema = new mongoose.Schema(
 
     paymentStatus: {
       type: String,
-      enum: ["pending", "paid", "failed", "refunded"],
+      enum: ["pending", "paid", "failed", "refunded", "refund-pending"],
       default: "pending",
     },
 
@@ -221,6 +221,14 @@ const bookingSchema = new mongoose.Schema(
       type: String,
       enum: ["pending", "released", "failed"],
       default: "pending",
+    },
+
+    penaltyAmount: {
+      type: Number,
+    },
+
+    refundAmount: {
+      type: Number,
     },
   },
   { timestamps: true },
