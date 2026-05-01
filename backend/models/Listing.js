@@ -106,6 +106,19 @@ const listingSchema = new mongoose.Schema(
     brand: { type: String, required: true },
     model: { type: String, required: true },
     year: { type: Number, required: true },
+    category: {
+      type: String,
+      enum: [
+        "SUV",
+        "Sedan",
+        "Electric",
+        "Luxury",
+        "Hatchback",
+        "Off-Road",
+        "Van",
+      ],
+      required: true,
+    },
     description: String,
 
     // ===== SPECS =====
@@ -131,6 +144,17 @@ const listingSchema = new mongoose.Schema(
     location: {
       type: String,
       required: function () {
+        //     return (
+        //       this.listingType === "full" &&
+        //       (this.latitude === undefined || this.longitude === undefined)
+        //     );
+        //   },
+        // },
+        // latitude: {
+        //   type: Number,
+        // },
+        // longitude: {
+        //   type: Number,
         return (
           this.listingType === "full" &&
           (this.latitude === undefined || this.longitude === undefined)

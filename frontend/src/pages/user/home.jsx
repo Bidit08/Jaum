@@ -1,7 +1,32 @@
+// import HeroSection from "@/components/home/HeroSection";
+// import HowItWorksSection from "@/components/home/HowItWorksSection";
+// import FeatureSection from "@/components/home/FeatureSection";
+// import CarShowcase from "@/components/home/CarShowcase";
+// import VehicleCategories from "@/components/home/VehicleCategories";
+// import Footer from "@/components/Footer";
+// import Navbar from "@/components/Navbar";
+
+// export default function Home() {
+//   return (
+//     // <div className="overflow-x-hidden">
+//     <div className="overflow-x-hidden bg-white selection:bg-cyan-500/30 selection:text-slate-900">
+//       <Navbar />
+//       <HeroSection />
+//       <VehicleCategories />
+//       <CarShowcase />
+//       <HowItWorksSection />
+//       <FeatureSection />
+//       <Footer />
+//     </div>
+//   );
+// }
+
 import HeroSection from "@/components/home/HeroSection";
+import RentalTypes from "@/components/home/RentalTypes";
 import HowItWorksSection from "@/components/home/HowItWorksSection";
 import FeatureSection from "@/components/home/FeatureSection";
 import CarShowcase from "@/components/home/CarShowcase";
+import VehicleCategories from "@/components/home/VehicleCategories";
 import Footer from "@/components/Footer";
 import Navbar from "@/components/Navbar";
 
@@ -11,10 +36,11 @@ export default function Home() {
     <div className="overflow-x-hidden bg-white selection:bg-cyan-500/30 selection:text-slate-900">
       <Navbar />
       <HeroSection />
+      <RentalTypes />
+      <VehicleCategories />
       <CarShowcase />
       <HowItWorksSection />
       <FeatureSection />
-
       <Footer />
     </div>
   );

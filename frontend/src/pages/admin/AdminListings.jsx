@@ -21,6 +21,7 @@ import {
 } from "lucide-react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
 
 /* ─── Helpers ────────────────────────────────────────────────── */
 const fmtDate = (d) =>
@@ -100,13 +101,6 @@ function TypeBadge({ type }) {
 function OwnerAvatar({ owner, size = "sm" }) {
   const cls = size === "lg" ? "w-14 h-14 text-lg" : "w-8 h-8 text-xs";
   if (owner?.profilePicture)
-    // return (
-    //   <img
-    //     src={owner.profilePicture}
-    //     alt={owner.name}
-    //     className={`${cls} rounded-full object-cover border-2 border-slate-200`}
-    //   />
-    // );
     return (
       <img
         src={GET_IMAGE_URL(owner.profilePicture)}
@@ -132,13 +126,6 @@ function OwnerAvatar({ owner, size = "sm" }) {
 /* ─── Thumbnail ─────────────────────────────────────────────── */
 function ListingThumb({ photos }) {
   if (photos?.[0])
-    // return (
-    //   <img
-    //     src={photos[0]}
-    //     alt=""
-    //     className="w-16 h-14 rounded-xl object-cover shrink-0"
-    //   />
-    // );
     return (
       <img
         src={GET_IMAGE_URL(photos[0])}
@@ -310,12 +297,6 @@ function ListingDetailModal({ listingId, onClose, onUpdate }) {
           {listing.photos?.length > 0 && (
             <div className="flex gap-2 p-4 overflow-x-auto bg-slate-50 border-b border-slate-100">
               {listing.photos.map((p, i) => (
-                // <img
-                //   key={i}
-                //   src={p}
-                //   alt=""
-                //   className="h-36 w-auto rounded-xl object-cover shrink-0"
-                // />
                 <img
                   key={i}
                   src={GET_IMAGE_URL(p)}
@@ -492,6 +473,9 @@ export default function AdminListings() {
   const [editTarget, setEditTarget] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  // Generic confirm dialog state
+  const [pendingAction, setPendingAction] = useState(null); // { variant, title, message, fn }
+  const [actionLoading, setActionLoading] = useState(false);
 
   const fetchListings = useCallback(async () => {
     setLoading(true);
@@ -518,48 +502,103 @@ export default function AdminListings() {
       prev.map((l) => (l._id === id ? { ...l, ...updates } : l)),
     );
 
-  /* ─── approve ─── */
-  const handleApprove = async (listing) => {
+  /* ─── confirm helper ─── */
+  const requestConfirm = (variant, title, message, fn) => {
+    setPendingAction({ variant, title, message, fn });
+  };
+
+  const executeConfirmed = async () => {
+    if (!pendingAction) return;
+    setActionLoading(true);
     try {
-      const res = await api.patch(`/admin/listings/${listing._id}/approve`);
-      patchListing(listing._id, { isApproved: true, isRejected: false });
-      toast.success("Listing approved");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to approve");
+      await pendingAction.fn();
+    } finally {
+      setActionLoading(false);
+      setPendingAction(null);
     }
+  };
+
+  /* ─── approve ─── */
+  const handleApprove = (listing) => {
+    requestConfirm(
+      "approve",
+      "Approve Listing",
+      <>
+        Are you sure you want to approve <strong>{listing.name}</strong>? It
+        will become visible to all users.
+      </>,
+      async () => {
+        const res = await api.patch(`/admin/listings/${listing._id}/approve`);
+        patchListing(listing._id, { isApproved: true, isRejected: false });
+        toast.success("Listing approved");
+      },
+    );
   };
 
   /* ─── reject ─── */
-  const handleReject = async (listing) => {
-    try {
-      await api.patch(`/admin/listings/${listing._id}/reject`);
-      patchListing(listing._id, { isApproved: false, isRejected: true });
-      toast.success("Listing rejected");
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to reject");
-    }
+  const handleReject = (listing) => {
+    requestConfirm(
+      "reject",
+      "Reject Listing",
+      <>
+        Are you sure you want to reject <strong>{listing.name}</strong>? The
+        owner will be notified.
+      </>,
+      async () => {
+        await api.patch(`/admin/listings/${listing._id}/reject`);
+        patchListing(listing._id, { isApproved: false, isRejected: true });
+        toast.success("Listing rejected");
+      },
+    );
   };
 
   /* ─── toggle status (active ↔ paused) ─── */
-  const handleToggleStatus = async (listing) => {
-    try {
-      const res = await api.patch(`/admin/listings/${listing._id}/status`);
-      patchListing(listing._id, { status: res.data.status });
-      toast.success(res.data.message);
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to toggle status");
-    }
+  const handleToggleStatus = (listing) => {
+    const isPausing = listing.status === "active";
+    requestConfirm(
+      isPausing ? "pause" : "unpause",
+      isPausing ? "Pause Listing" : "Activate Listing",
+      isPausing ? (
+        <>
+          Pause <strong>{listing.name}</strong>? It will no longer appear in
+          search results.
+        </>
+      ) : (
+        <>
+          Activate <strong>{listing.name}</strong>? It will appear in search
+          results again.
+        </>
+      ),
+      async () => {
+        const res = await api.patch(`/admin/listings/${listing._id}/status`);
+        patchListing(listing._id, { status: res.data.status });
+        toast.success(res.data.message);
+      },
+    );
   };
 
   /* ─── toggle featured ─── */
-  const handleToggleFeatured = async (listing) => {
-    try {
-      const res = await api.patch(`/admin/listings/${listing._id}/feature`);
-      patchListing(listing._id, { isFeatured: res.data.isFeatured });
-      toast.success(res.data.message);
-    } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to toggle featured");
-    }
+  const handleToggleFeatured = (listing) => {
+    const featuring = !listing.isFeatured;
+    requestConfirm(
+      featuring ? "feature" : "unfeature",
+      featuring ? "Feature Listing" : "Unfeature Listing",
+      featuring ? (
+        <>
+          Mark <strong>{listing.name}</strong> as featured? It will be
+          highlighted on the home page.
+        </>
+      ) : (
+        <>
+          Remove <strong>{listing.name}</strong> from featured listings?
+        </>
+      ),
+      async () => {
+        const res = await api.patch(`/admin/listings/${listing._id}/feature`);
+        patchListing(listing._id, { isFeatured: res.data.isFeatured });
+        toast.success(res.data.message);
+      },
+    );
   };
 
   /* ─── delete ─── */
@@ -872,6 +911,18 @@ export default function AdminListings() {
           onConfirm={handleDelete}
           onCancel={() => setDeleteTarget(null)}
           loading={deleting}
+        />
+      )}
+
+      {/* Generic action confirm dialog */}
+      {pendingAction && (
+        <ConfirmDialog
+          variant={pendingAction.variant}
+          title={pendingAction.title}
+          message={pendingAction.message}
+          loading={actionLoading}
+          onConfirm={executeConfirmed}
+          onCancel={() => setPendingAction(null)}
         />
       )}
     </div>

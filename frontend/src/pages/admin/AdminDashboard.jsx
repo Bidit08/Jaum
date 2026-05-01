@@ -107,6 +107,8 @@ const AdminDashboard = () => {
         return "Refund Management";
       case "/admin/users":
         return "User Management";
+      case "/admin/reviews":
+        return "Review Management";
       default:
         return "Admin Panel";
     }

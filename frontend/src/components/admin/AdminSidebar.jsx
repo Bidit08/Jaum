@@ -151,6 +151,7 @@ import {
   CreditCard,
   DollarSign,
   RefreshCw,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "../../lib/utils";
 
@@ -167,6 +168,7 @@ const adminNavItems = [
     path: "/admin/damage-reports",
     icon: ClipboardList,
   },
+  { name: "Reviews", path: "/admin/reviews", icon: MessageSquare },
 ];
 
 const AdminSidebar = ({

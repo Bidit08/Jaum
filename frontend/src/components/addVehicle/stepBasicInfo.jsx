@@ -7,7 +7,7 @@ const StepBasicInfo = ({ formData, updateFormData }) => {
 
   const years = Array.from(
     { length: 30 },
-    (_, i) => new Date().getFullYear() - i
+    (_, i) => new Date().getFullYear() - i,
   );
 
   return (
@@ -70,6 +70,33 @@ const StepBasicInfo = ({ formData, updateFormData }) => {
             {years.map((y) => (
               <option key={y} value={y}>
                 {y}
+              </option>
+            ))}
+          </select>
+        </div>
+
+        <div className="space-y-2">
+          <label className="text-sm font-semibold text-slate-700">
+            Category
+          </label>
+          <select
+            name="category"
+            value={formData.category || ""}
+            onChange={handleChange}
+            className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3 text-slate-900 focus:outline-none focus:ring-2 focus:ring-blue-500/10 focus:border-blue-500 transition-all"
+          >
+            <option value="">Select Category</option>
+            {[
+              "SUV",
+              "Sedan",
+              "Electric",
+              "Luxury",
+              "Hatchback",
+              "Off-Road",
+              "Van",
+            ].map((cat) => (
+              <option key={cat} value={cat}>
+                {cat}
               </option>
             ))}
           </select>

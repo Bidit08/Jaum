@@ -328,6 +328,7 @@ import AdminPayouts from "./pages/admin/AdminPayouts";
 import AdminUsers from "./pages/admin/AdminUsers";
 import AdminDamageReports from "./pages/admin/AdminDamageReports";
 import AdminRefunds from "./pages/admin/AdminRefunds";
+import AdminReviews from "./pages/admin/AdminReviews";
 
 import Home from "./pages/user/home";
 import Login from "./pages/auth/login";
@@ -372,6 +373,7 @@ function App() {
           <Route path="users" element={<AdminUsers />} />
           <Route path="payouts" element={<AdminPayouts />} />
           <Route path="damage-reports" element={<AdminDamageReports />} />
+          <Route path="reviews" element={<AdminReviews />} />
         </Route>
 
         {/* 🌍 Public Routes */}

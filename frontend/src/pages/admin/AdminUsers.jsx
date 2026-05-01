@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
+import ConfirmDialog from "../../components/admin/ConfirmDialog";
 
 /* ─── helpers ─────────────────────────────────────────────────── */
 const fmtDate = (d) =>
@@ -405,6 +406,8 @@ export default function AdminUsers() {
   const [selectedUserId, setSelectedUserId] = useState(null);
   const [deleteTarget, setDeleteTarget] = useState(null);
   const [deleting, setDeleting] = useState(false);
+  const [pendingAction, setPendingAction] = useState(null);
+  const [actionLoading, setActionLoading] = useState(false);
 
   const fetchUsers = useCallback(async () => {
     setLoading(true);
@@ -431,13 +434,42 @@ export default function AdminUsers() {
     );
   };
 
-  const handleSuspendInline = async (user) => {
+  const executeSuspend = async (user) => {
+    const res = await api.patch(`/admin/users/${user._id}/suspend`);
+    handleSuspendToggle(user._id, res.data.isSuspended);
+    toast.success(res.data.message);
+  };
+
+  const handleSuspendInline = (user) => {
+    const isSuspending = !user.isSuspended;
+    setPendingAction({
+      variant: isSuspending ? "suspend" : "activate",
+      title: isSuspending ? "Suspend User" : "Activate User",
+      message: isSuspending ? (
+        <span>
+          Suspend <strong>{user.name}</strong>? They will lose access to the
+          platform.
+        </span>
+      ) : (
+        <span>
+          Activate <strong>{user.name}</strong>? They will regain full platform
+          access.
+        </span>
+      ),
+      fn: () => executeSuspend(user),
+    });
+  };
+
+  const executeConfirmed = async () => {
+    if (!pendingAction) return;
+    setActionLoading(true);
     try {
-      const res = await api.patch(`/admin/users/${user._id}/suspend`);
-      handleSuspendToggle(user._id, res.data.isSuspended);
-      toast.success(res.data.message);
+      await pendingAction.fn();
     } catch (err) {
-      toast.error(err.response?.data?.message || "Failed to update status");
+      toast.error(err.response?.data?.message || "Action failed");
+    } finally {
+      setActionLoading(false);
+      setPendingAction(null);
     }
   };
 
@@ -659,6 +691,18 @@ export default function AdminUsers() {
           onConfirm={handleDelete}
           onCancel={() => setDeleteTarget(null)}
           loading={deleting}
+        />
+      )}
+
+      {/* Generic action confirm */}
+      {pendingAction && (
+        <ConfirmDialog
+          variant={pendingAction.variant}
+          title={pendingAction.title}
+          message={pendingAction.message}
+          loading={actionLoading}
+          onConfirm={executeConfirmed}
+          onCancel={() => setPendingAction(null)}
         />
       )}
     </div>

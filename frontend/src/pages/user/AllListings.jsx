@@ -2577,17 +2577,151 @@ const AllListings = () => {
             </button>
           </div>
         ) : (
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          // <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-10">
+          //   {filteredListings.map((listing) => {
+          //     const isFull = listing.listingType === "full";
+
+          //     return (
+          //       <div
+          //         key={listing._id}
+          //         className="group relative bg-white rounded-[2rem] border border-slate-200/60 shadow-[0_25px_50px_-12px_rgba(15,23,42,0.25)] hover:border-blue-100 hover:shadow-[0_35px_70px_-12px_rgba(15,23,42,0.35)] transition-all duration-500 overflow-hidden flex flex-col hover:-translate-y-2"
+          //       >
+          //         {/* Image Block */}
+          //         <div className="relative h-[280px] overflow-hidden m-2 rounded-t-[1.75rem] rounded-b-xl bg-slate-100">
+          //           <img
+          //             src={
+          //               listing.photos?.length
+          //                 ? listing.photos[0].startsWith("http")
+          //                   ? listing.photos[0]
+          //                   : `${BACKEND_URL}${listing.photos[0]}`
+          //                 : "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000"
+          //             }
+          //             alt={listing.name}
+          //             className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
+          //           />
+
+          //           {/* Gradient Overlay for badges contrast */}
+          //           <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+
+          //           {/* Compare Box */}
+          //           <div className="absolute top-4 right-4 z-20">
+          //             <label className="flex items-center cursor-pointer gap-2 bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-sm hover:shadow-md hover:bg-white transition group/check border border-slate-200">
+          //               <input
+          //                 type="checkbox"
+          //                 checked={selectedVehicles.some(
+          //                   (v) => v._id === listing._id,
+          //                 )}
+          //                 onChange={(e) => {
+          //                   e.stopPropagation();
+          //                   e.target.checked
+          //                     ? addToComparison(listing)
+          //                     : removeFromComparison(listing._id);
+          //                 }}
+          //                 className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+          //               />
+          //               <span className="text-[10px] uppercase font-bold text-slate-600 tracking-widest ml-1 opacity-0 group-hover/check:opacity-100 transition-opacity w-0 group-hover/check:w-auto overflow-hidden whitespace-nowrap">
+          //                 Compare
+          //               </span>
+          //             </label>
+          //           </div>
+
+          //           {/* Main Badges via absolute placement over gradient */}
+          //           <div className="absolute bottom-4 left-4 flex gap-2">
+          //             <span
+          //               className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-1.5 ${isFull ? "bg-blue-600 text-white" : "bg-emerald-500 text-white"}`}
+          //             >
+          //               {isFull ? <Car size={13} /> : <Users size={13} />}
+          //               {isFull ? "Premium Rental" : "Seat Share"}
+          //             </span>
+          //             {!isFull && Number(listing.availableSeats) === 0 && (
+          //               <span className="px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-rose-500 text-white shadow-lg flex items-center gap-1.5">
+          //                 <Users size={13} /> Fully Booked
+          //               </span>
+          //             )}
+          //           </div>
+          //         </div>
+
+          //         {/* Text & Content Block */}
+          //         <div className="p-8 flex flex-col flex-1 text-slate-900 justify-between">
+          //           <div>
+          //             <div className="flex justify-between items-start mb-6">
+          //               <div className="flex-1 pr-4">
+          //                 <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 line-clamp-1">
+          //                   {listing.brand || "Luxury Vehicle"}
+          //                 </p>
+          //                 <h3 className="text-2xl font-black tracking-tight leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+          //                   {listing.name}
+          //                 </h3>
+          //               </div>
+          //               <div className="text-right shrink-0">
+          //                 <p className="text-2xl font-black text-blue-600">
+          //                   Rs.{" "}
+          //                   {isFull
+          //                     ? listing.pricePerDay
+          //                     : listing.pricePerSeat}
+          //                 </p>
+          //                 <p className="text-[9px] uppercase font-bold tracking-widest text-slate-400 mt-0.5">
+          //                   /{isFull ? "day" : "seat"}
+          //                 </p>
+          //               </div>
+          //             </div>
+
+          //             {/* Icon Metadata Row */}
+          //             <div className="flex items-center gap-6 mt-6 pt-6 border-t border-slate-100">
+          //               <div className="flex items-center gap-2">
+          //                 <div className="p-1.5 rounded-lg bg-slate-50 text-slate-400">
+          //                   <Gauge size={16} />
+          //                 </div>
+          //                 <span className="text-xs font-bold text-slate-600">
+          //                   {listing.transmission || "Auto"}
+          //                 </span>
+          //               </div>
+          //               <div className="flex items-center gap-2">
+          //                 <div className="p-1.5 rounded-lg bg-slate-50 text-slate-400">
+          //                   <Users size={16} />
+          //                 </div>
+          //                                           <span className="text-xs font-bold text-slate-600">
+          //                   {listing.listingType === "seats"
+          //                     ? `${listing.availableSeats || 0} Seats Left`
+          //                     : `${listing.seats || 5} Seats`}
+          //                 </span>
+          //               </div>
+          //               <div className="flex items-center gap-2">
+          //                 <div className="p-1.5 rounded-lg bg-slate-50 text-emerald-500">
+          //                   <ShieldCheck size={16} />
+          //                 </div>
+          //                 <span className="text-xs font-bold text-emerald-600">
+          //                   Verified
+          //                 </span>
+          //               </div>
+          //             </div>
+          //           </div>
+
+          //           <div className="mt-8">
+          //             <button
+          //               onClick={() => navigate(`/listings/${listing._id}`)}
+          //               className="w-full py-4 bg-slate-900 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-500 text-white font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 rounded-xl transition-all duration-300 shadow-md group-hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-95"
+          //             >
+          //               View Details
+          //               <ChevronRight size={16} />
+          //             </button>
+          //           </div>
+          //         </div>
+          //       </div>
+          //     );
+          //   })}
+          // </div>
+          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
             {filteredListings.map((listing) => {
               const isFull = listing.listingType === "full";
 
               return (
                 <div
                   key={listing._id}
-                  className="group relative bg-white rounded-[2rem] border border-slate-200/60 shadow-[0_25px_50px_-12px_rgba(15,23,42,0.25)] hover:border-blue-100 hover:shadow-[0_35px_70px_-12px_rgba(15,23,42,0.35)] transition-all duration-500 overflow-hidden flex flex-col hover:-translate-y-2"
+                  className="group relative bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-slate-200 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col hover:-translate-y-1"
                 >
                   {/* Image Block */}
-                  <div className="relative h-[280px] overflow-hidden m-2 rounded-t-[1.75rem] rounded-b-xl bg-slate-100">
+                  <div className="relative h-[220px] overflow-hidden bg-slate-100">
                     <img
                       src={
                         listing.photos?.length
@@ -2597,15 +2731,15 @@ const AllListings = () => {
                           : "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000"
                       }
                       alt={listing.name}
-                      className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 ease-in-out"
+                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
                     />
 
-                    {/* Gradient Overlay for badges contrast */}
-                    <div className="absolute inset-x-0 bottom-0 h-1/2 bg-gradient-to-t from-black/80 via-black/20 to-transparent pointer-events-none" />
+                    {/* Gradient Overlay */}
+                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/0 to-slate-900/0 pointer-events-none" />
 
                     {/* Compare Box */}
-                    <div className="absolute top-4 right-4 z-20">
-                      <label className="flex items-center cursor-pointer gap-2 bg-white/90 backdrop-blur-md p-2 rounded-xl shadow-sm hover:shadow-md hover:bg-white transition group/check border border-slate-200">
+                    <div className="absolute top-3 right-3 z-20">
+                      <label className="flex items-center cursor-pointer bg-white/90 backdrop-blur-md p-1.5 rounded-lg shadow-sm hover:shadow-md hover:bg-white transition group/check border border-slate-200">
                         <input
                           type="checkbox"
                           checked={selectedVehicles.some(
@@ -2619,91 +2753,68 @@ const AllListings = () => {
                           }}
                           className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
                         />
-                        <span className="text-[10px] uppercase font-bold text-slate-600 tracking-widest ml-1 opacity-0 group-hover/check:opacity-100 transition-opacity w-0 group-hover/check:w-auto overflow-hidden whitespace-nowrap">
-                          Compare
-                        </span>
                       </label>
                     </div>
 
-                    {/* Main Badges via absolute placement over gradient */}
-                    <div className="absolute bottom-4 left-4 flex gap-2">
-                      <span
-                        className={`px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest shadow-lg flex items-center gap-1.5 ${isFull ? "bg-blue-600 text-white" : "bg-emerald-500 text-white"}`}
-                      >
-                        {isFull ? <Car size={13} /> : <Users size={13} />}
-                        {isFull ? "Premium Rental" : "Seat Share"}
+                    {/* Badges */}
+                    <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
+                      <span className="px-2.5 py-1 rounded-md bg-white/25 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                        {isFull ? <Car size={12} /> : <Users size={12} />}
+                        {isFull ? "Full" : "Seats"}
                       </span>
                       {!isFull && Number(listing.availableSeats) === 0 && (
-                        <span className="px-4 py-1.5 rounded-xl text-[10px] font-black uppercase tracking-widest bg-rose-500 text-white shadow-lg flex items-center gap-1.5">
-                          <Users size={13} /> Fully Booked
+                        <span className="px-2.5 py-1 rounded-md bg-rose-500/90 backdrop-blur-md border border-rose-500/50 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
+                          Fully Booked
                         </span>
                       )}
                     </div>
                   </div>
 
-                  {/* Text & Content Block */}
-                  <div className="p-8 flex flex-col flex-1 text-slate-900 justify-between">
+                  {/* Text Block */}
+                  <div className="p-5 flex flex-col flex-1 text-slate-900 justify-between">
                     <div>
-                      <div className="flex justify-between items-start mb-6">
-                        <div className="flex-1 pr-4">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1.5 line-clamp-1">
-                            {listing.brand || "Luxury Vehicle"}
+                      <div className="flex justify-between items-start mb-1">
+                        <div className="flex-1 pr-3">
+                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 line-clamp-1">
+                            {listing.brand || "Vehicle"}
                           </p>
-                          <h3 className="text-2xl font-black tracking-tight leading-tight group-hover:text-blue-600 transition-colors line-clamp-2">
+                          <h3 className="text-xl font-black tracking-tight leading-tight text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
                             {listing.name}
                           </h3>
                         </div>
-                        <div className="text-right shrink-0">
-                          <p className="text-2xl font-black text-blue-600">
-                            Rs.{" "}
-                            {isFull
-                              ? listing.pricePerDay
-                              : listing.pricePerSeat}
-                          </p>
-                          <p className="text-[9px] uppercase font-bold tracking-widest text-slate-400 mt-0.5">
-                            /{isFull ? "day" : "seat"}
-                          </p>
-                        </div>
                       </div>
 
-                      {/* Icon Metadata Row */}
-                      <div className="flex items-center gap-6 mt-6 pt-6 border-t border-slate-100">
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-slate-50 text-slate-400">
-                            <Gauge size={16} />
-                          </div>
-                          <span className="text-xs font-bold text-slate-600">
-                            {listing.transmission || "Auto"}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-slate-50 text-slate-400">
-                            <Users size={16} />
-                          </div>
-                                                    <span className="text-xs font-bold text-slate-600">
-                            {listing.listingType === "seats" 
-                              ? `${listing.availableSeats || 0} Seats Left` 
-                              : `${listing.seats || 5} Seats`}
-                          </span>
-                        </div>
-                        <div className="flex items-center gap-2">
-                          <div className="p-1.5 rounded-lg bg-slate-50 text-emerald-500">
-                            <ShieldCheck size={16} />
-                          </div>
-                          <span className="text-xs font-bold text-emerald-600">
-                            Verified
-                          </span>
-                        </div>
+                      {/* Specs */}
+                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 mb-4 uppercase tracking-wider">
+                        <span>{listing.transmission || "Auto"}</span>
+                        <span className="text-slate-300">•</span>
+                        <span>{listing.fuelType || "Gasoline"}</span>
+                        <span className="text-slate-300">•</span>
+                        <span>
+                          {listing.listingType === "seats"
+                            ? `${listing.availableSeats || 0} seats left`
+                            : `${listing.seats || 5} seats`}
+                        </span>
+                      </div>
+
+                      {/* Price Section */}
+                      <div className="flex items-end gap-1 mb-1">
+                        <p className="text-2xl font-black text-slate-900 leading-none">
+                          Rs.{" "}
+                          {isFull ? listing.pricePerDay : listing.pricePerSeat}
+                        </p>
+                        <p className="text-xs font-bold text-slate-400 mb-0.5">
+                          /{isFull ? "day" : "seat"}
+                        </p>
                       </div>
                     </div>
 
-                    <div className="mt-8">
+                    <div className="mt-5">
                       <button
                         onClick={() => navigate(`/listings/${listing._id}`)}
-                        className="w-full py-4 bg-slate-900 hover:bg-gradient-to-r hover:from-blue-600 hover:to-cyan-500 text-white font-bold text-xs uppercase tracking-[0.15em] flex items-center justify-center gap-2 rounded-xl transition-all duration-300 shadow-md group-hover:shadow-blue-500/25 hover:scale-[1.02] active:scale-95"
+                        className="w-full py-3 bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
                       >
                         View Details
-                        <ChevronRight size={16} />
                       </button>
                     </div>
                   </div>

@@ -612,6 +612,7 @@ export const createListing = async (req, res) => {
       "brand",
       "model",
       "year",
+      "category",
       "description",
       "fuelType",
       "transmission",
