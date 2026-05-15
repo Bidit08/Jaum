@@ -144,17 +144,6 @@ const listingSchema = new mongoose.Schema(
     location: {
       type: String,
       required: function () {
-        //     return (
-        //       this.listingType === "full" &&
-        //       (this.latitude === undefined || this.longitude === undefined)
-        //     );
-        //   },
-        // },
-        // latitude: {
-        //   type: Number,
-        // },
-        // longitude: {
-        //   type: Number,
         return (
           this.listingType === "full" &&
           (this.latitude === undefined || this.longitude === undefined)
@@ -184,15 +173,27 @@ const listingSchema = new mongoose.Schema(
     departure: {
       type: String,
       required: function () {
-        return this.listingType === "seats";
+        return (
+          this.listingType === "seats" &&
+          (this.departureLatitude === undefined ||
+            this.departureLongitude === undefined)
+        );
       },
     },
+    departureLatitude: Number,
+    departureLongitude: Number,
     destination: {
       type: String,
       required: function () {
-        return this.listingType === "seats";
+        return (
+          this.listingType === "seats" &&
+          (this.destinationLatitude === undefined ||
+            this.destinationLongitude === undefined)
+        );
       },
     },
+    destinationLatitude: Number,
+    destinationLongitude: Number,
     departureTime: {
       type: Date,
       required: function () {

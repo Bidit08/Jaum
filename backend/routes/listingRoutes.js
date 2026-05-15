@@ -261,6 +261,7 @@ import {
   getListingById,
   updateListing,
   deleteListing,
+  getSearchSuggestions,
 } from "../controllers/listingController.js";
 
 import authMiddleware from "../middleware/authMiddleware.js";
@@ -293,7 +294,7 @@ router.post(
   "/upload/photos",
   authMiddleware,
   upload.array("photos", 10),
-  uploadListingPhotos
+  uploadListingPhotos,
 );
 
 // ✏️ Update listing
@@ -305,6 +306,9 @@ router.delete("/:id", authMiddleware, deleteListing);
 /* =======================
    DYNAMIC PUBLIC ROUTE (LAST!)
 ======================= */
+
+// 🌍 Get search suggestions (MUST be before :id)
+router.get("/suggestions", getSearchSuggestions);
 
 // 🌍 Get single approved listing (PUBLIC)
 router.get("/:id", getListingById);

@@ -757,9 +757,10 @@ export const getAllListings = async (req, res) => {
   try {
     const listings = await Listing.find({
       isApproved: true,
+      $or: [{ status: "active" }, { status: { $exists: false } }],
       $or: [
-        { status: "active" },
-        { status: { $exists: false } }, // ✅ IMPORTANT FIX
+        { listingType: "full" },
+        { listingType: "seats", departureTime: { $gt: new Date() } },
       ],
     }).sort({ createdAt: -1 });
 
@@ -913,37 +914,67 @@ export const deleteListing = async (req, res) => {
 //   }
 // };
 
-// /* =======================
-//    ADMIN: GET PENDING
-// ======================= */
-// export const getPendingListings = async (req, res) => {
-//   try {
-//     const listings = await Listing.find({
-//       isApproved: false,
-//     }).sort({ createdAt: -1 });
+/* =======================
+   GET SEARCH SUGGESTIONS
+======================= */
+export const getSearchSuggestions = async (req, res) => {
+  try {
+    const { query, type } = req.query;
+    if (!query) {
+      return res.json([]);
+    }
 
-//     res.json(listings);
-//   } catch (err) {
-//     res.status(500).json({ message: "Failed to fetch pending listings" });
-//   }
-// };
+    const searchRegex = new RegExp(query, "i");
+    const baseQuery = {
+      isApproved: true,
+      $or: [{ status: "active" }, { status: { $exists: false } }],
+    };
 
-// /* =======================
-//    ADMIN: APPROVE LISTING
-// ======================= */
-// export const approveListing = async (req, res) => {
-//   try {
-//     const listing = await Listing.findById(req.params.id);
+    let results = [];
+    const uniqueMap = new Map();
 
-//     if (!listing) {
-//       return res.status(404).json({ message: "Listing not found" });
-//     }
+    const addItems = (items, itemType) => {
+      items.forEach((item) => {
+        if (item && searchRegex.test(item)) {
+          const lower = item.toLowerCase();
+          if (!uniqueMap.has(lower)) {
+            uniqueMap.set(lower, { name: item, type: itemType });
+          }
+        }
+      });
+    };
 
-//     listing.isApproved = true;
-//     await listing.save();
+    if (type === "car") {
+      const locations = await Listing.distinct("location", {
+        ...baseQuery,
+        location: searchRegex,
+      });
+      const brands = await Listing.distinct("brand", {
+        ...baseQuery,
+        brand: searchRegex,
+      });
 
-//     res.json({ message: "Listing approved", listing });
-//   } catch (err) {
-//     res.status(500).json({ message: "Approval failed" });
-//   }
-// };
+      addItems(locations, "location");
+      addItems(brands, "brand");
+    } else {
+      const departures = await Listing.distinct("departure", {
+        ...baseQuery,
+        departure: searchRegex,
+      });
+      const destinations = await Listing.distinct("destination", {
+        ...baseQuery,
+        destination: searchRegex,
+      });
+
+      addItems(departures, "location");
+      addItems(destinations, "location");
+    }
+
+    results = Array.from(uniqueMap.values()).slice(0, 6);
+
+    res.json(results);
+  } catch (err) {
+    console.error("getSearchSuggestions error:", err);
+    res.status(500).json({ message: "Failed to fetch suggestions" });
+  }
+};

@@ -1391,6 +1391,33 @@ const AddVehiclePage = () => {
         );
         return;
       }
+    } else if (formData.listingType === "seats") {
+      const hasDepartureName =
+        formData.departure && formData.departure.trim() !== "";
+      const hasDepartureCoords =
+        formData.departureLatitude !== "" &&
+        formData.departureLongitude !== "" &&
+        formData.departureLatitude !== undefined;
+
+      const hasDestinationName =
+        formData.destination && formData.destination.trim() !== "";
+      const hasDestinationCoords =
+        formData.destinationLatitude !== "" &&
+        formData.destinationLongitude !== "" &&
+        formData.destinationLatitude !== undefined;
+
+      if (!hasDepartureName && !hasDepartureCoords) {
+        toast.error(
+          "Please provide either a departure location name or coordinates.",
+        );
+        return;
+      }
+      if (!hasDestinationName && !hasDestinationCoords) {
+        toast.error(
+          "Please provide either a destination location name or coordinates.",
+        );
+        return;
+      }
     }
 
     if (!formData.photos.length) {

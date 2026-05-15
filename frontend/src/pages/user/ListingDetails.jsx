@@ -2630,6 +2630,592 @@
 
 // export default ListingDetails;
 
+// import { useEffect, useState } from "react";
+// import { useParams, useNavigate } from "react-router-dom";
+// import {
+//   Car,
+//   Users,
+//   MapPin,
+//   Fuel,
+//   Settings,
+//   Calendar,
+//   ArrowLeft,
+//   Star,
+//   Shield,
+//   Sparkles,
+//   Clock,
+//   CheckCircle,
+//   Share2,
+//   Heart,
+//   Navigation,
+//   Battery,
+//   Palette,
+//   Bluetooth,
+//   Music,
+//   ChevronDown,
+//   ChevronUp,
+// } from "lucide-react";
+// import api from "../../utils/api";
+// import { toast } from "react-toastify";
+// import BookingModal from "../../components/BookingModal";
+// import VisitModal from "../../components/VisitModal";
+// import PaymentMethodModal from "../../components/bookings/PaymentMethodModal";
+// import Navbar from "../../components/Navbar";
+// import ReviewCard from "../../components/reviews/ReviewCard";
+// import { MapContainer, TileLayer, Marker, Popup } from "react-leaflet";
+// import "leaflet/dist/leaflet.css";
+// import L from "leaflet";
+
+// // Fix leaflet marker icon issue in React
+// delete L.Icon.Default.prototype._getIconUrl;
+// L.Icon.Default.mergeOptions({
+//   iconRetinaUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon-2x.png",
+//   iconUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-icon.png",
+//   shadowUrl:
+//     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+// });
+
+// const BACKEND_URL = "http://localhost:5000";
+
+// const Skeleton = ({ className }) => (
+//   <div className={`animate-pulse bg-slate-200 rounded-2xl ${className}`}></div>
+// );
+
+// const ListingDetails = () => {
+//   const { id } = useParams();
+//   const navigate = useNavigate();
+
+//   const [listing, setListing] = useState(null);
+//   const [loading, setLoading] = useState(true);
+//   const [showBooking, setShowBooking] = useState(false);
+//   const [showVisit, setShowVisit] = useState(false);
+//   const [showPayment, setShowPayment] = useState(false);
+//   const [currentBooking, setCurrentBooking] = useState(null);
+//   const [selectedImage, setSelectedImage] = useState(0);
+//   const [isFavorite, setIsFavorite] = useState(false);
+//   const [isDescExpanded, setIsDescExpanded] = useState(false);
+//   const [reviews, setReviews] = useState([]);
+
+//   useEffect(() => {
+//     const fetchListingAndReviews = async () => {
+//       try {
+//         const [listingRes, reviewsRes] = await Promise.all([
+//           api.get(`/listings/${id}`),
+//           api.get(`/reviews/listing/${id}`),
+//         ]);
+//         setListing(listingRes.data);
+//         setReviews(reviewsRes.data);
+//       } catch (err) {
+//         toast.error("Listing not found");
+//         navigate("/listings");
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+
+//     fetchListingAndReviews();
+//     window.scrollTo(0, 0);
+//   }, [id, navigate]);
+
+//   if (loading) {
+//     return (
+//       <div className="min-h-screen bg-white">
+//         <Navbar />
+//         <div className="max-w-7xl mx-auto px-4 py-12 pt-24">
+//           <Skeleton className="w-32 h-6 mb-8" />
+//           <div className="grid grid-cols-1 lg:grid-cols-2 gap-12">
+//             <div className="space-y-6">
+//               <Skeleton className="w-full h-[450px]" />
+//               <div className="grid grid-cols-4 gap-4">
+//                 {[1, 2, 3, 4].map((i) => (
+//                   <Skeleton key={i} className="h-24" />
+//                 ))}
+//               </div>
+//             </div>
+//             <div className="space-y-8">
+//               <Skeleton className="w-3/4 h-10" />
+//               <Skeleton className="w-1/2 h-6" />
+//               <Skeleton className="w-full h-40" />
+//               <div className="grid grid-cols-2 gap-4">
+//                 {[1, 2, 3, 4].map((i) => (
+//                   <Skeleton key={i} className="h-20" />
+//                 ))}
+//               </div>
+//             </div>
+//           </div>
+//         </div>
+//       </div>
+//     );
+//   }
+
+//   if (!listing) return null;
+
+//   const isSeatListing = listing.listingType === "seats";
+//   const isSoldOut = isSeatListing && Number(listing.availableSeats) === 0;
+//   const description =
+//     listing.description ||
+//     "No description provided. This vehicle is well-maintained and ready for your next adventure. Experience comfort, safety, and reliability with this premium rental.";
+//   const shouldTruncate = description.length > 300;
+//   const displayedDescription = isDescExpanded
+//     ? description
+//     : description.slice(0, 300) + (shouldTruncate ? "..." : "");
+
+//   return (
+//     <div className="min-h-screen bg-slate-50/50">
+//       <Navbar />
+
+//       <main className="relative max-w-7xl mx-auto px-4 py-12 lg:py-16 pt-20 lg:pt-36">
+//         {/* Breadcrumb & Actions */}
+//         <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
+//           <button
+//             onClick={() => navigate(-1)}
+//             className="flex items-center gap-2 text-slate-500 hover:text-blue-600 font-medium transition-colors group"
+//           >
+//             <div className="p-2 rounded-full group-hover:bg-blue-50 transition-colors">
+//               <ArrowLeft size={20} />
+//             </div>
+//             Back to explore
+//           </button>
+
+//           <div className="flex items-center gap-3">
+//             <button
+//               onClick={() => setIsFavorite(!isFavorite)}
+//               className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm hover:shadow-md transition-all active:scale-95 group"
+//             >
+//               <Heart
+//                 size={18}
+//                 className={`${isFavorite ? "fill-rose-500 text-rose-500" : "text-slate-400 group-hover:text-rose-500"} transition-colors`}
+//               />
+//               <span className="text-sm font-semibold text-slate-700">Save</span>
+//             </button>
+//             <button className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm hover:shadow-md transition-all active:scale-95 group">
+//               <Share2
+//                 size={18}
+//                 className="text-slate-400 group-hover:text-blue-600 transition-colors"
+//               />
+//               <span className="text-sm font-semibold text-slate-700">
+//                 Share
+//               </span>
+//             </button>
+//           </div>
+//         </div>
+
+//         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
+//           {/* Main Content Area (8 Columns) */}
+//           <div className="lg:col-span-8">
+//             {/* Header & Gallery Section */}
+//             <section className="mb-8">
+//               <div className="mb-6">
+//                 <h1 className="text-[32px] leading-tight font-semibold text-slate-900">
+//                   {listing.name}
+//                 </h1>
+//                 <div className="flex items-center flex-wrap gap-2 mt-2 text-[15px] text-slate-700">
+//                   <Star className="w-4 h-4 fill-slate-900 text-slate-900" />
+//                   <span className="font-semibold">
+//                     {listing.averageRating > 0 ? listing.averageRating : "New"}
+//                   </span>
+//                   {listing.reviewCount > 0 && (
+//                     <span className="underline font-semibold">
+//                       ({listing.reviewCount} reviews)
+//                     </span>
+//                   )}
+//                   <span>·</span>
+//                   <span className="flex items-center gap-1 font-semibold underline">
+//                     {listing.location || "Location not specified"}
+//                   </span>
+//                 </div>
+//               </div>
+
+//               <div className="grid grid-cols-1 md:grid-cols-2 gap-2 rounded-2xl overflow-hidden h-[300px] md:h-[400px]">
+//                 {/* Main image */}
+//                 <div
+//                   className="w-full h-full relative group cursor-pointer"
+//                   onClick={() => setSelectedImage(0)}
+//                 >
+//                   <img
+//                     src={
+//                       listing.photos?.length
+//                         ? `${BACKEND_URL}${listing.photos[0]}`
+//                         : "/placeholder-car.jpg"
+//                     }
+//                     className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+//                     alt="Main"
+//                   />
+//                 </div>
+//                 {/* Thumbnails grid */}
+//                 <div className="hidden md:grid grid-cols-2 grid-rows-2 gap-2 h-full">
+//                   {listing.photos?.slice(1, 5).map((p, i) => (
+//                     <div
+//                       key={i}
+//                       className="w-full h-full relative group cursor-pointer"
+//                       onClick={() => setSelectedImage(i + 1)}
+//                     >
+//                       <img
+//                         src={`${BACKEND_URL}${p}`}
+//                         className="w-full h-full object-cover hover:opacity-90 transition-opacity"
+//                         alt={`Thumbnail ${i + 1}`}
+//                       />
+//                     </div>
+//                   ))}
+//                   {/* Fill empty spots if less than 5 photos */}
+//                   {(!listing.photos || listing.photos.length < 5) &&
+//                     Array.from({
+//                       length: 5 - (listing.photos?.length || 1),
+//                     }).map((_, i) => (
+//                       <div
+//                         key={`empty-${i}`}
+//                         className="w-full h-full bg-slate-100 border border-slate-200"
+//                       ></div>
+//                     ))}
+//                 </div>
+//               </div>
+//             </section>
+
+//             {/* Host & Specs */}
+//             <div className="flex justify-between items-center py-6 border-b border-slate-200">
+//               <div>
+//                 <h2 className="text-xl font-semibold text-slate-900">
+//                   {listing.listingType === "full"
+//                     ? "Entire vehicle"
+//                     : "Shared ride"}{" "}
+//                   hosted by{" "}
+//                   {listing.owner?.name || listing.ownerName || "Prasana"}
+//                 </h2>
+//                 <div className="flex items-center flex-wrap gap-1.5 mt-1 text-[15px] text-slate-600">
+//                   <span>{listing.seats} seats</span>
+//                   <span>·</span>
+//                   <span>{listing.transmission || "Automatic"}</span>
+//                   <span>·</span>
+//                   <span>{listing.fuelType || "Gasoline"}</span>
+//                   <span>·</span>
+//                   <span>{listing.brand}</span>
+//                 </div>
+//               </div>
+//               <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-xl font-semibold text-white uppercase overflow-hidden shrink-0">
+//                 {(listing.owner?.name || listing.ownerName || "P")[0]}
+//               </div>
+//             </div>
+
+//             {/* Highlights */}
+//             <div className="py-8 border-b border-slate-200 space-y-6">
+//               <div className="flex items-start gap-4">
+//                 <Navigation
+//                   size={28}
+//                   className="text-slate-800"
+//                   strokeWidth={1.5}
+//                 />
+//                 <div>
+//                   <h3 className="font-semibold text-slate-900 text-base">
+//                     Perfect for your trip
+//                   </h3>
+//                   <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
+//                     Highly rated for city rides and weekend getaways.
+//                   </p>
+//                 </div>
+//               </div>
+//               <div className="flex items-start gap-4">
+//                 <CheckCircle
+//                   size={28}
+//                   className="text-slate-800"
+//                   strokeWidth={1.5}
+//                 />
+//                 <div>
+//                   <h3 className="font-semibold text-slate-900 text-base">
+//                     Free cancellation
+//                   </h3>
+//                   <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
+//                     Cancel for a full refund up to 24 hours before your trip.
+//                   </p>
+//                 </div>
+//               </div>
+//               <div className="flex items-start gap-4">
+//                 <Shield
+//                   size={28}
+//                   className="text-slate-800"
+//                   strokeWidth={1.5}
+//                 />
+//                 <div>
+//                   <h3 className="font-semibold text-slate-900 text-base">
+//                     Verified and Insured
+//                   </h3>
+//                   <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
+//                     This vehicle includes standard insurance and Jaum support.
+//                   </p>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Description */}
+//             <div className="py-8 border-b border-slate-200 space-y-4">
+//               <h2 className="text-xl font-semibold text-slate-900">
+//                 About this vehicle
+//               </h2>
+//               <div className="text-slate-700 text-[15px] leading-relaxed whitespace-pre-line">
+//                 {displayedDescription}
+//               </div>
+//               {shouldTruncate && (
+//                 <button
+//                   onClick={() => setIsDescExpanded(!isDescExpanded)}
+//                   className="font-semibold text-slate-900 underline hover:text-slate-600 transition-colors mt-2"
+//                 >
+//                   {isDescExpanded ? "Show less" : "Show more"}
+//                 </button>
+//               )}
+//             </div>
+
+//             {/* Features Section */}
+//             <div className="py-8 border-b border-slate-200 space-y-6">
+//               <h2 className="text-xl font-semibold text-slate-900">
+//                 What this vehicle offers
+//               </h2>
+//               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
+//                 <div className="flex items-center gap-3 text-slate-700 text-[15px]">
+//                   <Bluetooth size={24} strokeWidth={1.5} /> Seamless Bluetooth
+//                 </div>
+//                 <div className="flex items-center gap-3 text-slate-700 text-[15px]">
+//                   <Music size={24} strokeWidth={1.5} /> Surround Sound
+//                 </div>
+//                 <div className="flex items-center gap-3 text-slate-700 text-[15px]">
+//                   <Navigation size={24} strokeWidth={1.5} /> GPS Navigation
+//                 </div>
+//                 <div className="flex items-center gap-3 text-slate-700 text-[15px]">
+//                   <Battery size={24} strokeWidth={1.5} /> Eco Friendly
+//                 </div>
+//                 <div className="flex items-center gap-3 text-slate-700 text-[15px]">
+//                   <Palette size={24} strokeWidth={1.5} /> Leather Interior
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Map Section */}
+//             {listing.latitude && listing.longitude && (
+//               <div className="py-8 border-b border-slate-200 space-y-6">
+//                 <h2 className="text-xl font-semibold text-slate-900">
+//                   Where you'll be
+//                 </h2>
+//                 <div className="h-[320px] w-full rounded-2xl overflow-hidden relative z-0">
+//                   <MapContainer
+//                     center={[listing.latitude, listing.longitude]}
+//                     zoom={14}
+//                     scrollWheelZoom={false}
+//                     className="h-full w-full"
+//                   >
+//                     <TileLayer
+//                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
+//                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
+//                     />
+//                     <Marker position={[listing.latitude, listing.longitude]}>
+//                       <Popup>{listing.location || "Vehicle Location"}</Popup>
+//                     </Marker>
+//                   </MapContainer>
+//                 </div>
+//                 {listing.location && (
+//                   <p className="text-slate-900 font-semibold text-[15px]">
+//                     {listing.location}
+//                   </p>
+//                 )}
+//                 <p className="text-slate-600 text-[15px]">
+//                   Exact location provided after booking.
+//                 </p>
+//               </div>
+//             )}
+
+//             {/* Reviews Section */}
+//             <div className="py-8 space-y-8">
+//               <div className="flex items-center gap-2">
+//                 <Star className="w-5 h-5 fill-slate-900 text-slate-900" />
+//                 <h2 className="text-xl font-semibold text-slate-900">
+//                   {listing.averageRating > 0
+//                     ? `${listing.averageRating} · ${listing.reviewCount} reviews`
+//                     : "No reviews (yet)"}
+//                 </h2>
+//               </div>
+
+//               {reviews.length > 0 ? (
+//                 <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+//                   {reviews.map((review) => (
+//                     <ReviewCard key={review._id} review={review} />
+//                   ))}
+//                 </div>
+//               ) : (
+//                 <div className="text-slate-600 text-[15px]">
+//                   This vehicle doesn't have any reviews yet. Be the first to
+//                   review after your trip!
+//                 </div>
+//               )}
+//             </div>
+//           </div>
+
+//           {/* Sidebar Booking Card */}
+//           <div className="lg:col-span-4 lg:sticky lg:top-28 space-y-6 mb-12">
+//             <div className="bg-white rounded-2xl border border-slate-200 shadow-xl shadow-slate-200/50 p-6">
+//               {/* Pricing */}
+//               <div className="flex items-baseline gap-1 mb-6">
+//                 <span className="text-[22px] font-semibold text-slate-900">
+//                   Rs.{" "}
+//                   {isSeatListing ? listing.pricePerSeat : listing.pricePerDay}
+//                 </span>
+//                 <span className="text-slate-600 text-[15px]">
+//                   / {isSeatListing ? "seat" : "day"}
+//                 </span>
+//               </div>
+
+//               <div className="space-y-4">
+//                 {isSeatListing && (
+//                   <div className="p-3 rounded-lg border border-slate-300 text-slate-900 flex items-center justify-between">
+//                     <span className="text-sm font-semibold uppercase tracking-wider text-slate-600">
+//                       Seats Left
+//                     </span>
+//                     <span className="font-semibold">
+//                       {listing.availableSeats}
+//                     </span>
+//                   </div>
+//                 )}
+
+//                 <button
+//                   onClick={() => setShowBooking(true)}
+//                   disabled={isSoldOut}
+//                   className={`w-full py-3.5 rounded-lg text-base font-semibold transition-colors ${
+//                     isSoldOut
+//                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
+//                       : "bg-[#e51d53] text-white hover:bg-[#d4164b]" // Using an Airbnb-style reddish pink for CTA
+//                   }`}
+//                 >
+//                   {!isSeatListing
+//                     ? "Reserve"
+//                     : isSoldOut
+//                       ? "Sold Out"
+//                       : "Book Seat"}
+//                 </button>
+
+//                 <p className="text-center text-sm text-slate-500 font-medium">
+//                   You won't be charged yet
+//                 </p>
+
+//                 {!isSeatListing && (
+//                   <button
+//                     onClick={() => setShowVisit(true)}
+//                     className="w-full py-3.5 mt-2 rounded-lg text-base font-semibold text-slate-900 border border-slate-900 hover:bg-slate-50 transition-colors"
+//                   >
+//                     Schedule Visit
+//                   </button>
+//                 )}
+//               </div>
+
+//               {/* Price Breakdown Preview */}
+//               <div className="mt-6 pt-6 border-t border-slate-200 space-y-4">
+//                 <div className="flex justify-between text-[15px] text-slate-600 underline">
+//                   <span>
+//                     Rs.{" "}
+//                     {isSeatListing ? listing.pricePerSeat : listing.pricePerDay}{" "}
+//                     x 1 {isSeatListing ? "seat" : "day"}
+//                   </span>
+//                   <span>
+//                     Rs.{" "}
+//                     {isSeatListing ? listing.pricePerSeat : listing.pricePerDay}
+//                   </span>
+//                 </div>
+//                 <div className="flex justify-between text-[15px] text-slate-600 underline">
+//                   <span>Jaum service fee</span>
+//                   <span>Rs. 0</span>
+//                 </div>
+//                 <div className="flex justify-between font-semibold text-[15px] text-slate-900 pt-4 border-t border-slate-200">
+//                   <span>Total</span>
+//                   <span>
+//                     Rs.{" "}
+//                     {isSeatListing ? listing.pricePerSeat : listing.pricePerDay}
+//                   </span>
+//                 </div>
+//               </div>
+//             </div>
+
+//             {/* Small Trust indicator below card */}
+//             <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
+//               <Shield size={16} />
+//               <span>Book with confidence on Jaum</span>
+//             </div>
+//           </div>
+//         </div>
+//       </main>
+
+//       {/* Mobile Fixed CTA */}
+//       <div className="lg:hidden fixed bottom-0 left-0 right-0 p-4 bg-white/80 backdrop-blur-lg border-t border-slate-200 z-50 flex items-center justify-between gap-4 animate-in slide-in-from-bottom-full duration-500">
+//         <div>
+//           <p className="text-xs text-slate-400 font-bold uppercase tracking-widest leading-none mb-1">
+//             Total
+//           </p>
+//           <p className="text-2xl font-black text-slate-900">
+//             Rs. {isSeatListing ? listing.pricePerSeat : listing.pricePerDay}
+//           </p>
+//         </div>
+//         <button
+//           onClick={() => setShowBooking(true)}
+//           disabled={isSoldOut}
+//           className={`flex-1 max-w-[200px] py-4 rounded-2xl font-bold shadow-lg transition-all active:scale-95 ${
+//             isSoldOut
+//               ? "bg-slate-200 text-slate-500"
+//               : "bg-blue-600 text-white shadow-blue-500/20"
+//           }`}
+//         >
+//           {isSoldOut ? "Sold Out" : "Book Now"}
+//         </button>
+//       </div>
+
+//       {/* Modals */}
+//       {showBooking && (
+//         <BookingModal
+//           listing={listing}
+//           onClose={() => setShowBooking(false)}
+//           onSuccess={(booking) => {
+//             setShowBooking(false);
+//             toast.success("Booking requested! Waiting for owner approval.");
+//             navigate("/dashboard/profile?tab=bookings");
+//           }}
+//         />
+//       )}
+//       {showVisit && (
+//         <VisitModal listing={listing} onClose={() => setShowVisit(false)} />
+//       )}
+//       {showPayment && currentBooking && (
+//         <PaymentMethodModal
+//           isOpen={showPayment}
+//           onClose={() => setShowPayment(false)}
+//           bookingId={currentBooking._id}
+//           totalPrice={currentBooking.totalPrice}
+//           onComplete={() => navigate("/dashboard/profile?tab=bookings")}
+//         />
+//       )}
+
+//       {/* Spacer for mobile footer */}
+//       <div className="h-24 lg:hidden"></div>
+//     </div>
+//   );
+// };
+
+// /* Helper Components */
+// const SpecCard = ({ icon, label, value }) => (
+//   <div className="p-5 bg-slate-50 border border-slate-100 rounded-3xl group hover:bg-white hover:border-blue-200 hover:shadow-md transition-all duration-300">
+//     <div className="p-2 bg-white rounded-xl w-fit shadow-sm mb-3 group-hover:scale-110 transition-transform">
+//       {icon}
+//     </div>
+//     <p className="text-xs text-slate-400 font-bold uppercase tracking-widest mb-0.5">
+//       {label}
+//     </p>
+//     <p className="text-slate-900 font-bold truncate">{value || "—"}</p>
+//   </div>
+// );
+
+// const FeatureChip = ({ icon, label }) => (
+//   <div className="flex items-center gap-2 px-4 py-2.5 bg-slate-50 border border-slate-100 rounded-xl hover:border-blue-400 hover:bg-blue-50 hover:-translate-y-0.5 hover:shadow-md hover:shadow-blue-500/10 transition-all cursor-default text-sm font-bold text-slate-700">
+//     <span className="text-blue-500">{icon}</span>
+//     {label}
+//   </div>
+// );
+
+// export default ListingDetails;
+
 import { useEffect, useState } from "react";
 import { useParams, useNavigate } from "react-router-dom";
 import {
@@ -2654,6 +3240,8 @@ import {
   Music,
   ChevronDown,
   ChevronUp,
+  ChevronLeft,
+  ChevronRight,
 } from "lucide-react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
@@ -2677,6 +3265,28 @@ L.Icon.Default.mergeOptions({
     "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
 });
 
+const departureIcon = new L.Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-blue.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
+const destinationIcon = new L.Icon({
+  iconUrl:
+    "https://raw.githubusercontent.com/pointhi/leaflet-color-markers/master/img/marker-icon-2x-red.png",
+  shadowUrl:
+    "https://cdnjs.cloudflare.com/ajax/libs/leaflet/1.7.1/images/marker-shadow.png",
+  iconSize: [25, 41],
+  iconAnchor: [12, 41],
+  popupAnchor: [1, -34],
+  shadowSize: [41, 41],
+});
+
 const BACKEND_URL = "http://localhost:5000";
 
 const Skeleton = ({ className }) => (
@@ -2697,6 +3307,48 @@ const ListingDetails = () => {
   const [isFavorite, setIsFavorite] = useState(false);
   const [isDescExpanded, setIsDescExpanded] = useState(false);
   const [reviews, setReviews] = useState([]);
+
+  // Swipe gesture support
+  const [touchStart, setTouchStart] = useState(null);
+  const [touchEnd, setTouchEnd] = useState(null);
+
+  const minSwipeDistance = 50;
+
+  const onTouchStart = (e) => {
+    setTouchEnd(null);
+    setTouchStart(e.targetTouches[0].clientX);
+  };
+
+  const onTouchMove = (e) => {
+    setTouchEnd(e.targetTouches[0].clientX);
+  };
+
+  const onTouchEndHandler = () => {
+    if (!touchStart || !touchEnd) return;
+    const distance = touchStart - touchEnd;
+    const isLeftSwipe = distance > minSwipeDistance;
+    const isRightSwipe = distance < -minSwipeDistance;
+
+    if (isLeftSwipe) {
+      nextImage();
+    } else if (isRightSwipe) {
+      prevImage();
+    }
+  };
+
+  const nextImage = () => {
+    if (listing?.photos?.length) {
+      setSelectedImage((prev) => (prev + 1) % listing.photos.length);
+    }
+  };
+
+  const prevImage = () => {
+    if (listing?.photos?.length) {
+      setSelectedImage(
+        (prev) => (prev - 1 + listing.photos.length) % listing.photos.length,
+      );
+    }
+  };
 
   useEffect(() => {
     const fetchListingAndReviews = async () => {
@@ -2804,151 +3456,279 @@ const ListingDetails = () => {
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
           {/* Main Content Area (8 Columns) */}
-          <div className="lg:col-span-8">
+          <div className="lg:col-span-8 space-y-8">
             {/* Header & Gallery Section */}
-            <section className="mb-8">
-              <div className="mb-6">
+            <section className="mb-2">
+              <div className="flex flex-col gap-3">
+                {/* Main image */}
+                <div
+                  className="w-full h-[300px] md:h-[450px] relative rounded-2xl overflow-hidden group bg-slate-900"
+                  onTouchStart={onTouchStart}
+                  onTouchMove={onTouchMove}
+                  onTouchEnd={onTouchEndHandler}
+                >
+                  {listing.photos?.length > 1 && (
+                    <>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          prevImage();
+                        }}
+                        className="absolute left-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white text-slate-800 rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-all active:scale-95"
+                      >
+                        <ChevronLeft size={24} />
+                      </button>
+                      <button
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          nextImage();
+                        }}
+                        className="absolute right-4 top-1/2 -translate-y-1/2 z-10 w-10 h-10 bg-white/80 hover:bg-white text-slate-800 rounded-full flex items-center justify-center shadow-md opacity-0 group-hover:opacity-100 transition-all active:scale-95"
+                      >
+                        <ChevronRight size={24} />
+                      </button>
+                    </>
+                  )}
+                  {listing.photos?.map((photo, i) => (
+                    <img
+                      key={i}
+                      src={`${BACKEND_URL}${photo}`}
+                      alt={`Vehicle ${i + 1}`}
+                      className={`absolute inset-0 w-full h-full object-cover transition-opacity duration-500 ease-in-out ${i === selectedImage ? "opacity-100 z-0" : "opacity-0 -z-10"}`}
+                    />
+                  ))}
+                  {(!listing.photos || listing.photos.length === 0) && (
+                    <img
+                      src="/placeholder-car.jpg"
+                      className="w-full h-full object-cover opacity-90"
+                      alt="Main"
+                    />
+                  )}
+                </div>
+
+                {/* Thumbnails row */}
+                {listing.photos?.length > 1 && (
+                  <div className="flex gap-3 overflow-x-auto py-2 px-1 scrollbar-hide">
+                    {listing.photos.map((p, i) => (
+                      <button
+                        key={i}
+                        onClick={() => setSelectedImage(i)}
+                        className={`relative w-24 h-16 md:w-32 md:h-20 shrink-0 rounded-xl overflow-hidden transition-all ${selectedImage === i ? "ring-2 ring-blue-600 ring-offset-2" : "opacity-70 hover:opacity-100"}`}
+                      >
+                        <img
+                          src={`${BACKEND_URL}${p}`}
+                          className="w-full h-full object-cover"
+                          alt={`Thumbnail ${i + 1}`}
+                        />
+                      </button>
+                    ))}
+                  </div>
+                )}
+              </div>
+            </section>
+
+            {/* Vehicle Overview Card */}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6">
+              {/* Vehicle Title & Ratings */}
+              <div className="pb-6 border-b border-slate-200">
                 <h1 className="text-[32px] leading-tight font-semibold text-slate-900">
                   {listing.name}
                 </h1>
                 <div className="flex items-center flex-wrap gap-2 mt-2 text-[15px] text-slate-700">
-                  <Star className="w-4 h-4 fill-slate-900 text-slate-900" />
-                  <span className="font-semibold">
-                    {listing.averageRating > 0 ? listing.averageRating : "New"}
-                  </span>
-                  {listing.reviewCount > 0 && (
-                    <span className="underline font-semibold">
-                      ({listing.reviewCount} reviews)
-                    </span>
-                  )}
-                  <span>·</span>
+                  {/* <Star className="w-4 h-4 fill-slate-900 text-slate-900" /> */}
+                  {/* <span className="font-semibold">{listing.averageRating > 0 ? listing.averageRating : "New"}</span> */}
+                  {/* {listing.reviewCount > 0 && <span className="underline font-semibold">({listing.reviewCount} reviews)</span>}
+                  <span>·</span> */}
                   <span className="flex items-center gap-1 font-semibold underline">
-                    {listing.location || "Location not specified"}
+                    {isSeatListing
+                      ? `${listing.departure} → ${listing.destination}`
+                      : listing.location || "Location not specified"}
                   </span>
                 </div>
               </div>
 
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-2 rounded-2xl overflow-hidden h-[300px] md:h-[400px]">
-                {/* Main image */}
-                <div
-                  className="w-full h-full relative group cursor-pointer"
-                  onClick={() => setSelectedImage(0)}
-                >
-                  <img
-                    src={
-                      listing.photos?.length
-                        ? `${BACKEND_URL}${listing.photos[0]}`
-                        : "/placeholder-car.jpg"
-                    }
-                    className="w-full h-full object-cover hover:opacity-90 transition-opacity"
-                    alt="Main"
-                  />
+              <div className="pb-6 border-b border-slate-200">
+                <div className="flex justify-between items-center mb-6">
+                  <h2 className="text-xl font-semibold text-slate-900">
+                    {listing.listingType === "full"
+                      ? "Entire vehicle"
+                      : "Shared ride"}
+                  </h2>
+                  <div className="flex items-center gap-2 px-3 py-1.5 bg-blue-50 text-blue-700 rounded-lg text-sm font-semibold border border-blue-100">
+                    <Car size={16} /> Overview
+                  </div>
                 </div>
-                {/* Thumbnails grid */}
-                <div className="hidden md:grid grid-cols-2 grid-rows-2 gap-2 h-full">
-                  {listing.photos?.slice(1, 5).map((p, i) => (
-                    <div
-                      key={i}
-                      className="w-full h-full relative group cursor-pointer"
-                      onClick={() => setSelectedImage(i + 1)}
-                    >
-                      <img
-                        src={`${BACKEND_URL}${p}`}
-                        className="w-full h-full object-cover hover:opacity-90 transition-opacity"
-                        alt={`Thumbnail ${i + 1}`}
-                      />
+
+                <div className="grid grid-cols-2 sm:grid-cols-4 gap-y-5 gap-x-6">
+                  {listing.brand && (
+                    <div>
+                      <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                        Brand
+                      </p>
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        {listing.brand}
+                      </p>
                     </div>
-                  ))}
-                  {/* Fill empty spots if less than 5 photos */}
-                  {(!listing.photos || listing.photos.length < 5) &&
-                    Array.from({
-                      length: 5 - (listing.photos?.length || 1),
-                    }).map((_, i) => (
-                      <div
-                        key={`empty-${i}`}
-                        className="w-full h-full bg-slate-100 border border-slate-200"
-                      ></div>
-                    ))}
+                  )}
+                  {listing.model && (
+                    <div>
+                      <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                        Model
+                      </p>
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        {listing.model}
+                      </p>
+                    </div>
+                  )}
+                  {listing.year && (
+                    <div>
+                      <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                        Year
+                      </p>
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        {listing.year}
+                      </p>
+                    </div>
+                  )}
+                  {listing.category && (
+                    <div>
+                      <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                        Category
+                      </p>
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        {listing.category}
+                      </p>
+                    </div>
+                  )}
+                  {listing.seats && (
+                    <div>
+                      <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                        Seats
+                      </p>
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        {listing.seats}
+                      </p>
+                    </div>
+                  )}
+                  <div>
+                    <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                      Transmission
+                    </p>
+                    <p className="text-[15px] font-semibold text-slate-900">
+                      {listing.transmission || "Automatic"}
+                    </p>
+                  </div>
+                  <div>
+                    <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                      Fuel Type
+                    </p>
+                    <p className="text-[15px] font-semibold text-slate-900">
+                      {listing.fuelType || "Gasoline"}
+                    </p>
+                  </div>
+                  {listing.mileage && (
+                    <div>
+                      <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                        Mileage
+                      </p>
+                      <p className="text-[15px] font-semibold text-slate-900">
+                        {listing.mileage}
+                      </p>
+                    </div>
+                  )}
+                  {isSeatListing && (
+                    <>
+                      <div className="col-span-2">
+                        <p className="text-[11px] text-blue-600 uppercase tracking-wider font-bold mb-1">
+                          Departure
+                        </p>
+                        <p className="text-[15px] font-semibold text-slate-900">
+                          {listing.departure}
+                        </p>
+                      </div>
+                      <div className="col-span-2">
+                        <p className="text-[11px] text-rose-600 uppercase tracking-wider font-bold mb-1">
+                          Destination
+                        </p>
+                        <p className="text-[15px] font-semibold text-slate-900">
+                          {listing.destination}
+                        </p>
+                      </div>
+                      <div className="col-span-2 sm:col-span-4">
+                        <p className="text-[11px] text-slate-400 uppercase tracking-wider font-bold mb-1">
+                          Departure Time
+                        </p>
+                        <p className="text-[15px] font-semibold text-slate-900">
+                          {listing.departureTime
+                            ? new Date(listing.departureTime).toLocaleString(
+                                "en-US",
+                                {
+                                  weekday: "short",
+                                  month: "short",
+                                  day: "numeric",
+                                  hour: "2-digit",
+                                  minute: "2-digit",
+                                },
+                              )
+                            : "Not specified"}
+                        </p>
+                      </div>
+                    </>
+                  )}
+                </div>
+              </div>
+
+              <div className="space-y-6">
+                <div className="flex items-start gap-4">
+                  <Navigation
+                    size={28}
+                    className="text-slate-800"
+                    strokeWidth={1.5}
+                  />
+                  <div>
+                    <h3 className="font-semibold text-slate-900 text-base">
+                      Perfect for your trip
+                    </h3>
+                    <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
+                      Highly rated for city rides and weekend getaways.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <CheckCircle
+                    size={28}
+                    className="text-slate-800"
+                    strokeWidth={1.5}
+                  />
+                  <div>
+                    <h3 className="font-semibold text-slate-900 text-base">
+                      Free cancellation
+                    </h3>
+                    <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
+                      Cancel for a full refund up to 24 hours before your trip.
+                    </p>
+                  </div>
+                </div>
+                <div className="flex items-start gap-4">
+                  <Shield
+                    size={28}
+                    className="text-slate-800"
+                    strokeWidth={1.5}
+                  />
+                  <div>
+                    <h3 className="font-semibold text-slate-900 text-base">
+                      Verified and Insured
+                    </h3>
+                    <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
+                      This vehicle includes standard insurance and Jaum support.
+                    </p>
+                  </div>
                 </div>
               </div>
             </section>
 
-            {/* Host & Specs */}
-            <div className="flex justify-between items-center py-6 border-b border-slate-200">
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">
-                  {listing.listingType === "full"
-                    ? "Entire vehicle"
-                    : "Shared ride"}{" "}
-                  hosted by{" "}
-                  {listing.owner?.name || listing.ownerName || "Prasana"}
-                </h2>
-                <div className="flex items-center flex-wrap gap-1.5 mt-1 text-[15px] text-slate-600">
-                  <span>{listing.seats} seats</span>
-                  <span>·</span>
-                  <span>{listing.transmission || "Automatic"}</span>
-                  <span>·</span>
-                  <span>{listing.fuelType || "Gasoline"}</span>
-                  <span>·</span>
-                  <span>{listing.brand}</span>
-                </div>
-              </div>
-              <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-xl font-semibold text-white uppercase overflow-hidden shrink-0">
-                {(listing.owner?.name || listing.ownerName || "P")[0]}
-              </div>
-            </div>
-
-            {/* Highlights */}
-            <div className="py-8 border-b border-slate-200 space-y-6">
-              <div className="flex items-start gap-4">
-                <Navigation
-                  size={28}
-                  className="text-slate-800"
-                  strokeWidth={1.5}
-                />
-                <div>
-                  <h3 className="font-semibold text-slate-900 text-base">
-                    Perfect for your trip
-                  </h3>
-                  <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
-                    Highly rated for city rides and weekend getaways.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <CheckCircle
-                  size={28}
-                  className="text-slate-800"
-                  strokeWidth={1.5}
-                />
-                <div>
-                  <h3 className="font-semibold text-slate-900 text-base">
-                    Free cancellation
-                  </h3>
-                  <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
-                    Cancel for a full refund up to 24 hours before your trip.
-                  </p>
-                </div>
-              </div>
-              <div className="flex items-start gap-4">
-                <Shield
-                  size={28}
-                  className="text-slate-800"
-                  strokeWidth={1.5}
-                />
-                <div>
-                  <h3 className="font-semibold text-slate-900 text-base">
-                    Verified and Insured
-                  </h3>
-                  <p className="text-slate-500 text-[15px] leading-snug mt-0.5">
-                    This vehicle includes standard insurance and Jaum support.
-                  </p>
-                </div>
-              </div>
-            </div>
-
-            {/* Description */}
-            <div className="py-8 border-b border-slate-200 space-y-4">
+            {/* About this vehicle Card */}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-4">
               <h2 className="text-xl font-semibold text-slate-900">
                 About this vehicle
               </h2>
@@ -2963,12 +3743,12 @@ const ListingDetails = () => {
                   {isDescExpanded ? "Show less" : "Show more"}
                 </button>
               )}
-            </div>
+            </section>
 
-            {/* Features Section */}
-            <div className="py-8 border-b border-slate-200 space-y-6">
+            {/* Key Features Card */}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6">
               <h2 className="text-xl font-semibold text-slate-900">
-                What this vehicle offers
+                Key features
               </h2>
               <div className="grid grid-cols-1 sm:grid-cols-2 gap-y-4 gap-x-8">
                 <div className="flex items-center gap-3 text-slate-700 text-[15px]">
@@ -2987,18 +3767,32 @@ const ListingDetails = () => {
                   <Palette size={24} strokeWidth={1.5} /> Leather Interior
                 </div>
               </div>
-            </div>
+            </section>
 
-            {/* Map Section */}
-            {listing.latitude && listing.longitude && (
-              <div className="py-8 border-b border-slate-200 space-y-6">
+            {/* Pickup Location/Map Card */}
+            {((!isSeatListing && listing.latitude && listing.longitude) ||
+              (isSeatListing &&
+                (listing.departureLatitude ||
+                  listing.destinationLatitude))) && (
+              <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-6">
                 <h2 className="text-xl font-semibold text-slate-900">
-                  Where you'll be
+                  {isSeatListing ? "Route details" : "Where you'll be"}
                 </h2>
-                <div className="h-[320px] w-full rounded-2xl overflow-hidden relative z-0">
+                <div className="h-[320px] w-full rounded-2xl overflow-hidden relative z-0 border border-slate-200">
                   <MapContainer
-                    center={[listing.latitude, listing.longitude]}
-                    zoom={14}
+                    center={
+                      isSeatListing
+                        ? [
+                            listing.departureLatitude ||
+                              listing.destinationLatitude ||
+                              27.7172,
+                            listing.departureLongitude ||
+                              listing.destinationLongitude ||
+                              85.324,
+                          ]
+                        : [listing.latitude, listing.longitude]
+                    }
+                    zoom={isSeatListing ? 10 : 14}
                     scrollWheelZoom={false}
                     className="h-full w-full"
                   >
@@ -3006,24 +3800,95 @@ const ListingDetails = () => {
                       url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
                       attribution='&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a> contributors'
                     />
-                    <Marker position={[listing.latitude, listing.longitude]}>
-                      <Popup>{listing.location || "Vehicle Location"}</Popup>
-                    </Marker>
+                    {!isSeatListing &&
+                      listing.latitude &&
+                      listing.longitude && (
+                        <Marker
+                          position={[listing.latitude, listing.longitude]}
+                        >
+                          <Popup>
+                            {listing.location || "Vehicle Location"}
+                          </Popup>
+                        </Marker>
+                      )}
+                    {isSeatListing &&
+                      listing.departureLatitude &&
+                      listing.departureLongitude && (
+                        <Marker
+                          position={[
+                            listing.departureLatitude,
+                            listing.departureLongitude,
+                          ]}
+                          icon={departureIcon}
+                        >
+                          <Popup>Departure: {listing.departure}</Popup>
+                        </Marker>
+                      )}
+                    {isSeatListing &&
+                      listing.destinationLatitude &&
+                      listing.destinationLongitude && (
+                        <Marker
+                          position={[
+                            listing.destinationLatitude,
+                            listing.destinationLongitude,
+                          ]}
+                          icon={destinationIcon}
+                        >
+                          <Popup>Destination: {listing.destination}</Popup>
+                        </Marker>
+                      )}
                   </MapContainer>
                 </div>
-                {listing.location && (
-                  <p className="text-slate-900 font-semibold text-[15px]">
-                    {listing.location}
-                  </p>
+                {isSeatListing ? (
+                  <div className="space-y-3">
+                    <p className="text-slate-900 font-semibold text-[15px] flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-blue-600" />
+                      <span className="text-slate-500 font-medium w-20">
+                        From:
+                      </span>{" "}
+                      {listing.departure}
+                    </p>
+                    <p className="text-slate-900 font-semibold text-[15px] flex items-center gap-3">
+                      <div className="w-2 h-2 rounded-full bg-rose-600" />
+                      <span className="text-slate-500 font-medium w-20">
+                        To:
+                      </span>{" "}
+                      {listing.destination}
+                    </p>
+                  </div>
+                ) : (
+                  listing.location && (
+                    <p className="text-slate-900 font-semibold text-[15px] flex items-center gap-2">
+                      <MapPin size={18} className="text-rose-500" />{" "}
+                      {listing.location}
+                    </p>
+                  )
                 )}
-                <p className="text-slate-600 text-[15px]">
+                <p className="text-slate-500 text-[15px]">
                   Exact location provided after booking.
                 </p>
-              </div>
+              </section>
             )}
 
-            {/* Reviews Section */}
-            <div className="py-8 space-y-8">
+            {/* Owner Details Card */}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex items-center gap-4">
+              <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-2xl font-semibold text-white uppercase overflow-hidden shrink-0">
+                {(listing.owner?.name || listing.ownerName || "P")[0]}
+              </div>
+              <div>
+                <h2 className="text-xl font-semibold text-slate-900">
+                  Hosted by{" "}
+                  {listing.owner?.name || listing.ownerName || "Prasana"}
+                </h2>
+                <p className="text-slate-500 text-[15px] flex items-center gap-2 mt-1">
+                  <Shield size={16} className="text-emerald-500" /> Identity
+                  verified
+                </p>
+              </div>
+            </section>
+
+            {/* Reviews Card */}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-8">
               <div className="flex items-center gap-2">
                 <Star className="w-5 h-5 fill-slate-900 text-slate-900" />
                 <h2 className="text-xl font-semibold text-slate-900">
@@ -3034,7 +3899,7 @@ const ListingDetails = () => {
               </div>
 
               {reviews.length > 0 ? (
-                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-12 gap-y-8">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-x-8 gap-y-6">
                   {reviews.map((review) => (
                     <ReviewCard key={review._id} review={review} />
                   ))}
@@ -3045,7 +3910,7 @@ const ListingDetails = () => {
                   review after your trip!
                 </div>
               )}
-            </div>
+            </section>
           </div>
 
           {/* Sidebar Booking Card */}
@@ -3080,7 +3945,7 @@ const ListingDetails = () => {
                   className={`w-full py-3.5 rounded-lg text-base font-semibold transition-colors ${
                     isSoldOut
                       ? "bg-slate-200 text-slate-400 cursor-not-allowed"
-                      : "bg-[#e51d53] text-white hover:bg-[#d4164b]" // Using an Airbnb-style reddish pink for CTA
+                      : "bg-blue-600 text-white hover:bg-blue-700 shadow-md shadow-blue-500/20"
                   }`}
                 >
                   {!isSeatListing

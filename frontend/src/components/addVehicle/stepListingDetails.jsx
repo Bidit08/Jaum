@@ -537,13 +537,51 @@ const StepListingDetails = ({ formData, updateFormData }) => {
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
-        {[
-          { name: "departure", label: "Departure Location" },
-          { name: "destination", label: "Destination" },
-        ].map((f) => (
-          <div key={f.name} className="space-y-2">
+        {/* Departure Section */}
+        <div className="space-y-4 md:col-span-2 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+          <div className="flex items-center justify-between">
+            <h3 className="font-bold text-slate-900 flex items-center gap-2">
+              <Map size={18} className="text-blue-600" /> Departure Location
+            </h3>
+            <button
+              onClick={(e) => {
+                e.preventDefault();
+                if (!("geolocation" in navigator)) {
+                  alert("Geolocation is not supported by your browser");
+                  return;
+                }
+                setIsLocating(true);
+                navigator.geolocation.getCurrentPosition(
+                  (position) => {
+                    updateFormData({
+                      departureLatitude: position.coords.latitude,
+                      departureLongitude: position.coords.longitude,
+                    });
+                    setIsLocating(false);
+                  },
+                  (error) => {
+                    console.error("Error obtaining location", error);
+                    alert(
+                      "Could not get your location. Please ensure location access is allowed.",
+                    );
+                    setIsLocating(false);
+                  },
+                );
+              }}
+              disabled={isLocating}
+              className="flex items-center gap-2 text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50"
+            >
+              <Navigation
+                size={14}
+                className={isLocating ? "animate-pulse" : ""}
+              />
+              {isLocating ? "Locating..." : "Use My Location"}
+            </button>
+          </div>
+
+          <div className="space-y-2">
             <label className="text-sm font-semibold text-slate-700">
-              {f.label}
+              Location Name / Address
             </label>
             <div className="relative">
               <MapPin
@@ -551,14 +589,103 @@ const StepListingDetails = ({ formData, updateFormData }) => {
                 size={18}
               />
               <input
-                name={f.name}
-                value={formData[f.name]}
+                name="departure"
+                value={formData.departure || ""}
                 onChange={handleChange}
-                className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3"
+                placeholder="e.g. San Francisco"
+                className="w-full bg-white border border-slate-200 rounded-xl px-10 py-3"
               />
             </div>
           </div>
-        ))}
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Latitude
+              </label>
+              <input
+                type="number"
+                step="any"
+                name="departureLatitude"
+                value={formData.departureLatitude || ""}
+                onChange={handleChange}
+                placeholder="e.g. 37.7749"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Longitude
+              </label>
+              <input
+                type="number"
+                step="any"
+                name="departureLongitude"
+                value={formData.departureLongitude || ""}
+                onChange={handleChange}
+                placeholder="e.g. -122.4194"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3"
+              />
+            </div>
+          </div>
+        </div>
+
+        {/* Destination Section */}
+        <div className="space-y-4 md:col-span-2 p-6 bg-slate-50 border border-slate-200 rounded-2xl">
+          <h3 className="font-bold text-slate-900 flex items-center gap-2">
+            <Map size={18} className="text-red-500" /> Destination
+          </h3>
+
+          <div className="space-y-2">
+            <label className="text-sm font-semibold text-slate-700">
+              Location Name / Address
+            </label>
+            <div className="relative">
+              <MapPin
+                className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400"
+                size={18}
+              />
+              <input
+                name="destination"
+                value={formData.destination || ""}
+                onChange={handleChange}
+                placeholder="e.g. Los Angeles"
+                className="w-full bg-white border border-slate-200 rounded-xl px-10 py-3"
+              />
+            </div>
+          </div>
+
+          <div className="grid grid-cols-2 gap-4">
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Latitude
+              </label>
+              <input
+                type="number"
+                step="any"
+                name="destinationLatitude"
+                value={formData.destinationLatitude || ""}
+                onChange={handleChange}
+                placeholder="e.g. 34.0522"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3"
+              />
+            </div>
+            <div className="space-y-2">
+              <label className="text-sm font-semibold text-slate-700">
+                Longitude
+              </label>
+              <input
+                type="number"
+                step="any"
+                name="destinationLongitude"
+                value={formData.destinationLongitude || ""}
+                onChange={handleChange}
+                placeholder="e.g. -118.2437"
+                className="w-full bg-white border border-slate-200 rounded-xl px-4 py-3"
+              />
+            </div>
+          </div>
+        </div>
 
         <div className="space-y-2">
           <label className="text-sm font-semibold text-slate-700">
@@ -572,7 +699,7 @@ const StepListingDetails = ({ formData, updateFormData }) => {
             <input
               type="datetime-local"
               name="departureTime"
-              value={formData.departureTime}
+              value={formData.departureTime || ""}
               onChange={handleChange}
               className="w-full bg-slate-50 border border-slate-200 rounded-xl px-10 py-3"
             />
@@ -586,7 +713,7 @@ const StepListingDetails = ({ formData, updateFormData }) => {
           <input
             type="number"
             name="pricePerSeat"
-            value={formData.pricePerSeat}
+            value={formData.pricePerSeat || ""}
             onChange={handleChange}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
           />
@@ -599,7 +726,7 @@ const StepListingDetails = ({ formData, updateFormData }) => {
           <input
             type="number"
             name="availableSeats"
-            value={formData.availableSeats}
+            value={formData.availableSeats || ""}
             onChange={handleChange}
             max={formData.seats}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"
@@ -612,7 +739,7 @@ const StepListingDetails = ({ formData, updateFormData }) => {
           </label>
           <textarea
             name="rules"
-            value={formData.rules}
+            value={formData.rules || ""}
             onChange={handleChange}
             rows={3}
             className="w-full bg-slate-50 border border-slate-200 rounded-xl px-4 py-3"

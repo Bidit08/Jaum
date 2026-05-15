@@ -815,12 +815,319 @@
 
 // export default HeroSection;
 
+// import React, { useState } from "react";
+// import { useNavigate } from "react-router-dom";
+// import { Button } from "@/components/ui/button";
+// import { Input } from "@/components/ui/input";
+// import { Card, CardContent } from "@/components/ui/card";
+// // import { Calendar, MapPin, Users, Search, Sparkles } from "lucide-react";
+// import {
+//   Calendar,
+//   MapPin,
+//   Users,
+//   Search,
+//   Car,
+//   User,
+//   ChevronDown,
+// } from "lucide-react";
+
+// const HeroSection = () => {
+//   const navigate = useNavigate();
+//   const [searchMode, setSearchMode] = useState("car"); // "car" or "seat"
+
+//   // Car search states
+//   const [carLocation, setCarLocation] = useState("");
+//   const [carFuelType, setCarFuelType] = useState("");
+//   const [carPassengers, setCarPassengers] = useState("");
+
+//   // Seat search states
+//   const [seatFrom, setSeatFrom] = useState("");
+//   const [seatTo, setSeatTo] = useState("");
+//   const [seatDate, setSeatDate] = useState("");
+//   const [seatCount, setSeatCount] = useState("");
+
+//   const handleCarSearch = () => {
+//     const params = new URLSearchParams();
+//     params.append("mode", "full");
+//     if (carLocation) params.append("location", carLocation);
+//     if (carFuelType) params.append("fuelType", carFuelType);
+//     if (carPassengers) params.append("passengers", carPassengers);
+
+//     navigate(`/listings?${params.toString()}`);
+//   };
+
+//   const handleSeatSearch = () => {
+//     const params = new URLSearchParams();
+//     params.append("mode", "seats");
+//     if (seatFrom) params.append("departure", seatFrom);
+//     if (seatTo) params.append("destination", seatTo);
+//     if (seatDate) params.append("date", seatDate);
+//     if (seatCount) params.append("seats", seatCount);
+
+//     navigate(`/listings?${params.toString()}`);
+//   };
+//   return (
+//     <section className="min-h-screen relative overflow-hidden bg-black">
+//       {/* Background Image */}
+//       <div
+//         className="absolute inset-0 bg-cover"
+//         style={{
+//           backgroundImage:
+//             "url('https://images.unsplash.com/photo-1603881359318-e2bc03deaaee?q=80&w=2000&auto=format&fit=crop')",
+//           backgroundPosition: "center -850px", // shift upward
+//         }}
+//       />
+
+//       {/* Floating Particles */}
+//       {/* <div className="absolute inset-0 overflow-hidden">
+//         {[...Array(20)].map((_, i) => (
+//           <div
+//             key={i}
+//             className="absolute rounded-full bg-cyan-400/30 animate-float"
+//             style={{
+//               left: `${Math.random() * 100}%`,
+//               top: `${Math.random() * 100}%`,
+//               width: `${Math.random() * 3 + 1}px`,
+//               height: `${Math.random() * 3 + 1}px`,
+//               animationDelay: `${Math.random() * 5}s`,
+//               animationDuration: `${Math.random() * 6 + 6}s`,
+//             }}
+//           />
+//         ))}
+//       </div> */}
+
+//       {/* CONTENT */}
+//       <div className="relative z-10 container mx-auto px-4 pt-40">
+//         <div className="max-w-6xl mx-auto">
+//           {/* Title */}
+//           <div className="text-center mb-16 drop-shadow-[0_4px_30px_rgba(0,0,0,0.8)]">
+//             {/* <Sparkles className="absolute left-1/3 top-20 w-5 h-5 text-cyan-300 animate-pulse" />
+//             <Sparkles className="absolute right-1/3 top-24 w-4 h-4 text-blue-300 animate-pulse delay-1000" /> */}
+
+//             <h1 className="text-5xl md:text-7xl font-bold text-white">
+//               Drive Your <span className="text-blue-400">Dreams</span>
+//             </h1>
+//             <p className="mt-8 text-lg md:text-xl text-white/90 font-medium max-w-2xl mx-auto mt-4 font-light">
+//               Find the perfect ride for business, adventure or luxury travel.
+//             </p>
+//           </div>
+
+//           {/* 👇 Clean Search Card */}
+//           <Card className="bg-black/70 backdrop-blur-lg border-white/20 shadow-xl rounded-2xl">
+//             <CardContent className="p-6 py-1.5">
+//               {/* Service Selection Toggle */}
+//               <div className="w-full flex justify-start mb-7">
+//                 <div className="grid grid-cols-2 w-full md:w-[1200px] bg-white/10 backdrop-blur-xl p-1.5 rounded-2xl border border-white/10 shadow-lg">
+//                   <button
+//                     onClick={() => setSearchMode("car")}
+//                     className={`flex justify-center items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 ${
+//                       searchMode === "car"
+//                         ? "bg-blue-500 text-white shadow-lg"
+//                         : "text-slate-300 hover:text-white hover:bg-white/10"
+//                     }`}
+//                   >
+//                     <Car className="w-5 h-5" />
+//                     Rent a Car
+//                   </button>
+
+//                   <button
+//                     onClick={() => setSearchMode("seat")}
+//                     className={`flex justify-center items-center gap-2 px-6 py-3 rounded-xl text-base font-semibold transition-all duration-300 ${
+//                       searchMode === "seat"
+//                         ? "bg-blue-500 text-white shadow-lg"
+//                         : "text-slate-300 hover:text-white hover:bg-white/10"
+//                     }`}
+//                   >
+//                     <User className="w-5 h-5" />
+//                     Book a Seat
+//                   </button>
+//                 </div>
+//               </div>
+
+//               {/* Form Grid */}
+//               <div
+//                 className={
+//                   searchMode === "car"
+//                     ? "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4"
+//                     : "grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4"
+//                 }
+//               >
+//                 {searchMode === "car" ? (
+//                   <>
+//                     {/* Location */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white">
+//                         Pick-up Location
+//                       </label>
+//                       <div className="relative">
+//                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+//                         <Input
+//                           placeholder="City or Airport"
+//                           value={carLocation}
+//                           onChange={(e) => setCarLocation(e.target.value)}
+//                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+//                         />
+//                       </div>
+//                     </div>
+
+//                     {/* Fuel Type */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white flex items-center gap-2">
+//                         Fuel Type
+//                       </label>
+//                       <div className="relative">
+//                         <User className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300 pointer-events-none" />
+//                         <select
+//                           value={carFuelType}
+//                           onChange={(e) => setCarFuelType(e.target.value)}
+//                           className="w-full bg-white/10 border border-white/20 text-white h-12 pl-10 pr-4 rounded-md outline-none appearance-none focus:ring-2 focus:ring-blue-500/50 transition-all font-medium"
+//                         >
+//                           <option value="" className="bg-slate-900">
+//                             All Fuel Types
+//                           </option>
+//                           <option value="Gasoline" className="bg-slate-900">
+//                             Gasoline
+//                           </option>
+//                           <option value="Diesel" className="bg-slate-900">
+//                             Diesel
+//                           </option>
+//                           <option value="Electric" className="bg-slate-900">
+//                             Electric
+//                           </option>
+//                           <option value="Hybrid" className="bg-slate-900">
+//                             Hybrid
+//                           </option>
+//                         </select>
+//                         <ChevronDown className="absolute right-3 top-1/2 -translate-y-1/2 w-4 text-white/40 pointer-events-none" />
+//                       </div>
+//                     </div>
+
+//                     {/* Passengers */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white">
+//                         Passengers
+//                       </label>
+//                       <div className="relative">
+//                         <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+//                         <Input
+//                           type="number"
+//                           min="1"
+//                           placeholder="2"
+//                           value={carPassengers}
+//                           onChange={(e) => setCarPassengers(e.target.value)}
+//                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+//                         />
+//                       </div>
+//                     </div>
+
+//                     {/* Button */}
+//                     <div className="flex items-end">
+//                       <Button
+//                         onClick={handleCarSearch}
+//                         className="w-full h-12 bg-blue-400 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors"
+//                       >
+//                         <Search className="w-5 mr-2" />
+//                         Find Vehicle
+//                       </Button>
+//                     </div>
+//                   </>
+//                 ) : (
+//                   <>
+//                     {/* From Location */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white">
+//                         From
+//                       </label>
+//                       <div className="relative">
+//                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+//                         <Input
+//                           placeholder="Departure City"
+//                           value={seatFrom}
+//                           onChange={(e) => setSeatFrom(e.target.value)}
+//                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+//                         />
+//                       </div>
+//                     </div>
+
+//                     {/* To Location */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white">
+//                         To
+//                       </label>
+//                       <div className="relative">
+//                         <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+//                         <Input
+//                           placeholder="Destination City"
+//                           value={seatTo}
+//                           onChange={(e) => setSeatTo(e.target.value)}
+//                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+//                         />
+//                       </div>
+//                     </div>
+
+//                     {/* Date */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white">
+//                         Travel Date
+//                       </label>
+//                       <div className="relative">
+//                         <Calendar className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+//                         <Input
+//                           type="date"
+//                           value={seatDate}
+//                           onChange={(e) => setSeatDate(e.target.value)}
+//                           className="bg-white/10 border-white/20 text-white h-12 pl-10"
+//                           style={{ colorScheme: "dark" }}
+//                         />
+//                       </div>
+//                     </div>
+
+//                     {/* Seats */}
+//                     <div className="space-y-1">
+//                       <label className="text-sm font-medium text-white">
+//                         Seats Needed
+//                       </label>
+//                       <div className="relative">
+//                         <Users className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+//                         <Input
+//                           type="number"
+//                           min="1"
+//                           placeholder="1"
+//                           value={seatCount}
+//                           onChange={(e) => setSeatCount(e.target.value)}
+//                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
+//                         />
+//                       </div>
+//                     </div>
+
+//                     {/* Button */}
+//                     <div className="flex items-end">
+//                       <Button
+//                         onClick={handleSeatSearch}
+//                         className="w-full h-12 bg-blue-400 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors"
+//                       >
+//                         <Search className="w-5 mr-2" />
+//                         Find Seats
+//                       </Button>
+//                     </div>
+//                   </>
+//                 )}
+//               </div>
+//             </CardContent>
+//           </Card>
+//         </div>
+//       </div>
+//     </section>
+//   );
+// };
+
+// export default HeroSection;
+
 import React, { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card, CardContent } from "@/components/ui/card";
-// import { Calendar, MapPin, Users, Search, Sparkles } from "lucide-react";
 import {
   Calendar,
   MapPin,
@@ -829,16 +1136,25 @@ import {
   Car,
   User,
   ChevronDown,
+  Loader2,
 } from "lucide-react";
+import api from "../../utils/api";
 
 const HeroSection = () => {
   const navigate = useNavigate();
   const [searchMode, setSearchMode] = useState("car"); // "car" or "seat"
 
   // Car search states
-  const [carLocation, setCarLocation] = useState("");
+  const [searchQuery, setSearchQuery] = useState("");
   const [carFuelType, setCarFuelType] = useState("");
   const [carPassengers, setCarPassengers] = useState("");
+
+  // Suggestions states
+  const [suggestions, setSuggestions] = useState([]);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [isSuggestionsLoading, setIsSuggestionsLoading] = useState(false);
+  const [activeInput, setActiveInput] = useState(null); // 'carSearch', 'seatFrom', 'seatTo'
+  const isSelectingRef = React.useRef(false);
 
   // Seat search states
   const [seatFrom, setSeatFrom] = useState("");
@@ -849,7 +1165,7 @@ const HeroSection = () => {
   const handleCarSearch = () => {
     const params = new URLSearchParams();
     params.append("mode", "full");
-    if (carLocation) params.append("location", carLocation);
+    if (searchQuery) params.append("search", searchQuery);
     if (carFuelType) params.append("fuelType", carFuelType);
     if (carPassengers) params.append("passengers", carPassengers);
 
@@ -866,6 +1182,105 @@ const HeroSection = () => {
 
     navigate(`/listings?${params.toString()}`);
   };
+
+  // Fetch suggestions
+  React.useEffect(() => {
+    const currentQuery =
+      activeInput === "carSearch"
+        ? searchQuery
+        : activeInput === "seatFrom"
+          ? seatFrom
+          : activeInput === "seatTo"
+            ? seatTo
+            : "";
+
+    if (!currentQuery || !currentQuery.trim()) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      return;
+    }
+
+    if (isSelectingRef.current) {
+      isSelectingRef.current = false;
+      return;
+    }
+
+    const fetchSuggestions = async () => {
+      setIsSuggestionsLoading(true);
+      try {
+        const searchType = activeInput === "carSearch" ? "car" : "seat";
+        const { data } = await api.get(
+          `/listings/suggestions?query=${encodeURIComponent(currentQuery)}&type=${searchType}`,
+        );
+        setSuggestions(data);
+        setShowSuggestions(true);
+      } catch (error) {
+        console.error("Failed to fetch suggestions", error);
+        setSuggestions([]);
+      } finally {
+        setIsSuggestionsLoading(false);
+      }
+    };
+
+    const delayDebounceFn = setTimeout(() => {
+      fetchSuggestions();
+    }, 300);
+
+    return () => clearTimeout(delayDebounceFn);
+  }, [searchQuery, seatFrom, seatTo, activeInput]);
+
+  const handleSuggestionClick = (locationStr) => {
+    isSelectingRef.current = true;
+    if (activeInput === "carSearch") setSearchQuery(locationStr);
+    else if (activeInput === "seatFrom") setSeatFrom(locationStr);
+    else if (activeInput === "seatTo") setSeatTo(locationStr);
+    setShowSuggestions(false);
+  };
+
+  const SuggestionDropdown = ({ inputName }) => {
+    if (activeInput !== inputName || !showSuggestions) return null;
+
+    return (
+      <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-xl shadow-2xl border border-slate-100 overflow-hidden z-50">
+        {isSuggestionsLoading ? (
+          <div className="p-4 flex items-center justify-center text-slate-500">
+            <Loader2 className="w-5 h-5 animate-spin mr-2" />
+            <span className="text-sm">Searching...</span>
+          </div>
+        ) : suggestions.length === 0 ? (
+          <div className="p-4 text-center text-slate-500 text-sm">
+            No locations found
+          </div>
+        ) : (
+          <ul className="max-h-64 overflow-y-auto">
+            {suggestions.map((suggestion, idx) => (
+              <li
+                key={idx}
+                onMouseDown={(e) => {
+                  e.preventDefault(); // Prevent onBlur
+                  handleSuggestionClick(suggestion.name);
+                }}
+                className="p-3 hover:bg-slate-50 cursor-pointer flex items-center gap-3 transition-colors border-b border-slate-50 last:border-0"
+              >
+                {suggestion.type === "brand" ? (
+                  <Car className="w-4 h-4 text-slate-400" />
+                ) : (
+                  <MapPin className="w-4 h-4 text-slate-400" />
+                )}
+                <span className="text-sm font-medium text-slate-900">
+                  {suggestion.name}
+                </span>
+                <span className="text-xs text-slate-400 ml-auto capitalize">
+                  {suggestion.type}
+                </span>
+              </li>
+            ))}
+          </ul>
+        )}
+      </div>
+    );
+  };
+
   return (
     <section className="min-h-screen relative overflow-hidden bg-black">
       {/* Background Image */}
@@ -954,20 +1369,36 @@ const HeroSection = () => {
               >
                 {searchMode === "car" ? (
                   <>
-                    {/* Location */}
-                    <div className="space-y-1">
+                    {/* Location / Search */}
+                    <div className="space-y-1 relative">
                       <label className="text-sm font-medium text-white">
-                        Pick-up Location
+                        Search Vehicle or Location
                       </label>
                       <div className="relative">
-                        <MapPin className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
+                        <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-5 text-cyan-300" />
                         <Input
-                          placeholder="City or Airport"
-                          value={carLocation}
-                          onChange={(e) => setCarLocation(e.target.value)}
+                          placeholder="City, Brand, or Model..."
+                          value={searchQuery}
+                          onChange={(e) => setSearchQuery(e.target.value)}
+                          onFocus={() => {
+                            setActiveInput("carSearch");
+                            if (searchQuery.trim() && suggestions.length > 0)
+                              setShowSuggestions(true);
+                          }}
+                          onBlur={() => {
+                            setTimeout(() => setShowSuggestions(false), 200);
+                          }}
+                          onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                              setShowSuggestions(false);
+                              handleCarSearch();
+                            }
+                          }}
                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
                         />
                       </div>
+
+                      <SuggestionDropdown inputName="carSearch" />
                     </div>
 
                     {/* Fuel Type */}
@@ -1034,7 +1465,7 @@ const HeroSection = () => {
                 ) : (
                   <>
                     {/* From Location */}
-                    <div className="space-y-1">
+                    <div className="space-y-1 relative">
                       <label className="text-sm font-medium text-white">
                         From
                       </label>
@@ -1044,13 +1475,22 @@ const HeroSection = () => {
                           placeholder="Departure City"
                           value={seatFrom}
                           onChange={(e) => setSeatFrom(e.target.value)}
+                          onFocus={() => {
+                            setActiveInput("seatFrom");
+                            if (seatFrom.trim() && suggestions.length > 0)
+                              setShowSuggestions(true);
+                          }}
+                          onBlur={() =>
+                            setTimeout(() => setShowSuggestions(false), 200)
+                          }
                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
                         />
                       </div>
+                      <SuggestionDropdown inputName="seatFrom" />
                     </div>
 
                     {/* To Location */}
-                    <div className="space-y-1">
+                    <div className="space-y-1 relative">
                       <label className="text-sm font-medium text-white">
                         To
                       </label>
@@ -1060,9 +1500,18 @@ const HeroSection = () => {
                           placeholder="Destination City"
                           value={seatTo}
                           onChange={(e) => setSeatTo(e.target.value)}
+                          onFocus={() => {
+                            setActiveInput("seatTo");
+                            if (seatTo.trim() && suggestions.length > 0)
+                              setShowSuggestions(true);
+                          }}
+                          onBlur={() =>
+                            setTimeout(() => setShowSuggestions(false), 200)
+                          }
                           className="bg-white/10 border-white/20 text-white h-12 pl-10 placeholder:text-slate-400"
                         />
                       </div>
+                      <SuggestionDropdown inputName="seatTo" />
                     </div>
 
                     {/* Date */}
