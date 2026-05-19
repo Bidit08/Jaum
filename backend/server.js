@@ -69,6 +69,7 @@ import visitRoutes from "./routes/visitRoutes.js";
 import paymentRoutes from "./routes/paymentRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import damageRoutes from "./routes/damageRoutes.js";
+import notificationRoutes from "./routes/notificationRoutes.js";
 
 import path from "path";
 
@@ -122,6 +123,7 @@ app.use("/api/reviews", reviewRoutes);
 app.use("/api/damage", damageRoutes);
 
 app.use("/api/admin", adminRoutes);
+app.use("/api/notifications", notificationRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;

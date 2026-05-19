@@ -353,6 +353,7 @@ import PaymentSuccess from "./pages/user/PaymentSuccess";
 import PaymentFailure from "./pages/user/PaymentFailure";
 import DamageReportPage from "./pages/user/dashboard/DamageReportPage";
 import DamageReportsList from "./pages/user/dashboard/DamageReportsList";
+import NotificationsPage from "./pages/user/dashboard/NotificationsPage";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -415,6 +416,7 @@ function App() {
               element={<DamageReportPage />}
             />
             <Route path="reports" element={<DamageReportsList />} />
+            <Route path="notifications" element={<NotificationsPage />} />
           </Route>
         </Route>
 

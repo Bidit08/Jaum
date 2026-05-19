@@ -985,6 +985,7 @@
 import Listing from "../models/Listing.js";
 import User from "../models/User.js";
 import Booking from "../models/Booking.js";
+import { createNotification } from "../utils/notificationHelper.js";
 
 /* =======================
    GET PENDING LISTINGS
@@ -1793,6 +1794,17 @@ export const updatePaymentStatus = async (req, res) => {
       .populate("listing", "name");
 
     res.json({ message: "Payment status updated", booking: updated });
+
+    // 🔔 Notify User if Refunded
+    if (paymentStatus === "refunded") {
+      await createNotification({
+        user: updated.user._id,
+        title: "Refund Processed",
+        message: `Your refund for booking ${updated.listing.name} has been processed successfully.`,
+        type: "refund",
+        link: "/dashboard/bookings",
+      });
+    }
   } catch (err) {
     console.error("updatePaymentStatus error:", err);
     res.status(500).json({ message: "Failed to update payment status" });

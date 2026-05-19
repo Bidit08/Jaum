@@ -194,6 +194,16 @@
 
 import Booking from "../models/Booking.js";
 import Listing from "../models/Listing.js";
+import sendEmail from "../utils/sendEmail.js";
+import {
+  bookingRequestedTemplate,
+  bookingApprovedTemplate,
+  bookingRejectedTemplate,
+  bookingConfirmedTemplate,
+  bookingCancelledTemplate,
+  bookingCompletedTemplate,
+} from "../utils/emailTemplates/bookingTemplates.js";
+import { createNotification } from "../utils/notificationHelper.js";
 
 /* =========================
    CREATE BOOKING (USER)
@@ -203,7 +213,10 @@ export const createBooking = async (req, res) => {
   try {
     const { listingId, startDate, endDate, seatsBooked } = req.body;
 
-    const listing = await Listing.findById(listingId);
+    const listing = await Listing.findById(listingId).populate(
+      "owner",
+      "name email",
+    );
 
     if (!listing || !listing.isApproved) {
       return res.status(404).json({ message: "Listing not available" });
@@ -292,6 +305,34 @@ export const createBooking = async (req, res) => {
     });
 
     res.status(201).json(booking);
+
+    // 📧 Send Email to Owner
+    try {
+      await sendEmail({
+        email: listing.owner.email,
+        subject: `New Booking Request: ${listing.name}`,
+        html: bookingRequestedTemplate(
+          listing.owner.name,
+          req.user.name,
+          listing.name,
+          booking,
+        ),
+      });
+    } catch (err) {
+      console.error(
+        "Email notification failed for createBooking:",
+        err.message,
+      );
+    }
+
+    // 🔔 Create In-App Notification for Owner
+    await createNotification({
+      user: listing.owner._id,
+      title: "New Booking Request",
+      message: `${req.user.name} has requested to book your ${listing.name}.`,
+      type: "booking",
+      link: "/dashboard/bookings",
+    });
   } catch (err) {
     console.error("createBooking error:", err);
     res.status(500).json({ message: "Booking failed" });
@@ -324,7 +365,9 @@ export const cancelBooking = async (req, res) => {
     const booking = await Booking.findOne({
       _id: req.params.id,
       user: req.user.id,
-    }).populate("listing");
+    })
+      .populate("listing")
+      .populate("owner", "name email");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -374,6 +417,34 @@ export const cancelBooking = async (req, res) => {
           ? "Booking cancelled. Refund will be processed."
           : "Booking cancelled successfully.",
       booking,
+    });
+
+    // 📧 Send Email to Owner
+    try {
+      await sendEmail({
+        email: booking.owner.email,
+        subject: `Booking Cancelled: ${booking.listing.name}`,
+        html: bookingCancelledTemplate(
+          booking.owner.name,
+          booking.listing.name,
+          req.user.name,
+          booking.paymentStatus === "refund-pending",
+        ),
+      });
+    } catch (err) {
+      console.error(
+        "Email notification failed for cancelBooking:",
+        err.message,
+      );
+    }
+
+    // 🔔 Create In-App Notification for Owner
+    await createNotification({
+      user: booking.owner._id,
+      title: "Booking Cancelled",
+      message: `${req.user.name} has cancelled their booking for ${booking.listing.name}.`,
+      type: "booking",
+      link: "/dashboard/bookings",
     });
   } catch (err) {
     console.error("cancelBooking error:", err);
@@ -453,7 +524,9 @@ export const approveBooking = async (req, res) => {
       _id: req.params.id,
       owner: req.user.id,
       status: "pending",
-    }).populate("listing");
+    })
+      .populate("listing")
+      .populate("user", "name email");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -475,6 +548,33 @@ export const approveBooking = async (req, res) => {
     await booking.save();
 
     res.json({ message: "Booking approved", booking });
+
+    // 📧 Send Email to User
+    try {
+      await sendEmail({
+        email: booking.user.email,
+        subject: `Booking Approved: ${booking.listing.name}`,
+        html: bookingApprovedTemplate(
+          booking.user.name,
+          booking.listing.name,
+          booking,
+        ),
+      });
+    } catch (err) {
+      console.error(
+        "Email notification failed for approveBooking:",
+        err.message,
+      );
+    }
+
+    // 🔔 Create In-App Notification for User
+    await createNotification({
+      user: booking.user._id,
+      title: "Booking Approved",
+      message: `Your booking for ${booking.listing.name} has been approved. Please complete the payment.`,
+      type: "booking",
+      link: "/dashboard/bookings",
+    });
   } catch (err) {
     res.status(500).json({ message: "Approval failed" });
   }
@@ -489,7 +589,9 @@ export const rejectBooking = async (req, res) => {
       _id: req.params.id,
       owner: req.user.id,
       status: "pending",
-    });
+    })
+      .populate("listing", "name")
+      .populate("user", "name email");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -499,6 +601,29 @@ export const rejectBooking = async (req, res) => {
     await booking.save();
 
     res.json({ message: "Booking rejected" });
+
+    // 📧 Send Email to User
+    try {
+      await sendEmail({
+        email: booking.user.email,
+        subject: `Update on your booking: ${booking.listing.name}`,
+        html: bookingRejectedTemplate(booking.user.name, booking.listing.name),
+      });
+    } catch (err) {
+      console.error(
+        "Email notification failed for rejectBooking:",
+        err.message,
+      );
+    }
+
+    // 🔔 Create In-App Notification for User
+    await createNotification({
+      user: booking.user._id,
+      title: "Booking Rejected",
+      message: `Your booking request for ${booking.listing.name} was not accepted.`,
+      type: "booking",
+      link: "/dashboard/bookings",
+    });
   } catch (err) {
     console.error("rejectBooking error:", err);
     res.status(500).json({ message: "Failed to reject booking" });
@@ -530,7 +655,9 @@ export const completeBooking = async (req, res) => {
       _id: req.params.id,
       owner: req.user.id,
       status: "confirmed",
-    });
+    })
+      .populate("listing", "name")
+      .populate("user", "name email");
 
     if (!booking) {
       return res.status(404).json({ message: "Confirmed booking not found" });
@@ -540,6 +667,20 @@ export const completeBooking = async (req, res) => {
     await booking.save();
 
     res.json({ message: "Booking marked as completed", booking });
+
+    // 📧 Send Email to User
+    try {
+      await sendEmail({
+        email: booking.user.email,
+        subject: `Trip Completed: ${booking.listing.name}`,
+        html: bookingCompletedTemplate(booking.user.name, booking.listing.name),
+      });
+    } catch (err) {
+      console.error(
+        "Email notification failed for completeBooking:",
+        err.message,
+      );
+    }
   } catch (err) {
     console.error("completeBooking error:", err);
     res.status(500).json({ message: "Failed to complete booking" });

@@ -21,7 +21,22 @@ api.interceptors.request.use(
     }
     return config;
   },
-  (error) => Promise.reject(error)
+  (error) => Promise.reject(error),
+);
+
+// 🛑 Handle 401 Unauthorized globally
+api.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response && error.response.status === 401) {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
+      window.dispatchEvent(new Event("authChanged"));
+      // We don't use window.location.href automatically here to prevent loop on /login
+      // but if we are on a protected route it will help gracefully kick them out.
+    }
+    return Promise.reject(error);
+  },
 );
 
 export default api;

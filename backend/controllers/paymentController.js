@@ -175,6 +175,9 @@
 
 import Booking from "../models/Booking.js";
 import crypto from "crypto";
+import sendEmail from "../utils/sendEmail.js";
+import { bookingConfirmedTemplate } from "../utils/emailTemplates/bookingTemplates.js";
+import { createNotification } from "../utils/notificationHelper.js";
 
 /**
  * Set Payment Method and Initiate Process
@@ -185,13 +188,16 @@ export const selectPaymentMethod = async (req, res) => {
     const { bookingId, method } = req.body;
     const userId = req.user.id;
 
-    const booking = await Booking.findById(bookingId).populate("listing");
+    const booking = await Booking.findById(bookingId)
+      .populate("listing")
+      .populate("user", "name email")
+      .populate("owner", "name email");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
     }
 
-    if (booking.user.toString() !== userId) {
+    if (booking.user._id.toString() !== userId) {
       return res.status(403).json({ message: "Unauthorized access" });
     }
 
@@ -214,10 +220,50 @@ export const selectPaymentMethod = async (req, res) => {
       booking.receiptNumber = `CSH-${Date.now()}-${booking._id.toString().toUpperCase().slice(-4)}`;
       await booking.save();
 
-      return res.status(200).json({
+      res.status(200).json({
         message: "Cash payment method selected. Please pay at the counter.",
         booking,
       });
+
+      // 📧 Send Confirmation Email to User & Owner
+      try {
+        // To User
+        await sendEmail({
+          email: booking.user.email,
+          subject: `Booking Confirmed: ${booking.listing.name}`,
+          html: bookingConfirmedTemplate(
+            booking.user.name,
+            booking.listing.name,
+            booking,
+          ),
+        });
+        // To Owner
+        await sendEmail({
+          email: booking.owner.email,
+          subject: `Payment Pending (Cash): ${booking.listing.name}`,
+          html: bookingConfirmedTemplate(
+            booking.owner.name,
+            booking.listing.name,
+            booking,
+            true,
+          ),
+        });
+      } catch (err) {
+        console.error(
+          "Email notification failed for selectPaymentMethod (cash):",
+          err.message,
+        );
+      }
+
+      // 🔔 In-App Notification for Owner
+      await createNotification({
+        user: booking.owner._id,
+        title: "New Payment (Cash)",
+        message: `User ${booking.user.name} has selected cash payment for ${booking.listing.name}.`,
+        type: "payment",
+        link: "/dashboard/bookings",
+      });
+      return;
     } else if (method === "khalti") {
       const secretKey = process.env.KHALTI_SECRET_KEY;
       const frontendUrl = (
@@ -263,12 +309,10 @@ export const selectPaymentMethod = async (req, res) => {
           pidx: data.pidx,
         });
       } else {
-        return res
-          .status(400)
-          .json({
-            message: "Failed to initiate Khalti payment",
-            details: data,
-          });
+        return res.status(400).json({
+          message: "Failed to initiate Khalti payment",
+          details: data,
+        });
       }
     } else if (method === "esewa") {
       const secretKey = process.env.ESEWA_SECRET_KEY || "8gBm/:&EnhH.1/q";
@@ -330,11 +374,9 @@ export const verifyKhaltiPayment = async (req, res) => {
 
     if (!secretKey) {
       console.error("KHALTI_SECRET_KEY is missing in environment variables");
-      return res
-        .status(500)
-        .json({
-          message: "Khalti verification is not configured on the server.",
-        });
+      return res.status(500).json({
+        message: "Khalti verification is not configured on the server.",
+      });
     }
 
     const response = await fetch(
@@ -352,7 +394,10 @@ export const verifyKhaltiPayment = async (req, res) => {
     const data = await response.json();
 
     if (response.ok && data.status === "Completed") {
-      const booking = await Booking.findOne({ pidx }).populate("listing");
+      const booking = await Booking.findOne({ pidx })
+        .populate("listing")
+        .populate("user", "name email")
+        .populate("owner", "name email");
 
       if (!booking) {
         return res.status(404).json({ message: "Booking not found" });
@@ -367,10 +412,57 @@ export const verifyKhaltiPayment = async (req, res) => {
       booking.receiptNumber = `KHT-${data.transaction_id || Date.now()}`;
       await booking.save();
 
-      return res.status(200).json({
+      res.status(200).json({
         message: "Payment verified successfully",
         booking,
       });
+
+      // 📧 Send Confirmation Email to User & Owner
+      try {
+        await sendEmail({
+          email: booking.user.email,
+          subject: `Booking Confirmed: ${booking.listing.name}`,
+          html: bookingConfirmedTemplate(
+            booking.user.name,
+            booking.listing.name,
+            booking,
+          ),
+        });
+        await sendEmail({
+          email: booking.owner.email,
+          subject: `Booking Confirmed: ${booking.listing.name}`,
+          html: bookingConfirmedTemplate(
+            booking.owner.name,
+            booking.listing.name,
+            booking,
+            true,
+          ),
+        });
+      } catch (err) {
+        console.error(
+          "Email notification failed for verifyKhaltiPayment:",
+          err.message,
+        );
+      }
+
+      // 🔔 In-App Notification for User
+      await createNotification({
+        user: booking.user._id,
+        title: "Payment Successful",
+        message: `Your payment for ${booking.listing.name} was successful. Enjoy your trip!`,
+        type: "payment",
+        link: "/dashboard/bookings",
+      });
+
+      // 🔔 In-App Notification for Owner
+      await createNotification({
+        user: booking.owner._id,
+        title: "Booking Paid",
+        message: `Booking for ${booking.listing.name} has been paid via Khalti.`,
+        type: "payment",
+        link: "/dashboard/bookings",
+      });
+      return;
     } else {
       return res.status(400).json({
         message: "Payment verification failed",
@@ -406,9 +498,10 @@ export const verifyEsewaPayment = async (req, res) => {
     }
 
     const transaction_uuid = decodedData.transaction_uuid;
-    const booking = await Booking.findOne({
-      transactionId: transaction_uuid,
-    }).populate("listing");
+    const booking = await Booking.findOne({ transactionId: transaction_uuid })
+      .populate("listing")
+      .populate("user", "name email")
+      .populate("owner", "name email");
 
     if (!booking) {
       return res.status(404).json({ message: "Booking not found" });
@@ -434,10 +527,57 @@ export const verifyEsewaPayment = async (req, res) => {
       booking.receiptNumber = `ESW-${verificationData.ref_id || Date.now()}`;
       await booking.save();
 
-      return res.status(200).json({
+      res.status(200).json({
         message: "Payment verified successfully",
         booking,
       });
+
+      // 📧 Send Confirmation Email to User & Owner
+      try {
+        await sendEmail({
+          email: booking.user.email,
+          subject: `Booking Confirmed: ${booking.listing.name}`,
+          html: bookingConfirmedTemplate(
+            booking.user.name,
+            booking.listing.name,
+            booking,
+          ),
+        });
+        await sendEmail({
+          email: booking.owner.email,
+          subject: `Booking Confirmed: ${booking.listing.name}`,
+          html: bookingConfirmedTemplate(
+            booking.owner.name,
+            booking.listing.name,
+            booking,
+            true,
+          ),
+        });
+      } catch (err) {
+        console.error(
+          "Email notification failed for verifyEsewaPayment:",
+          err.message,
+        );
+      }
+
+      // 🔔 In-App Notification for User
+      await createNotification({
+        user: booking.user._id,
+        title: "Payment Successful",
+        message: `Your payment for ${booking.listing.name} was successful. Enjoy your trip!`,
+        type: "payment",
+        link: "/dashboard/bookings",
+      });
+
+      // 🔔 In-App Notification for Owner
+      await createNotification({
+        user: booking.owner._id,
+        title: "Booking Paid",
+        message: `Booking for ${booking.listing.name} has been paid via eSewa.`,
+        type: "payment",
+        link: "/dashboard/bookings",
+      });
+      return;
     } else {
       return res.status(400).json({
         message: "Payment verification failed",

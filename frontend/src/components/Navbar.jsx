@@ -357,13 +357,19 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LayoutDashboard, Moon, LogIn, LogOut } from "lucide-react";
+import { User, LayoutDashboard, Moon, LogIn, LogOut, Bell } from "lucide-react";
+import NotificationPanel from "./NotificationPanel";
 
 const BACKEND_URL = "http://localhost:5000";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
+  const [user, setUser] = useState(() => {
+    const saved = localStorage.getItem("user");
+    return saved ? JSON.parse(saved) : null;
+  });
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
 
   // Load user (from backend if token exists)
   useEffect(() => {
@@ -380,6 +386,8 @@ const Navbar = () => {
         localStorage.setItem("user", JSON.stringify(res.data));
         setUser(res.data);
       } catch {
+        localStorage.removeItem("token");
+        localStorage.removeItem("user");
         setUser(null);
       }
     };
@@ -390,6 +398,29 @@ const Navbar = () => {
     return () => window.removeEventListener("authChanged", loadUser);
   }, []);
 
+  // Fetch unread count
+  useEffect(() => {
+    if (!user) {
+      setUnreadCount(0);
+      return;
+    }
+
+    const fetchUnreadCount = async () => {
+      try {
+        const res = await api.get("/notifications");
+        const count = res.data.filter((n) => !n.isRead).length;
+        setUnreadCount(count);
+      } catch (err) {
+        console.error("Failed to fetch unread count");
+      }
+    };
+
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 60000); // Poll every minute
+
+    return () => clearInterval(interval);
+  }, [user]);
+
   // Logout
   const logout = () => {
     localStorage.removeItem("token");
@@ -399,7 +430,6 @@ const Navbar = () => {
   };
 
   return (
-    // <nav className="w-full fixed top-0 left-0 z-50 bg-slate-900/60 backdrop-blur-lg border-b border-white/10">
     <nav className="w-full fixed top-0 left-0 z-50 bg-slate-950/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
@@ -429,16 +459,10 @@ const Navbar = () => {
           >
             Comparison
           </Link>
-          {/* <Link
-            to="/services"
-            className="hover:text-cyan-400 transition-colors duration-300"
-          >
+          {/* <Link to="/services" className="hover:text-cyan-400 transition-colors duration-300">
             Services
           </Link>
-          <Link
-            to="/contact"
-            className="hover:text-cyan-400 transition-colors duration-300"
-          >
+          <Link to="/contact" className="hover:text-cyan-400 transition-colors duration-300">
             Contact
           </Link> */}
         </div>
@@ -451,6 +475,33 @@ const Navbar = () => {
           >
             List Vehicles
           </Link>
+
+          {/* Notifications */}
+          {user && (
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="p-2 text-gray-400 hover:text-white transition-colors relative active:scale-90"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-cyan-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse border-2 border-slate-950">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+              <NotificationPanel
+                isOpen={isNotificationsOpen}
+                onClose={() => setIsNotificationsOpen(false)}
+                onUpdate={() => {
+                  // Fetch unread count again
+                  api.get("/notifications").then((res) => {
+                    setUnreadCount(res.data.filter((n) => !n.isRead).length);
+                  });
+                }}
+              />
+            </div>
+          )}
 
           {/* Profile / Guest Dropdown */}
           <DropdownMenu>
