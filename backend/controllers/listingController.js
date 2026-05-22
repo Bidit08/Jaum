@@ -849,13 +849,24 @@ export const updateListing = async (req, res) => {
       }
     }
 
+    // Only require admin re-approval if fields other than status are modified
+    const keys = Object.keys(data);
+    const onlyTogglingStatus = keys.length === 1 && keys[0] === "status";
+
     Object.assign(listing, data);
-    listing.isApproved = false; // re-approval required after edit
+
+    if (!onlyTogglingStatus) {
+      listing.isApproved = false; // re-approval required after edit
+    }
+
     await listing.save();
 
     res.json(listing);
   } catch (err) {
-    res.status(400).json({ message: "Failed to update listing" });
+    console.error("updateListing error:", err);
+    res
+      .status(400)
+      .json({ message: err.message || "Failed to update listing" });
   }
 };
 

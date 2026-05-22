@@ -591,3 +591,100 @@ export const verifyEsewaPayment = async (req, res) => {
       .json({ message: "Payment verification failed", error: error.message });
   }
 };
+
+/**
+ * Mark Cash Booking as Paid (Owner only)
+ * PATCH /api/payments/:bookingId/mark-cash-paid
+ */
+export const markCashAsPaid = async (req, res) => {
+  try {
+    const { bookingId } = req.params;
+    const ownerId = req.user.id;
+
+    const booking = await Booking.findById(bookingId)
+      .populate("listing")
+      .populate("user", "name email")
+      .populate("owner", "name email");
+
+    if (!booking) {
+      return res.status(404).json({ message: "Booking not found" });
+    }
+
+    // Only the owner of this booking can mark it as paid
+    if (booking.owner._id.toString() !== ownerId) {
+      return res
+        .status(403)
+        .json({
+          message:
+            "Unauthorized. Only the vehicle owner can confirm cash payment.",
+        });
+    }
+
+    // Must be a cash booking in confirmed status
+    if (booking.paymentMethod !== "cash") {
+      return res
+        .status(400)
+        .json({ message: "This action is only for cash bookings." });
+    }
+
+    if (booking.paymentStatus === "paid") {
+      return res
+        .status(400)
+        .json({ message: "Cash payment has already been confirmed." });
+    }
+
+    if (booking.status !== "confirmed") {
+      return res
+        .status(400)
+        .json({
+          message: "Booking must be in confirmed status to mark as paid.",
+        });
+    }
+
+    // Update booking
+    booking.paymentStatus = "paid";
+    booking.cashPaidAt = new Date();
+    await booking.save();
+
+    res
+      .status(200)
+      .json({ message: "Cash payment confirmed successfully.", booking });
+
+    // 🔔 Send notification to renter
+    try {
+      await createNotification({
+        userId: booking.user._id,
+        title: "Cash Payment Verified ✅",
+        message: `Your cash payment for ${booking.listing.name} has been confirmed by the owner. Booking is now completed.`,
+        type: "payment",
+      });
+    } catch (notifErr) {
+      console.error("Notification error:", notifErr.message);
+    }
+
+    // 📧 Send email to renter
+    try {
+      const { cashPaymentVerifiedTemplate } =
+        await import("../utils/emailTemplates/bookingTemplates.js");
+      await sendEmail({
+        email: booking.user.email,
+        subject: `Cash Payment Confirmed: ${booking.listing.name}`,
+        html: cashPaymentVerifiedTemplate(
+          booking.user.name,
+          booking.listing.name,
+          booking,
+        ),
+      });
+    } catch (emailErr) {
+      console.error("Email error:", emailErr.message);
+    }
+  } catch (error) {
+    console.error("Mark Cash Paid Error:", error.message);
+    res
+      .status(500)
+      .json({
+        message: "Failed to confirm cash payment",
+        error: error.message,
+      });
+  }
+};

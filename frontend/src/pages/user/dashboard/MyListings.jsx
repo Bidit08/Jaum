@@ -1049,10 +1049,19 @@ const MyVehicles = () => {
               </p>
 
               <div className="flex items-center gap-4 p-4 bg-slate-50 rounded-2xl border border-slate-100 mb-8">
-                <img
+                {/* <img
                   src={
                     v.photos && v.photos.length > 0
                       ? `${BACKEND_URL}${v.photos[0]}`
+                      : ""
+                  }
+                  className="w-16 h-16 object-cover rounded-xl shadow-sm"
+                  alt=""
+                /> */}
+                <img
+                  src={
+                    vehicleToDelete.photos && vehicleToDelete.photos.length > 0
+                      ? `${BACKEND_URL}${vehicleToDelete.photos[0]}`
                       : ""
                   }
                   className="w-16 h-16 object-cover rounded-xl shadow-sm"

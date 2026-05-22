@@ -246,3 +246,33 @@ export const bookingCompletedTemplate = (userName, listingName) => `
   </div>
 </div>
 `;
+
+export const cashPaymentVerifiedTemplate = (userName, listingName, booking) => `
+<div style="${baseStyle}">
+  <div style="${containerStyle}">
+    <div style="${headerStyle}; background-color: #10b981;">
+      <h1 style="color: #ffffff; margin: 0; font-size: 24px;">✅ Cash Payment Verified!</h1>
+    </div>
+    <div style="${contentStyle}">
+      <p style="font-size: 16px; margin: 0;">Hi <strong>${userName}</strong>,</p>
+      <p style="font-size: 16px; line-height: 1.5; margin-top: 16px;">
+        Great news! The owner has confirmed your <strong>cash payment</strong> for <strong>${listingName}</strong>. Your booking is now fully confirmed.
+      </p>
+
+      <div style="${infoBoxStyle}">
+        <h3 style="margin: 0 0 12px 0; font-size: 16px; color: #374151;">Payment Details:</h3>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Vehicle:</strong> ${listingName}</p>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Amount Paid:</strong> Rs. ${booking.totalPrice?.toLocaleString()}</p>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Payment Method:</strong> Cash</p>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Receipt No:</strong> ${booking.receiptNumber || "N/A"}</p>
+        <p style="margin: 4px 0; font-size: 14px;"><strong>Verified At:</strong> ${new Date().toLocaleString()}</p>
+      </div>
+
+      <a href="${process.env.FRONTEND_URL}/dashboard/my-visits" style="${buttonStyle}">View My Booking</a>
+    </div>
+    <div style="${footerStyle}">
+      &copy; ${new Date().getFullYear()} Jaum Rentals. All rights reserved.
+    </div>
+  </div>
+</div>
+`;

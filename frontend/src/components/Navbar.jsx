@@ -433,10 +433,15 @@ const Navbar = () => {
     <nav className="w-full fixed top-0 left-0 z-50 bg-slate-950/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
       <div className="container mx-auto px-4 py-4 flex justify-between items-center">
         {/* Logo */}
-        <Link to="/">
+        {/* <Link to="/">
           <h1 className="text-2xl font-black text-white tracking-widest uppercase">
             Jaum
           </h1>
+        </Link> */}
+        {/* Logo */}
+        <Link to="/">
+          <img src="/Jaum.png" alt="Logo" className="h-15 w-20" />
+          {/* <h1 className="text-2xl font-black text-white tracking-widest uppercase">Jaum</h1> */}
         </Link>
 
         {/* Nav Links */}

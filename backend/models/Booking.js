@@ -230,6 +230,10 @@ const bookingSchema = new mongoose.Schema(
     refundAmount: {
       type: Number,
     },
+
+    cashPaidAt: {
+      type: Date,
+    },
   },
   { timestamps: true },
 );
