@@ -3242,6 +3242,7 @@ import {
   ChevronUp,
   ChevronLeft,
   ChevronRight,
+  MessageCircle,
 } from "lucide-react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
@@ -3370,6 +3371,42 @@ const ListingDetails = () => {
     fetchListingAndReviews();
     window.scrollTo(0, 0);
   }, [id, navigate]);
+
+  const handleMessageOwner = async () => {
+    try {
+      const userStr = localStorage.getItem("user");
+      if (!userStr) {
+        toast.error("Please login to message the owner.");
+        navigate("/login");
+        return;
+      }
+      const user = JSON.parse(userStr);
+
+      const ownerId = listing.owner?._id || listing.owner;
+      if (!ownerId) {
+        toast.error("Owner information not found.");
+        return;
+      }
+
+      // Fallback check if user ID matches owner ID
+      if (user._id === ownerId || user.id === ownerId) {
+        toast.info("This is your own listing.");
+        return;
+      }
+
+      const res = await api.post("/chat", {
+        receiverId: ownerId,
+        listingId: listing._id,
+      });
+
+      navigate("/dashboard/chat", {
+        state: { activeConversation: res.data._id },
+      });
+    } catch (err) {
+      toast.error("Failed to start conversation.");
+      console.error(err);
+    }
+  };
 
   if (loading) {
     return (
@@ -3871,20 +3908,29 @@ const ListingDetails = () => {
             )}
 
             {/* Owner Details Card */}
-            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex items-center gap-4">
-              <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-2xl font-semibold text-white uppercase overflow-hidden shrink-0">
-                {(listing.owner?.name || listing.ownerName || "P")[0]}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+              <div className="flex items-center gap-4">
+                <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-2xl font-semibold text-white uppercase overflow-hidden shrink-0">
+                  {(listing.owner?.name || listing.ownerName || "P")[0]}
+                </div>
+                <div>
+                  <h2 className="text-xl font-semibold text-slate-900">
+                    Hosted by{" "}
+                    {listing.owner?.name || listing.ownerName || "Prasana"}
+                  </h2>
+                  <p className="text-slate-500 text-[15px] flex items-center gap-2 mt-1">
+                    <Shield size={16} className="text-emerald-500" /> Identity
+                    verified
+                  </p>
+                </div>
               </div>
-              <div>
-                <h2 className="text-xl font-semibold text-slate-900">
-                  Hosted by{" "}
-                  {listing.owner?.name || listing.ownerName || "Prasana"}
-                </h2>
-                <p className="text-slate-500 text-[15px] flex items-center gap-2 mt-1">
-                  <Shield size={16} className="text-emerald-500" /> Identity
-                  verified
-                </p>
-              </div>
+              <button
+                onClick={handleMessageOwner}
+                className="flex items-center gap-2 px-6 py-3 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl font-bold transition-colors shadow-sm whitespace-nowrap"
+              >
+                <MessageCircle size={18} />
+                Message Owner
+              </button>
             </section>
 
             {/* Reviews Card */}

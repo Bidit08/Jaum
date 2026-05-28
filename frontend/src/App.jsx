@@ -354,6 +354,7 @@ import PaymentFailure from "./pages/user/PaymentFailure";
 import DamageReportPage from "./pages/user/dashboard/DamageReportPage";
 import DamageReportsList from "./pages/user/dashboard/DamageReportsList";
 import NotificationsPage from "./pages/user/dashboard/NotificationsPage";
+import Chat from "./pages/user/dashboard/Chat";
 
 import UserDashboardLayout from "./layouts/UserDashboardLayout";
 import ProtectedRoute from "./routes/ProtectedRoute";
@@ -417,6 +418,7 @@ function App() {
             />
             <Route path="reports" element={<DamageReportsList />} />
             <Route path="notifications" element={<NotificationsPage />} />
+            <Route path="chat" element={<Chat />} />
           </Route>
         </Route>
 

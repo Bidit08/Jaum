@@ -357,8 +357,17 @@ import {
   DropdownMenuSeparator,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu";
-import { User, LayoutDashboard, Moon, LogIn, LogOut, Bell } from "lucide-react";
+import {
+  User,
+  LayoutDashboard,
+  Moon,
+  LogIn,
+  LogOut,
+  Bell,
+  MessageSquare,
+} from "lucide-react";
 import NotificationPanel from "./NotificationPanel";
+import { socket } from "@/utils/socket";
 
 const BACKEND_URL = "http://localhost:5000";
 
@@ -370,6 +379,7 @@ const Navbar = () => {
   });
   const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const [unreadCount, setUnreadCount] = useState(0);
+  const [chatUnreadCount, setChatUnreadCount] = useState(0);
 
   // Load user (from backend if token exists)
   useEffect(() => {
@@ -398,27 +408,52 @@ const Navbar = () => {
     return () => window.removeEventListener("authChanged", loadUser);
   }, []);
 
-  // Fetch unread count
+  // Fetch unread counts (Notifications & Chat)
   useEffect(() => {
     if (!user) {
       setUnreadCount(0);
+      setChatUnreadCount(0);
       return;
     }
 
-    const fetchUnreadCount = async () => {
+    const fetchCounts = async () => {
       try {
-        const res = await api.get("/notifications");
-        const count = res.data.filter((n) => !n.isRead).length;
-        setUnreadCount(count);
+        const [notifRes, chatRes] = await Promise.all([
+          api.get("/notifications"),
+          api.get("/chat/unread-count"),
+        ]);
+
+        setUnreadCount(notifRes.data.filter((n) => !n.isRead).length);
+        setChatUnreadCount(chatRes.data.count);
       } catch (err) {
-        console.error("Failed to fetch unread count");
+        console.error("Failed to fetch unread counts");
       }
     };
 
-    fetchUnreadCount();
-    const interval = setInterval(fetchUnreadCount, 60000); // Poll every minute
+    fetchCounts();
+    const interval = setInterval(fetchCounts, 60000); // Poll every minute
 
-    return () => clearInterval(interval);
+    // Listen for cross-component read updates
+    window.addEventListener("chatReadUpdated", fetchCounts);
+
+    // Setup global socket connection for real-time badge updates
+    socket.connect();
+    socket.emit("addUser", user._id || user.id);
+
+    const handleSocketNotification = () => {
+      fetchCounts(); // Refresh unread count immediately
+    };
+
+    socket.on("newMessageNotification", handleSocketNotification);
+    socket.on("getMessage", handleSocketNotification);
+
+    return () => {
+      clearInterval(interval);
+      window.removeEventListener("chatReadUpdated", fetchCounts);
+      socket.off("newMessageNotification", handleSocketNotification);
+      socket.off("getMessage", handleSocketNotification);
+      // We don't necessarily disconnect here so that it persists across routes
+    };
   }, [user]);
 
   // Logout
@@ -431,16 +466,10 @@ const Navbar = () => {
 
   return (
     <nav className="w-full fixed top-0 left-0 z-50 bg-slate-950/70 backdrop-blur-xl border-b border-white/10 transition-all duration-300">
-      <div className="container mx-auto px-4 py-4 flex justify-between items-center">
-        {/* Logo */}
-        {/* <Link to="/">
-          <h1 className="text-2xl font-black text-white tracking-widest uppercase">
-            Jaum
-          </h1>
-        </Link> */}
+      <div className="container mx-auto px-2 py-1.5 flex justify-between items-center">
         {/* Logo */}
         <Link to="/">
-          <img src="/Jaum.png" alt="Logo" className="h-15 w-20" />
+          <img src="/Jaum4.png" alt="Logo" className="w-45" />
           {/* <h1 className="text-2xl font-black text-white tracking-widest uppercase">Jaum</h1> */}
         </Link>
 
@@ -464,10 +493,16 @@ const Navbar = () => {
           >
             Comparison
           </Link>
-          {/* <Link to="/services" className="hover:text-cyan-400 transition-colors duration-300">
+          {/* <Link
+            to="/services"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Services
           </Link>
-          <Link to="/contact" className="hover:text-cyan-400 transition-colors duration-300">
+          <Link
+            to="/contact"
+            className="hover:text-cyan-400 transition-colors duration-300"
+          >
             Contact
           </Link> */}
         </div>
@@ -481,6 +516,24 @@ const Navbar = () => {
             List Vehicles
           </Link>
 
+          {/* Messages */}
+          {user && (
+            <div className="relative">
+              <button
+                onClick={() => navigate("/dashboard/chat")}
+                className="p-2 text-gray-400 hover:text-white transition-colors relative active:scale-90"
+                title="Messages"
+              >
+                <MessageSquare size={20} />
+                {chatUnreadCount > 0 && (
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
+                    {chatUnreadCount > 9 ? "9+" : chatUnreadCount}
+                  </span>
+                )}
+              </button>
+            </div>
+          )}
+
           {/* Notifications */}
           {user && (
             <div className="relative">
@@ -490,7 +543,8 @@ const Navbar = () => {
               >
                 <Bell size={20} />
                 {unreadCount > 0 && (
-                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-cyan-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse border-2 border-slate-950">
+                  // <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center animate-pulse border-2 border-slate-950">
+                  <span className="absolute top-1.5 right-1.5 w-4 h-4 bg-blue-500 text-white text-[10px] font-bold rounded-full flex items-center justify-center">
                     {unreadCount > 9 ? "9+" : unreadCount}
                   </span>
                 )}

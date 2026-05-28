@@ -70,12 +70,88 @@ import paymentRoutes from "./routes/paymentRoutes.js";
 import reviewRoutes from "./routes/reviewRoutes.js";
 import damageRoutes from "./routes/damageRoutes.js";
 import notificationRoutes from "./routes/notificationRoutes.js";
+import chatRoutes from "./routes/chatRoutes.js";
+import { Server } from "socket.io";
+import http from "http";
 
 import path from "path";
 
 dotenv.config();
 
 const app = express();
+const server = http.createServer(app);
+
+// Initialize Socket.IO
+const io = new Server(server, {
+  cors: {
+    origin: "*", // Adjust this in production to match your frontend URL
+    methods: ["GET", "POST"],
+  },
+});
+
+// Attach Socket.IO to the req object so routes can use it if needed
+app.use((req, res, next) => {
+  req.io = io;
+  next();
+});
+
+// Store connected users (userId -> socketId)
+const userSocketMap = new Map();
+
+io.on("connection", (socket) => {
+  console.log("🟢 User connected:", socket.id);
+
+  // User logs in / connects
+  socket.on("addUser", (userId) => {
+    if (userId) {
+      userSocketMap.set(userId, socket.id);
+      console.log(`👤 User ${userId} mapped to socket ${socket.id}`);
+    }
+  });
+
+  // Handle joining a specific conversation room
+  socket.on("joinRoom", (conversationId) => {
+    socket.join(conversationId);
+    console.log(`User joined room: ${conversationId}`);
+  });
+
+  // Handle sending message
+  socket.on(
+    "sendMessage",
+    ({ conversationId, senderId, receiverId, text, messageId, createdAt }) => {
+      // Send to everyone in the room (including sender to verify)
+      io.to(conversationId).emit("getMessage", {
+        _id: messageId,
+        conversationId,
+        sender: { _id: senderId }, // Simplified sender object for frontend state
+        text,
+        createdAt: createdAt || Date.now(),
+        isRead: false,
+      });
+
+      // If receiver is online but not in the room, we could emit a notification
+      const receiverSocketId = userSocketMap.get(receiverId);
+      if (receiverSocketId) {
+        io.to(receiverSocketId).emit("newMessageNotification", {
+          conversationId,
+          senderId,
+          text,
+        });
+      }
+    },
+  );
+
+  socket.on("disconnect", () => {
+    console.log("🔴 User disconnected:", socket.id);
+    // Remove from map
+    for (const [userId, socketId] of userSocketMap.entries()) {
+      if (socketId === socket.id) {
+        userSocketMap.delete(userId);
+        break;
+      }
+    }
+  });
+});
 
 // ✅ Middleware
 app.use(cors());
@@ -124,7 +200,8 @@ app.use("/api/damage", damageRoutes);
 
 app.use("/api/admin", adminRoutes);
 app.use("/api/notifications", notificationRoutes);
+app.use("/api/chat", chatRoutes);
 
 // ✅ Start Server
 const PORT = process.env.PORT || 5000;
-app.listen(PORT, () => console.log(`✅ Server started on port ${PORT}`));
+server.listen(PORT, () => console.log(`✅ Server started on port ${PORT}`));

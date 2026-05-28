@@ -1455,7 +1455,7 @@ const HeroSection = () => {
                     <div className="flex items-end">
                       <Button
                         onClick={handleCarSearch}
-                        className="w-full h-12 bg-blue-400 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors"
+                        className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
                       >
                         <Search className="w-5 mr-2" />
                         Find Vehicle
@@ -1553,7 +1553,7 @@ const HeroSection = () => {
                     <div className="flex items-end">
                       <Button
                         onClick={handleSeatSearch}
-                        className="w-full h-12 bg-blue-400 hover:bg-cyan-500 text-white font-semibold rounded-xl transition-colors"
+                        className="w-full h-12 bg-blue-500 hover:bg-blue-600 text-white font-semibold rounded-xl transition-colors"
                       >
                         <Search className="w-5 mr-2" />
                         Find Seats

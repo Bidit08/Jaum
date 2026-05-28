@@ -757,7 +757,8 @@ export const getAllListings = async (req, res) => {
   try {
     const listings = await Listing.find({
       isApproved: true,
-      $or: [{ status: "active" }, { status: { $exists: false } }],
+      // $or: [{ status: "active" }, { status: { $exists: false } }],
+      status: "active",
       $or: [
         { listingType: "full" },
         { listingType: "seats", departureTime: { $gt: new Date() } },

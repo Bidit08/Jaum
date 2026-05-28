@@ -1024,6 +1024,7 @@ import {
   CalendarSearch,
   Eye,
   Users,
+  MessageSquare,
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
@@ -1056,7 +1057,7 @@ const navItems = [
   { name: "Profile", path: "/dashboard/profile", icon: User },
   { name: "My Listings", path: "/dashboard/vehicles", icon: Car },
   { name: "Add Vehicle", path: "/dashboard/add-vehicle", icon: PlusCircle },
-  // { name: "Security", path: "/dashboard/security", icon: ShieldCheck },
+  { name: "Chat", path: "/dashboard/chat", icon: MessageSquare },
   {
     name: "Incoming Bookings",
     path: "/dashboard/incoming-bookings",
@@ -1107,19 +1108,16 @@ const SidebarNavigation = ({
         <NavLink
           to="/"
           className={cn(
-            "flex items-center gap-4 overflow-hidden group",
+            "flex items-center gap-3 overflow-hidden group",
             isCollapsed && !isMobile && "mx-auto",
           )}
         >
-          {/* <div className="w-10 h-10 bg-gradient-to-br from-blue-600 to-indigo-600 rounded-xl flex items-center justify-center text-white font-black shadow-lg shadow-blue-500/20 group-hover:scale-105 transition-transform duration-300 shrink-0">
-            J
-          </div> */}
-
-          {!isCollapsed && (
-            <span className="text-2xl font-black text-slate-900 whitespace-nowrap group-hover:text-blue-600 transition-colors tracking-tight uppercase">
-              Jaum
-            </span>
-          )}
+          {/* Logo */}
+          <img
+            src="/Jaum12.png"
+            alt="Jaum Logo"
+            className="w-40 object-contain transition-transform duration-300 group-hover:scale-105"
+          />
         </NavLink>
 
         {/* Collapse button (desktop only) */}

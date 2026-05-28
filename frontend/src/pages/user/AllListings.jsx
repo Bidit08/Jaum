@@ -2211,6 +2211,875 @@
 
 // export default AllListings;
 
+// import React, { useEffect, useState } from "react";
+// import {
+//   Search,
+//   Car,
+//   Users,
+//   LayoutGrid,
+//   Gauge,
+//   SlidersHorizontal,
+//   X,
+//   ChevronDown,
+//   Fuel,
+//   Check,
+//   Calendar,
+//   Sparkles,
+//   MapPin,
+// } from "lucide-react";
+// import { useNavigate, useSearchParams } from "react-router-dom";
+// import Navbar from "@/components/Navbar";
+// import Footer from "@/components/Footer";
+// import api from "../../utils/api";
+// import FloatingCompareBar from "../../components/FloatingCompareBar";
+// import { useComparison } from "../../context/ComparisonContext";
+
+// const BACKEND_URL = "http://localhost:5000";
+
+// const AllListings = () => {
+//   const [listings, setListings] = useState([]);
+//   const [filteredListings, setFilteredListings] = useState([]);
+//   const [loading, setLoading] = useState(true);
+
+//   // Core filter states
+//   const [activeFilter, setActiveFilter] = useState("all"); // 'all', 'full', 'seats'
+//   const [searchQuery, setSearchQuery] = useState("");
+//   const [toQuery, setToQuery] = useState("");
+
+//   const [showFilters, setShowFilters] = useState(false); // Mobile drawer state
+//   const [fuelType, setFuelType] = useState([]);
+//   const [transmission, setTransmission] = useState([]);
+//   const [minSeats, setMinSeats] = useState(null);
+//   const [maxPrice, setMaxPrice] = useState(100000);
+//   const [sortBy, setSortBy] = useState("newest");
+//   const [categoryFilter, setCategoryFilter] = useState("");
+//   const [onlyAvailable, setOnlyAvailable] = useState(false); // Availability toggle
+
+//   const navigate = useNavigate();
+//   const [searchParams] = useSearchParams();
+//   const { selectedVehicles, addToComparison, removeFromComparison } =
+//     useComparison();
+
+//   // Load criteria from URL on mount
+//   useEffect(() => {
+//     const mode = searchParams.get("mode");
+//     const search = searchParams.get("search");
+//     const departure =
+//       searchParams.get("departure") || searchParams.get("location") || "";
+//     const destination = searchParams.get("destination");
+//     const fuel = searchParams.get("fuelType");
+//     const pass = searchParams.get("passengers") || searchParams.get("seats");
+//     const category = searchParams.get("category");
+
+//     if (mode) setActiveFilter(mode);
+//     if (search) setSearchQuery(search);
+//     else if (departure) setSearchQuery(departure);
+
+//     if (destination) setToQuery(destination);
+//     if (fuel) setFuelType([fuel]);
+//     if (pass) setMinSeats(parseInt(pass, 10));
+//     if (category) setCategoryFilter(category.toLowerCase());
+//   }, [searchParams]);
+
+//   // Fetch all listings
+//   useEffect(() => {
+//     const fetchListings = async () => {
+//       try {
+//         const res = await api.get("/listings");
+//         const data = Array.isArray(res.data) ? res.data : [];
+//         setListings(data);
+//         setFilteredListings(data);
+//       } catch (err) {
+//         console.error("Error fetching listings:", err);
+//       } finally {
+//         setLoading(false);
+//       }
+//     };
+//     fetchListings();
+//   }, []);
+
+//   // Multi-filter matching logic
+//   useEffect(() => {
+//     let result = listings;
+
+//     // Filter by Service Type (All, Rental, Ride Share)
+//     if (activeFilter !== "all") {
+//       result = result.filter((l) => l.listingType === activeFilter);
+//     }
+
+//     // Filter by Category
+//     if (categoryFilter) {
+//       result = result.filter((l) => {
+//         const cat = l.category?.toLowerCase() || "";
+//         const fuel = l.fuelType?.toLowerCase() || "";
+//         // "electric" category maps to fuelType === 'electric'
+//         if (categoryFilter === "electric") return fuel === "electric";
+//         return cat.includes(categoryFilter);
+//       });
+//     }
+
+//     // Filter by Search Query
+//     if (searchQuery) {
+//       const q = searchQuery.toLowerCase();
+//       result = result.filter(
+//         (l) =>
+//           l.name?.toLowerCase().includes(q) ||
+//           l.brand?.toLowerCase().includes(q) ||
+//           l.location?.toLowerCase().includes(q) ||
+//           l.departure?.toLowerCase().includes(q),
+//       );
+//     }
+
+//     // Filter by Destination
+//     if (toQuery) {
+//       const q = toQuery.toLowerCase();
+//       result = result.filter((l) => l.destination?.toLowerCase().includes(q));
+//     }
+
+//     // Filter by Fuel Type
+//     if (fuelType.length > 0) {
+//       result = result.filter((l) =>
+//         fuelType.includes(l.fuelType || "Gasoline"),
+//       );
+//     }
+
+//     // Filter by Transmission
+//     if (transmission.length > 0) {
+//       result = result.filter((l) =>
+//         transmission.includes(l.transmission || "Automatic"),
+//       );
+//     }
+
+//     // Filter by Min Seats
+//     if (minSeats !== null) {
+//       result = result.filter((l) => {
+//         const capacity =
+//           l.listingType === "seats" ? l.availableSeats || 0 : l.seats || 0;
+//         return Number(capacity) >= minSeats;
+//       });
+//     }
+
+//     // Filter by Price Range
+//     result = result.filter((l) => {
+//       const price = l.listingType === "full" ? l.pricePerDay : l.pricePerSeat;
+//       return (price ?? 0) <= maxPrice;
+//     });
+
+//     // Filter by Availability (Frontend only)
+//     if (onlyAvailable) {
+//       result = result.filter((l) => {
+//         if (l.listingType === "seats") {
+//           return Number(l.availableSeats || 0) > 0;
+//         }
+//         return true;
+//       });
+//     }
+
+//     // Sort listings
+//     result = [...result].sort((a, b) => {
+//       const priceA = a.listingType === "full" ? a.pricePerDay : a.pricePerSeat;
+//       const priceB = b.listingType === "full" ? b.pricePerDay : b.pricePerSeat;
+
+//       switch (sortBy) {
+//         case "price-asc":
+//           return (priceA ?? 0) - (priceB ?? 0);
+//         case "price-desc":
+//           return (priceB ?? 0) - (priceA ?? 0);
+//         case "popularity":
+//           return (b.views || 0) - (a.views || 0);
+//         case "newest":
+//         default:
+//           return (
+//             new Date(b.createdAt || 0).getTime() -
+//             new Date(a.createdAt || 0).getTime()
+//           );
+//       }
+//     });
+
+//     setFilteredListings(result);
+//   }, [
+//     activeFilter,
+//     categoryFilter,
+//     searchQuery,
+//     toQuery,
+//     listings,
+//     fuelType,
+//     transmission,
+//     minSeats,
+//     maxPrice,
+//     sortBy,
+//     onlyAvailable,
+//   ]);
+
+//   // Reset all criteria
+//   const clearAllAdvanced = () => {
+//     setSearchQuery("");
+//     setToQuery("");
+//     setFuelType([]);
+//     setTransmission([]);
+//     setMinSeats(null);
+//     setMaxPrice(100000);
+//     setSortBy("newest");
+//     setCategoryFilter("");
+//     setOnlyAvailable(false);
+//   };
+
+//   // Active filter count (excluding default parameters)
+//   const activeAdvCount =
+//     (fuelType.length || 0) +
+//     (transmission.length || 0) +
+//     (minSeats ? 1 : 0) +
+//     (maxPrice < 100000 ? 1 : 0) +
+//     (sortBy !== "newest" ? 1 : 0) +
+//     (categoryFilter ? 1 : 0) +
+//     (onlyAvailable ? 1 : 0);
+
+//   // Sub-components to avoid duplicate JSX
+//   const FilterControls = () => (
+//     <div className="space-y-7">
+//       {/* 1. Keyword Search */}
+//       <div className="space-y-2.5">
+//         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+//           Keyword Search
+//         </label>
+//         <div className="relative group">
+//           <Search
+//             className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"
+//             size={16}
+//           />
+//           <input
+//             type="text"
+//             placeholder="e.g. Tesla, SUV, Pokhara..."
+//             value={searchQuery}
+//             onChange={(e) => setSearchQuery(e.target.value)}
+//             className="w-full py-2.5 pl-11 pr-4 bg-slate-50 rounded-xl border border-slate-200 outline-none text-slate-950 text-xs font-semibold placeholder:text-slate-400 focus:border-blue-500/80 focus:ring-4 focus:ring-blue-500/5 transition-all shadow-inner"
+//           />
+//         </div>
+//       </div>
+
+//       {/* 2. Service/Rental Type */}
+//       <div className="space-y-2.5">
+//         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+//           Service Type
+//         </label>
+//         <div className="flex flex-col gap-1.5 p-1 bg-slate-50 border border-slate-200/80 rounded-2xl">
+//           {[
+//             { id: "all", label: "All Vehicles", icon: LayoutGrid },
+//             { id: "full", label: "Premium Rentals", icon: Car },
+//             { id: "seats", label: "Ride Shares", icon: Users },
+//           ].map((tab) => (
+//             <button
+//               key={tab.id}
+//               onClick={() => setActiveFilter(tab.id)}
+//               className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 ${
+//                 activeFilter === tab.id
+//                   ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm"
+//                   : "bg-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+//               }`}
+//             >
+//               <tab.icon
+//                 size={14}
+//                 className={
+//                   activeFilter === tab.id ? "text-white" : "text-slate-400"
+//                 }
+//               />
+//               <span>{tab.label}</span>
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* 3. Categories / Vehicle Styles */}
+//       <div className="space-y-2.5">
+//         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+//           Vehicle Category
+//         </label>
+//         <div className="flex flex-wrap gap-1.5">
+//           {[
+//             { id: "", label: "All Types" },
+//             { id: "suv", label: "SUV" },
+//             { id: "sedan", label: "Sedan" },
+//             { id: "electric", label: "Electric" },
+//             { id: "luxury", label: "Luxury" },
+//             { id: "hatchback", label: "Hatchback" },
+//           ].map((cat) => (
+//             <button
+//               key={cat.id}
+//               onClick={() => setCategoryFilter(cat.id)}
+//               className={`px-3 py-2 rounded-xl text-[10px] font-bold uppercase tracking-wider border transition-all duration-200 ${
+//                 categoryFilter === cat.id
+//                   ? "bg-slate-900 border-slate-900 text-white shadow-sm"
+//                   : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"
+//               }`}
+//             >
+//               {cat.label}
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* 4. Transmission */}
+//       <div className="space-y-2.5">
+//         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+//           Transmission
+//         </label>
+//         <div className="grid grid-cols-2 gap-2">
+//           {["Automatic", "Manual"].map((t) => {
+//             const isChecked = transmission.includes(t);
+//             return (
+//               <button
+//                 key={t}
+//                 onClick={() =>
+//                   setTransmission((prev) =>
+//                     isChecked ? prev.filter((x) => x !== t) : [...prev, t],
+//                   )
+//                 }
+//                 className={`px-3 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-wider flex items-center justify-between transition-all ${
+//                   isChecked
+//                     ? "bg-blue-50/60 border-blue-500/80 text-blue-700 shadow-sm shadow-blue-500/5 font-extrabold"
+//                     : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+//                 }`}
+//               >
+//                 <span>{t}</span>
+//                 {isChecked && (
+//                   <Check size={12} className="text-blue-600 stroke-[3]" />
+//                 )}
+//               </button>
+//             );
+//           })}
+//         </div>
+//       </div>
+
+//       {/* 5. Fuel Type */}
+//       <div className="space-y-2.5">
+//         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+//           <Fuel size={12} className="text-slate-400" /> Fuel Profile
+//         </label>
+//         <div className="grid grid-cols-2 gap-2">
+//           {["Electric", "Hybrid", "Diesel", "Gasoline"].map((t) => {
+//             const isChecked = fuelType.includes(t);
+//             return (
+//               <button
+//                 key={t}
+//                 onClick={() =>
+//                   setFuelType((prev) =>
+//                     isChecked ? prev.filter((x) => x !== t) : [...prev, t],
+//                   )
+//                 }
+//                 className={`px-3 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-wider flex items-center justify-between transition-all ${
+//                   isChecked
+//                     ? "bg-blue-50/60 border-blue-500/80 text-blue-700 shadow-sm shadow-blue-500/5 font-extrabold"
+//                     : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+//                 }`}
+//               >
+//                 <span>{t}</span>
+//                 {isChecked && (
+//                   <Check size={12} className="text-blue-600 stroke-[3]" />
+//                 )}
+//               </button>
+//             );
+//           })}
+//         </div>
+//       </div>
+
+//       {/* 6. Passenger Capacity */}
+//       <div className="space-y-2.5">
+//         <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+//           <Users size={12} className="text-slate-400" /> Passenger Capacity
+//         </label>
+//         <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-50 border border-slate-200/80">
+//           {[2, 4, 5, 7].map((n) => (
+//             <button
+//               key={n}
+//               onClick={() => setMinSeats(minSeats === n ? null : n)}
+//               className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+//                 minSeats === n
+//                   ? "bg-white text-blue-600 shadow-sm border border-slate-100 font-extrabold"
+//                   : "text-slate-500 hover:text-slate-800"
+//               }`}
+//             >
+//               {n}+
+//             </button>
+//           ))}
+//         </div>
+//       </div>
+
+//       {/* 7. Maximum Price Range */}
+//       <div className="space-y-3 pt-1">
+//         <div className="flex items-center justify-between">
+//           <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+//             Price Budget
+//           </label>
+//           <span className="text-[11px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+//             Rs. {maxPrice.toLocaleString()}
+//           </span>
+//         </div>
+//         <div className="px-1.5">
+//           <input
+//             type="range"
+//             min="0"
+//             max="100000"
+//             step="1000"
+//             value={maxPrice}
+//             onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
+//             className="w-full accent-blue-600 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+//           />
+//           <div className="flex justify-between text-[9px] font-bold text-slate-400 mt-2">
+//             <span>Rs. 0</span>
+//             <span>Rs. 100K</span>
+//           </div>
+//         </div>
+//       </div>
+
+//       {/* 8. Availability Switch */}
+//       <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+//         <div className="space-y-0.5">
+//           <p className="text-xs font-black text-slate-800 uppercase tracking-wider">
+//             Available Only
+//           </p>
+//           <p className="text-[9px] font-medium text-slate-400 leading-tight">
+//             Hide fully-booked ride shares
+//           </p>
+//         </div>
+//         <label className="relative inline-flex items-center cursor-pointer">
+//           <input
+//             type="checkbox"
+//             checked={onlyAvailable}
+//             onChange={(e) => setOnlyAvailable(e.target.checked)}
+//             className="sr-only peer"
+//           />
+//           <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+//         </label>
+//       </div>
+
+//       {/* 9. Reset Button */}
+//       {activeAdvCount > 0 && (
+//         <button
+//           onClick={clearAllAdvanced}
+//           className="w-full py-3 mt-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-800 transition-colors shadow-sm"
+//         >
+//           Reset All Filters
+//         </button>
+//       )}
+//     </div>
+//   );
+
+//   return (
+//     <div className="min-h-screen bg-[#f5f7fb] text-slate-900 font-sans antialiased">
+//       <Navbar />
+
+//       <main className="max-w-[1600px] mx-auto px-3 sm:px-4 lg:px-6 pt-20 pb-20 relative z-10">
+//         {/* ================= COMPACT HERO HEADER ================= */}
+//         <div className="mb-5 pt-1">
+//           <div className="max-w-3xl">
+//             <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-none">
+//               Find Your Premium{" "}
+//               <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
+//                 Ride.
+//               </span>
+//             </h1>
+//             <p className="text-slate-500 font-medium text-xs mt-1">
+//               Seamless premium rentals and verified shared commutes. Clean,
+//               fast, and verified.
+//             </p>
+//           </div>
+//         </div>
+
+//         {/* ================= TWO COLUMN MARKETPLACE LAYOUT ================= */}
+//         <div className="flex flex-col lg:flex-row gap-6 items-start">
+//           {/* ================= FIXED LEFT SIDEBAR FILTERS (DESKTOP) ================= */}
+//           <aside className="hidden lg:block w-64 shrink-0 sticky top-24 self-start max-h-[calc(100vh-120px)] overflow-y-auto bg-white/95 backdrop-blur-md border border-slate-200/50 shadow-[0_4px_24px_rgb(0,0,0,0.01)] rounded-2xl p-4 custom-scrollbar pr-2">
+//             <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+//               <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+//                 <SlidersHorizontal size={14} className="text-blue-500" /> Filter
+//                 Criteria
+//               </h3>
+//               {activeAdvCount > 0 && (
+//                 <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shadow-sm ring-2 ring-white">
+//                   {activeAdvCount}
+//                 </span>
+//               )}
+//             </div>
+//             <FilterControls />
+//           </aside>
+
+//           {/* ================= MAIN CONTENT LISTINGS AREA ================= */}
+//           <div className="flex-1 w-full space-y-6">
+//             {/* COMPACT HORIZONTAL SEARCH + SORTING ROW */}
+//             <div className="flex flex-col md:flex-row items-center gap-3 bg-white p-2.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.015)] border border-slate-200/60 relative z-20">
+//               {/* Compact Search Bar */}
+//               <div className="flex-1 w-full relative group">
+//                 <Search
+//                   className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"
+//                   size={16}
+//                 />
+//                 <input
+//                   type="text"
+//                   placeholder="Search model, brand or location..."
+//                   value={searchQuery}
+//                   onChange={(e) => setSearchQuery(e.target.value)}
+//                   className="w-full py-2.5 pl-11 pr-4 bg-slate-50 rounded-xl border border-slate-100 outline-none text-slate-900 font-semibold placeholder:text-slate-400 focus:bg-white focus:border-blue-500/50 transition-all text-xs"
+//                 />
+//               </div>
+
+//               <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
+//                 {/* Sort dropdown */}
+//                 <div className="relative flex-1 md:flex-none">
+//                   <select
+//                     value={sortBy}
+//                     onChange={(e) => setSortBy(e.target.value)}
+//                     className="w-full appearance-none bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-slate-800 outline-none hover:bg-slate-100/80 focus:border-blue-500/50 transition-all cursor-pointer"
+//                   >
+//                     <option value="newest">Sort: Newest</option>
+//                     <option value="price-asc">Price: Low to High</option>
+//                     <option value="price-desc">Price: High to Low</option>
+//                     <option value="popularity">Most Popular</option>
+//                   </select>
+//                   <ChevronDown
+//                     className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+//                     size={12}
+//                   />
+//                 </div>
+
+//                 {/* Mobile Filter Toggle Button */}
+//                 <button
+//                   onClick={() => setShowFilters(true)}
+//                   className="lg:hidden relative flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider transition-all"
+//                 >
+//                   <SlidersHorizontal size={12} />
+//                   <span>Filters</span>
+//                   {activeAdvCount > 0 && (
+//                     <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-black shadow-sm border border-white">
+//                       {activeAdvCount}
+//                     </span>
+//                   )}
+//                 </button>
+//               </div>
+//             </div>
+
+//             {/* LIVE INVENTORY & DISMISSIBLE ACTIVE CHIPS ROW */}
+//             <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+//               <div className="flex items-center gap-2">
+//                 <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+//                 <p className="text-xs font-bold text-slate-500">
+//                   <span className="text-slate-900 font-extrabold">
+//                     {filteredListings.length}
+//                   </span>{" "}
+//                   vehicles ready for bookings
+//                 </p>
+//               </div>
+
+//               {/* Active Filter Chips */}
+//               {(categoryFilter ||
+//                 fuelType.length > 0 ||
+//                 transmission.length > 0 ||
+//                 minSeats !== null ||
+//                 maxPrice < 100000 ||
+//                 activeFilter !== "all" ||
+//                 onlyAvailable) && (
+//                 <div className="flex flex-wrap gap-1.5 items-center">
+//                   {activeFilter !== "all" && (
+//                     <button
+//                       onClick={() => setActiveFilter("all")}
+//                       className="px-2.5 py-1.5 rounded-lg bg-blue-50/80 border border-blue-100 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-blue-600 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       Type: {activeFilter === "full" ? "Rental" : "Ride Share"}{" "}
+//                       <X size={10} />
+//                     </button>
+//                   )}
+//                   {categoryFilter && (
+//                     <button
+//                       onClick={() => setCategoryFilter("")}
+//                       className="px-2.5 py-1.5 rounded-lg bg-blue-50/80 border border-blue-100 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-blue-600 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       Cat: {categoryFilter} <X size={10} />
+//                     </button>
+//                   )}
+//                   {fuelType.map((f) => (
+//                     <button
+//                       key={f}
+//                       onClick={() =>
+//                         setFuelType((prev) => prev.filter((x) => x !== f))
+//                       }
+//                       className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       {f} <X size={10} />
+//                     </button>
+//                   ))}
+//                   {transmission.map((t) => (
+//                     <button
+//                       key={t}
+//                       onClick={() =>
+//                         setTransmission((prev) => prev.filter((x) => x !== t))
+//                       }
+//                       className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       {t} <X size={10} />
+//                     </button>
+//                   ))}
+//                   {minSeats !== null && (
+//                     <button
+//                       onClick={() => setMinSeats(null)}
+//                       className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       Seats: {minSeats}+ <X size={10} />
+//                     </button>
+//                   )}
+//                   {maxPrice < 100000 && (
+//                     <button
+//                       onClick={() => setMaxPrice(100000)}
+//                       className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       Max: Rs. {maxPrice.toLocaleString()} <X size={10} />
+//                     </button>
+//                   )}
+//                   {onlyAvailable && (
+//                     <button
+//                       onClick={() => setOnlyAvailable(false)}
+//                       className="px-2.5 py-1.5 rounded-lg bg-blue-50/80 border border-blue-100 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-blue-600 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+//                     >
+//                       Available Only <X size={10} />
+//                     </button>
+//                   )}
+//                 </div>
+//               )}
+//             </div>
+
+//             {/* ================= COMPACT CONTENT-DENSE LISTINGS GRID ================= */}
+//             {loading ? (
+//               <div className="flex justify-center items-center py-28">
+//                 <div className="animate-spin rounded-full h-9 w-9 border-b-2 border-blue-600"></div>
+//               </div>
+//             ) : filteredListings.length === 0 ? (
+//               <div className="text-center py-20 bg-white rounded-3xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.01)] flex flex-col items-center justify-center p-6">
+//                 <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mb-3 border border-slate-100">
+//                   <Car size={20} />
+//                 </div>
+//                 <p className="text-slate-800 font-extrabold text-sm uppercase tracking-wide">
+//                   No Matches Found
+//                 </p>
+//                 <p className="text-slate-400 text-xs mt-1 max-w-xs">
+//                   We couldn't find any vehicles matching those parameters. Try
+//                   clearing your filters or broadening your search criteria.
+//                 </p>
+//                 <button
+//                   onClick={clearAllAdvanced}
+//                   className="mt-5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-md shadow-blue-500/10 hover:shadow-lg"
+//                 >
+//                   Clear All Filters
+//                 </button>
+//               </div>
+//             ) : (
+//               <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+//                 {filteredListings.map((listing) => {
+//                   const isFull = listing.listingType === "full";
+//                   const isFullyBooked =
+//                     !isFull && Number(listing.availableSeats || 0) === 0;
+
+//                   return (
+//                     <div
+//                       key={listing._id}
+//                       className="group relative bg-white rounded-2xl border border-slate-100/90 shadow-[0_4px_20px_rgba(0,0,0,0.015)] hover:border-slate-200/80 hover:shadow-[0_12px_32px_rgba(0,0,0,0.045)] transition-all duration-300 overflow-hidden flex flex-col hover:-translate-y-1"
+//                     >
+//                       {/* Image block (Aspect ratio optimized) */}
+//                       <div className="relative h-[165px] overflow-hidden bg-slate-100 w-full shrink-0">
+//                         <img
+//                           src={
+//                             listing.photos?.length
+//                               ? listing.photos[0].startsWith("http")
+//                                 ? listing.photos[0]
+//                                 : `${BACKEND_URL}${listing.photos[0]}`
+//                               : "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000"
+//                           }
+//                           alt={listing.name}
+//                           className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+//                         />
+
+//                         {/* Dark Premium Gradient Image Overlay */}
+//                         <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent pointer-events-none" />
+
+//                         {/* Premium Compare Checkbox Overlay */}
+//                         <div className="absolute top-2.5 right-2.5 z-20">
+//                           <label className="flex items-center cursor-pointer bg-slate-900/65 backdrop-blur-md p-1.5 rounded-lg shadow-sm hover:shadow-md hover:bg-slate-900 border border-white/10 transition">
+//                             <input
+//                               type="checkbox"
+//                               checked={selectedVehicles.some(
+//                                 (v) => v._id === listing._id,
+//                               )}
+//                               onChange={(e) => {
+//                                 e.stopPropagation();
+//                                 e.target.checked
+//                                   ? addToComparison(listing)
+//                                   : removeFromComparison(listing._id);
+//                               }}
+//                               className="w-3.5 h-3.5 rounded border-slate-500/50 text-blue-600 focus:ring-blue-500/40 cursor-pointer accent-blue-600"
+//                             />
+//                           </label>
+//                         </div>
+
+//                         {/* Glassmorphic Badges */}
+//                         <div className="absolute bottom-2.5 left-2.5 flex flex-wrap gap-1.5 pointer-events-none">
+//                           <span className="px-2 py-0.5 rounded bg-slate-950/45 backdrop-blur-md border border-white/15 text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+//                             {isFull ? <Car size={10} /> : <Users size={10} />}
+//                             {isFull ? "Rental" : "Ride Share"}
+//                           </span>
+//                           {isFullyBooked && (
+//                             <span className="px-2 py-0.5 rounded bg-rose-500/80 backdrop-blur-md border border-rose-500/45 text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+//                               Fully Booked
+//                             </span>
+//                           )}
+//                           {!isFull &&
+//                             !isFullyBooked &&
+//                             listing.availableSeats !== undefined && (
+//                               <span className="px-2 py-0.5 rounded bg-cyan-600/80 backdrop-blur-md border border-cyan-500/30 text-white text-[9px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+//                                 {listing.availableSeats} Left
+//                               </span>
+//                             )}
+//                         </div>
+//                       </div>
+
+//                       {/* Info Text Block */}
+//                       <div className="p-4 flex flex-col flex-1 justify-between bg-white">
+//                         <div className="space-y-1.5">
+//                           <div className="flex items-start justify-between">
+//                             <div className="min-w-0 flex-1">
+//                               <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest mb-0.5 truncate">
+//                                 {listing.brand || "Premium"}
+//                               </p>
+//                               <h3 className="text-base font-extrabold tracking-tight text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1 leading-tight">
+//                                 {listing.name}
+//                               </h3>
+//                             </div>
+//                           </div>
+
+//                           {/* Specific micro details */}
+//                           <div className="flex items-center gap-1.5 text-[9px] font-extrabold text-slate-400 uppercase tracking-wider">
+//                             <span>{listing.transmission || "Auto"}</span>
+//                             <span className="text-slate-300">•</span>
+//                             <span>{listing.fuelType || "Gasoline"}</span>
+//                             <span className="text-slate-300">•</span>
+//                             <span>
+//                               {listing.listingType === "seats"
+//                                 ? `${listing.availableSeats || 0} seats available`
+//                                 : `${listing.seats || 5} seats`}
+//                             </span>
+//                           </div>
+//                         </div>
+
+//                         {/* Location Details (if present) */}
+//                         {(listing.location || listing.departure) && (
+//                           <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-500 mt-2.5">
+//                             <MapPin size={11} className="text-slate-400" />
+//                             <span className="truncate">
+//                               {listing.location || listing.departure}
+//                             </span>
+//                           </div>
+//                         )}
+
+//                         {/* Price & Action Row */}
+//                         <div className="mt-4 pt-3.5 border-t border-slate-100 flex items-center justify-between gap-2">
+//                           <div className="min-w-0">
+//                             <p className="text-[9px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">
+//                               Price
+//                             </p>
+//                             <div className="flex items-baseline gap-0.5">
+//                               <span className="text-base font-extrabold text-slate-900 leading-none">
+//                                 Rs.{" "}
+//                                 {isFull
+//                                   ? (listing.pricePerDay || 0).toLocaleString()
+//                                   : (
+//                                       listing.pricePerSeat || 0
+//                                     ).toLocaleString()}
+//                               </span>
+//                               <span className="text-[9px] font-bold text-slate-400">
+//                                 /{isFull ? "day" : "seat"}
+//                               </span>
+//                             </div>
+//                           </div>
+
+//                           <button
+//                             onClick={() => navigate(`/listings/${listing._id}`)}
+//                             className="px-4 py-2 bg-slate-900 hover:bg-blue-600 text-white font-extrabold text-[9px] uppercase tracking-widest rounded-xl transition-all duration-300 shadow-sm hover:shadow-[0_0_12px_rgba(37,99,235,0.35)] active:scale-[0.98] shrink-0"
+//                           >
+//                             View Details
+//                           </button>
+//                         </div>
+//                       </div>
+//                     </div>
+//                   );
+//                 })}
+//               </div>
+//             )}
+//           </div>
+//         </div>
+//       </main>
+
+//       {/* ================= SLIDING DRAWER FILTERS (MOBILE ONLY) ================= */}
+//       {showFilters && (
+//         <div className="fixed inset-0 z-[120] flex justify-end">
+//           {/* Backdrop */}
+//           <div
+//             className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
+//             onClick={() => setShowFilters(false)}
+//           />
+//           {/* Slider Drawer Panel */}
+//           <div className="relative w-full max-w-sm h-full bg-white shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right duration-200">
+//             {/* Header */}
+//             <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
+//               <div>
+//                 <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-1.5">
+//                   <SlidersHorizontal size={14} className="text-blue-500" />{" "}
+//                   Filter Criteria
+//                 </h3>
+//                 <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+//                   Refine Your Results
+//                 </p>
+//               </div>
+//               <button
+//                 onClick={() => setShowFilters(false)}
+//                 className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 transition-colors shadow-sm"
+//               >
+//                 <X size={14} />
+//               </button>
+//             </div>
+
+//             {/* Scrollable Filters Content */}
+//             <div className="flex-1 overflow-y-auto p-5 scrollbar-thin">
+//               <FilterControls />
+//             </div>
+
+//             {/* Sticky bottom Action Bar */}
+//             <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex gap-2 shrink-0">
+//               <button
+//                 onClick={() => setShowFilters(false)}
+//                 className="flex-1 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[10px] uppercase tracking-widest transition-all shadow-md shadow-blue-500/10 active:scale-95"
+//               >
+//                 Apply Criteria
+//               </button>
+//               {activeAdvCount > 0 && (
+//                 <button
+//                   onClick={() => {
+//                     clearAllAdvanced();
+//                     setShowFilters(false);
+//                   }}
+//                   className="py-3.5 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 transition-all"
+//                 >
+//                   Reset
+//                 </button>
+//               )}
+//             </div>
+//           </div>
+//         </div>
+//       )}
+
+//       <FloatingCompareBar />
+//       <Footer />
+//     </div>
+//   );
+// };
+
+// export default AllListings;
+
 import React, { useEffect, useState } from "react";
 import {
   Search,
@@ -2218,13 +3087,16 @@ import {
   Users,
   LayoutGrid,
   Gauge,
-  MapPin,
-  ChevronRight,
-  ShieldCheck,
   SlidersHorizontal,
   X,
   ChevronDown,
   Fuel,
+  Check,
+  Calendar,
+  Sparkles,
+  MapPin,
+  Zap,
+  Gem,
 } from "lucide-react";
 import { useNavigate, useSearchParams } from "react-router-dom";
 import Navbar from "@/components/Navbar";
@@ -2240,16 +3112,19 @@ const AllListings = () => {
   const [filteredListings, setFilteredListings] = useState([]);
   const [loading, setLoading] = useState(true);
 
-  const [activeFilter, setActiveFilter] = useState("all");
+  // Core filter states
+  const [activeFilter, setActiveFilter] = useState("all"); // 'all', 'full', 'seats'
   const [searchQuery, setSearchQuery] = useState("");
   const [toQuery, setToQuery] = useState("");
 
-  const [showFilters, setShowFilters] = useState(false);
+  const [showFilters, setShowFilters] = useState(false); // Mobile drawer state
   const [fuelType, setFuelType] = useState([]);
   const [transmission, setTransmission] = useState([]);
   const [minSeats, setMinSeats] = useState(null);
   const [maxPrice, setMaxPrice] = useState(100000);
   const [sortBy, setSortBy] = useState("newest");
+  const [categoryFilter, setCategoryFilter] = useState("");
+  const [onlyAvailable, setOnlyAvailable] = useState(false); // Availability toggle
 
   const navigate = useNavigate();
   const [searchParams] = useSearchParams();
@@ -2265,6 +3140,7 @@ const AllListings = () => {
     const destination = searchParams.get("destination");
     const fuel = searchParams.get("fuelType");
     const pass = searchParams.get("passengers") || searchParams.get("seats");
+    const category = searchParams.get("category");
 
     if (mode) setActiveFilter(mode);
     if (search) setSearchQuery(search);
@@ -2273,12 +3149,10 @@ const AllListings = () => {
     if (destination) setToQuery(destination);
     if (fuel) setFuelType([fuel]);
     if (pass) setMinSeats(parseInt(pass, 10));
-
-    // Note: Trip-specific date filtering for seats could be added to the state logic
-    // but the current AllListings state doesn't have a specific global 'travelDate' filter,
-    // so we apply general filters for now.
+    if (category) setCategoryFilter(category.toLowerCase());
   }, [searchParams]);
 
+  // Fetch all listings
   useEffect(() => {
     const fetchListings = async () => {
       try {
@@ -2295,13 +3169,27 @@ const AllListings = () => {
     fetchListings();
   }, []);
 
+  // Multi-filter matching logic
   useEffect(() => {
     let result = listings;
 
+    // Filter by Service Type (All, Rental, Ride Share)
     if (activeFilter !== "all") {
       result = result.filter((l) => l.listingType === activeFilter);
     }
 
+    // Filter by Category
+    if (categoryFilter) {
+      result = result.filter((l) => {
+        const cat = l.category?.toLowerCase() || "";
+        const fuel = l.fuelType?.toLowerCase() || "";
+        // "electric" category maps to fuelType === 'electric'
+        if (categoryFilter === "electric") return fuel === "electric";
+        return cat.includes(categoryFilter);
+      });
+    }
+
+    // Filter by Search Query
     if (searchQuery) {
       const q = searchQuery.toLowerCase();
       result = result.filter(
@@ -2313,23 +3201,27 @@ const AllListings = () => {
       );
     }
 
+    // Filter by Destination
     if (toQuery) {
       const q = toQuery.toLowerCase();
       result = result.filter((l) => l.destination?.toLowerCase().includes(q));
     }
 
+    // Filter by Fuel Type
     if (fuelType.length > 0) {
       result = result.filter((l) =>
         fuelType.includes(l.fuelType || "Gasoline"),
       );
     }
 
+    // Filter by Transmission
     if (transmission.length > 0) {
       result = result.filter((l) =>
         transmission.includes(l.transmission || "Automatic"),
       );
     }
 
+    // Filter by Min Seats
     if (minSeats !== null) {
       result = result.filter((l) => {
         const capacity =
@@ -2338,11 +3230,23 @@ const AllListings = () => {
       });
     }
 
+    // Filter by Price Range
     result = result.filter((l) => {
       const price = l.listingType === "full" ? l.pricePerDay : l.pricePerSeat;
       return (price ?? 0) <= maxPrice;
     });
 
+    // Filter by Availability (Frontend only)
+    if (onlyAvailable) {
+      result = result.filter((l) => {
+        if (l.listingType === "seats") {
+          return Number(l.availableSeats || 0) > 0;
+        }
+        return true;
+      });
+    }
+
+    // Sort listings
     result = [...result].sort((a, b) => {
       const priceA = a.listingType === "full" ? a.pricePerDay : a.pricePerSeat;
       const priceB = b.listingType === "full" ? b.pricePerDay : b.pricePerSeat;
@@ -2366,6 +3270,7 @@ const AllListings = () => {
     setFilteredListings(result);
   }, [
     activeFilter,
+    categoryFilter,
     searchQuery,
     toQuery,
     listings,
@@ -2374,8 +3279,10 @@ const AllListings = () => {
     minSeats,
     maxPrice,
     sortBy,
+    onlyAvailable,
   ]);
 
+  // Reset all criteria
   const clearAllAdvanced = () => {
     setSearchQuery("");
     setToQuery("");
@@ -2384,448 +3291,654 @@ const AllListings = () => {
     setMinSeats(null);
     setMaxPrice(100000);
     setSortBy("newest");
+    setCategoryFilter("");
+    setOnlyAvailable(false);
   };
 
+  // Active filter count (excluding default parameters)
   const activeAdvCount =
     (fuelType.length || 0) +
     (transmission.length || 0) +
     (minSeats ? 1 : 0) +
     (maxPrice < 100000 ? 1 : 0) +
-    (sortBy !== "newest" ? 1 : 0);
+    (sortBy !== "newest" ? 1 : 0) +
+    (categoryFilter ? 1 : 0) +
+    (onlyAvailable ? 1 : 0);
 
-  return (
-    <div className="min-h-screen bg-[#f5f7fb] text-slate-900 font-sans">
-      <Navbar />
-
-      <main className="max-w-7xl mx-auto px-4 sm:px-6 pt-32 pb-24 relative z-10">
-        {/* ================= HEADER & SEARCH ROW ================= */}
-        <div className="flex flex-col mb-10 space-y-8">
-          <div className="space-y-3">
-            <h1 className="text-4xl md:text-5xl font-black tracking-tight text-slate-900">
-              Find Your Perfect{" "}
-              <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">
-                Ride.
-              </span>
-            </h1>
-            <p className="text-slate-500 font-medium max-w-xl text-lg relative z-10">
-              The premier marketplace connecting you with luxury vehicles and
-              exclusive ride-shares.
-            </p>
-          </div>
-
-          <div className="flex flex-col lg:flex-row items-center justify-between gap-4 bg-white p-3 rounded-3xl shadow-sm border border-slate-200/60 relative z-20">
-            {/* Search Input */}
-            <div className="flex-1 w-full relative group">
-              <Search
-                className="absolute left-6 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"
-                size={20}
-              />
-              <input
-                type="text"
-                placeholder="Search by city, model or brand..."
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full py-4 pl-16 pr-6 bg-slate-50 rounded-full border border-slate-200 outline-none text-slate-900 font-medium placeholder:text-slate-400 focus:ring-2 focus:ring-blue-500/20 focus:border-blue-500 transition-all text-sm shadow-inner"
-              />
-            </div>
-
-            <div className="flex items-center gap-3 w-full lg:w-auto">
-              {/* Sort By */}
-              <div className="relative flex-1 lg:flex-none">
-                <select
-                  value={sortBy}
-                  onChange={(e) => setSortBy(e.target.value)}
-                  className="w-full appearance-none bg-slate-50 border border-slate-200 rounded-full px-6 py-4 pr-12 text-xs font-bold uppercase tracking-widest text-slate-500 outline-none hover:bg-slate-100 focus:border-blue-500 transition-all cursor-pointer shadow-sm"
-                >
-                  <option value="newest">Sort: Newest</option>
-                  <option value="price-asc">Price: Low to High</option>
-                  <option value="price-desc">Price: High to Low</option>
-                  <option value="popularity">Most Popular</option>
-                </select>
-                <ChevronDown
-                  className="absolute right-5 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
-                  size={16}
-                />
-              </div>
-
-              {/* Advanced Filters Button */}
-              <button
-                onClick={() => setShowFilters(true)}
-                className="relative flex-1 lg:flex-none inline-flex items-center justify-center gap-2 px-8 py-4 rounded-full bg-slate-900 text-white font-bold text-xs uppercase tracking-widest hover:bg-slate-800 transition-all shadow-md hover:shadow-lg hover:scale-105 active:scale-95"
-              >
-                <SlidersHorizontal size={14} />
-                Filters
-                {activeAdvCount > 0 && (
-                  <span className="absolute -top-1 -right-1 w-5 h-5 rounded-full bg-blue-500 text-white flex items-center justify-center text-[10px] font-black shadow-sm ring-2 ring-white">
-                    {activeAdvCount}
-                  </span>
-                )}
-              </button>
-            </div>
-          </div>
+  // Sub-components to avoid duplicate JSX
+  const FilterControls = () => (
+    <div className="space-y-7">
+      {/* 1. Keyword Search */}
+      <div className="space-y-2.5">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Keyword Search
+        </label>
+        <div className="relative group">
+          <Search
+            className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"
+            size={16}
+          />
+          <input
+            type="text"
+            placeholder="e.g. Tesla, SUV, Pokhara..."
+            value={searchQuery}
+            onChange={(e) => setSearchQuery(e.target.value)}
+            className="w-full py-2.5 pl-11 pr-4 bg-slate-50 rounded-xl border border-slate-200 outline-none text-slate-950 text-xs font-semibold placeholder:text-slate-400 focus:border-blue-500/80 focus:ring-4 focus:ring-blue-500/5 transition-all shadow-inner"
+          />
         </div>
+      </div>
 
-        {/* ================= PILL FILTER TABS ================= */}
-        <div className="flex flex-col md:flex-row items-start md:items-center justify-between gap-6 mb-12 border-b border-slate-200/60 pb-8">
-          <div className="flex gap-2 bg-slate-100/50 p-1.5 rounded-full border border-slate-200 overflow-x-auto w-full md:w-auto hide-scrollbar">
-            {[
-              { id: "all", label: "All Listings", icon: LayoutGrid },
-              { id: "full", label: "Premium Rentals", icon: Car },
-              { id: "seats", label: "Ride Shares", icon: Users },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                onClick={() => setActiveFilter(tab.id)}
-                className={`flex items-center gap-2 whitespace-nowrap px-6 py-3 rounded-full font-bold text-xs uppercase tracking-widest transition-all duration-300 ${
-                  activeFilter === tab.id
-                    ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md scale-105"
-                    : "bg-transparent text-slate-500 border border-transparent hover:bg-white hover:border-slate-200 hover:text-slate-900 hover:shadow-sm"
-                }`}
-              >
-                <tab.icon
-                  size={16}
-                  className={
-                    activeFilter === tab.id ? "text-white" : "text-slate-400"
-                  }
-                />
-                {tab.label}
-              </button>
-            ))}
-          </div>
-
-          <div className="hidden md:block text-right">
-            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-1">
-              Live Inventory
-            </p>
-            <p className="text-2xl font-black text-slate-900 leading-none">
-              {filteredListings.length}{" "}
-              <span className="text-slate-500 text-sm font-semibold">
-                Ready
-              </span>
-            </p>
-          </div>
-        </div>
-
-        {/* ================= ACTIVE FILTER CHIPS ================= */}
-        {(fuelType.length > 0 ||
-          transmission.length > 0 ||
-          minSeats !== null ||
-          maxPrice < 100000 ||
-          sortBy !== "newest") && (
-          <div className="flex flex-wrap gap-2 mb-10">
-            {toQuery && (
-              <button
-                onClick={() => setToQuery("")}
-                className="px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-rose-300 hover:bg-rose-50 text-[10px] font-bold uppercase text-slate-600 hover:text-rose-600 tracking-widest flex items-center gap-2 transition-all"
-              >
-                Destination: {toQuery} <X size={12} />
-              </button>
-            )}
-            {fuelType.map((f) => (
-              <button
-                key={f}
-                onClick={() =>
-                  setFuelType((prev) => prev.filter((x) => x !== f))
+      {/* 2. Service/Rental Type */}
+      <div className="space-y-2.5">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Service Type
+        </label>
+        <div className="flex flex-col gap-1.5 p-1 bg-slate-50 border border-slate-200/80 rounded-2xl">
+          {[
+            { id: "all", label: "All Vehicles", icon: LayoutGrid },
+            { id: "full", label: "Premium Rentals", icon: Car },
+            { id: "seats", label: "Ride Shares", icon: Users },
+          ].map((tab) => (
+            <button
+              key={tab.id}
+              onClick={() => setActiveFilter(tab.id)}
+              className={`flex items-center gap-2.5 px-4 py-2.5 rounded-xl font-bold text-xs uppercase tracking-wider transition-all duration-200 ${
+                activeFilter === tab.id
+                  ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-sm"
+                  : "bg-transparent text-slate-500 hover:text-slate-800 hover:bg-slate-100"
+              }`}
+            >
+              <tab.icon
+                size={14}
+                className={
+                  activeFilter === tab.id ? "text-white" : "text-slate-400"
                 }
-                className="px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-rose-300 hover:bg-rose-50 text-[10px] font-bold uppercase text-slate-600 hover:text-rose-600 tracking-widest flex items-center gap-2 transition-all"
-              >
-                {f} <X size={12} />
-              </button>
-            ))}
-            {transmission.map((t) => (
+              />
+              <span>{tab.label}</span>
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 4. Transmission */}
+      <div className="space-y-2.5">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+          Transmission
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {["Automatic", "Manual"].map((t) => {
+            const isChecked = transmission.includes(t);
+            return (
               <button
                 key={t}
                 onClick={() =>
-                  setTransmission((prev) => prev.filter((x) => x !== t))
+                  setTransmission((prev) =>
+                    isChecked ? prev.filter((x) => x !== t) : [...prev, t],
+                  )
                 }
-                className="px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-rose-300 hover:bg-rose-50 text-[10px] font-bold uppercase text-slate-600 hover:text-rose-600 tracking-widest flex items-center gap-2 transition-all"
+                className={`px-3 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-wider flex items-center justify-between transition-all ${
+                  isChecked
+                    ? "bg-blue-50/60 border-blue-500/80 text-blue-700 shadow-sm shadow-blue-500/5 font-extrabold"
+                    : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                }`}
               >
-                {t} <X size={12} />
+                <span>{t}</span>
+                {isChecked && (
+                  <Check size={12} className="text-blue-600 stroke-[3]" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 5. Fuel Type */}
+      <div className="space-y-2.5">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+          <Fuel size={12} className="text-slate-400" /> Fuel Profile
+        </label>
+        <div className="grid grid-cols-2 gap-2">
+          {["Electric", "Hybrid", "Diesel", "Gasoline"].map((t) => {
+            const isChecked = fuelType.includes(t);
+            return (
+              <button
+                key={t}
+                onClick={() =>
+                  setFuelType((prev) =>
+                    isChecked ? prev.filter((x) => x !== t) : [...prev, t],
+                  )
+                }
+                className={`px-3 py-2.5 rounded-xl border text-[10px] font-black uppercase tracking-wider flex items-center justify-between transition-all ${
+                  isChecked
+                    ? "bg-blue-50/60 border-blue-500/80 text-blue-700 shadow-sm shadow-blue-500/5 font-extrabold"
+                    : "bg-white border-slate-200 text-slate-500 hover:border-slate-300"
+                }`}
+              >
+                <span>{t}</span>
+                {isChecked && (
+                  <Check size={12} className="text-blue-600 stroke-[3]" />
+                )}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
+      {/* 6. Passenger Capacity */}
+      <div className="space-y-2.5">
+        <label className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-1.5">
+          <Users size={12} className="text-slate-400" /> Passenger Capacity
+        </label>
+        <div className="flex items-center gap-1 p-1 rounded-2xl bg-slate-50 border border-slate-200/80">
+          {[2, 4, 5, 7].map((n) => (
+            <button
+              key={n}
+              onClick={() => setMinSeats(minSeats === n ? null : n)}
+              className={`flex-1 py-2 rounded-xl text-xs font-black transition-all ${
+                minSeats === n
+                  ? "bg-white text-blue-600 shadow-sm border border-slate-100 font-extrabold"
+                  : "text-slate-500 hover:text-slate-800"
+              }`}
+            >
+              {n}+
+            </button>
+          ))}
+        </div>
+      </div>
+
+      {/* 7. Maximum Price Range */}
+      <div className="space-y-3 pt-1">
+        <div className="flex items-center justify-between">
+          <label className="text-[10px] font-black uppercase tracking-widest text-slate-400">
+            Price Budget
+          </label>
+          <span className="text-[11px] font-black text-blue-600 bg-blue-50 px-2 py-0.5 rounded-md border border-blue-100">
+            Rs. {maxPrice.toLocaleString()}
+          </span>
+        </div>
+        <div className="px-1.5">
+          <input
+            type="range"
+            min="0"
+            max="100000"
+            step="1000"
+            value={maxPrice}
+            onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
+            className="w-full accent-blue-600 h-1.5 bg-slate-200 rounded-lg appearance-none cursor-pointer"
+          />
+          <div className="flex justify-between text-[9px] font-bold text-slate-400 mt-2">
+            <span>Rs. 0</span>
+            <span>Rs. 100K</span>
+          </div>
+        </div>
+      </div>
+
+      {/* 8. Availability Switch */}
+      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+        <div className="space-y-0.5">
+          <p className="text-xs font-black text-slate-800 uppercase tracking-wider">
+            Available Only
+          </p>
+          <p className="text-[9px] font-medium text-slate-400 leading-tight">
+            Hide fully-booked ride shares
+          </p>
+        </div>
+        <label className="relative inline-flex items-center cursor-pointer">
+          <input
+            type="checkbox"
+            checked={onlyAvailable}
+            onChange={(e) => setOnlyAvailable(e.target.checked)}
+            className="sr-only peer"
+          />
+          <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
+        </label>
+      </div>
+
+      {/* 9. Reset Button */}
+      {activeAdvCount > 0 && (
+        <button
+          onClick={clearAllAdvanced}
+          className="w-full py-3 mt-4 rounded-xl border border-slate-200 bg-white hover:bg-slate-50 text-[10px] font-black uppercase tracking-widest text-slate-500 hover:text-slate-800 transition-colors shadow-sm"
+        >
+          Reset All Filters
+        </button>
+      )}
+    </div>
+  );
+
+  return (
+    <div className="min-h-screen bg-[#f5f7fb] text-slate-900 font-sans antialiased">
+      <Navbar />
+
+      {/* ================= FULL WIDTH CATEGORY TAB BAR ================= */}
+      <div className="mt-[76px] bg-white border-b border-slate-200/60 shadow-[0_4px_20px_rgb(0,0,0,0.015)] overflow-x-auto custom-scrollbar no-scrollbar flex items-center relative z-40">
+        <div className="max-w-[1600px] mx-auto px-6 sm:px-8 md:px-10 lg:px-12 w-full pt-3 pb-3">
+          <div className="flex items-center justify-between w-full min-w-max md:min-w-full gap-4">
+            {[
+              { id: "", label: "All", icon: LayoutGrid },
+              { id: "suv", label: "SUV", icon: Car },
+              { id: "sedan", label: "Sedan", icon: Car },
+              { id: "electric", label: "Electric", icon: Zap },
+              { id: "luxury", label: "Luxury", icon: Gem },
+              { id: "hatchback", label: "Hatchback", icon: Car },
+            ].map((cat) => (
+              <button
+                key={cat.id}
+                onClick={() => setCategoryFilter(cat.id)}
+                className={`flex items-center justify-center flex-1 min-w-[110px] gap-2 px-5 py-2.5 rounded-full font-bold text-xs uppercase tracking-wider transition-all duration-300 ${
+                  categoryFilter === cat.id
+                    ? "bg-gradient-to-r from-blue-600 to-cyan-500 text-white shadow-md shadow-blue-500/20"
+                    : "bg-transparent text-slate-500 hover:text-blue-600 hover:bg-slate-50"
+                }`}
+              >
+                <cat.icon
+                  size={16}
+                  className={
+                    categoryFilter === cat.id ? "text-white" : "opacity-80"
+                  }
+                />
+                <span className="whitespace-nowrap">{cat.label}</span>
               </button>
             ))}
-            {minSeats !== null && (
-              <button
-                onClick={() => setMinSeats(null)}
-                className="px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-rose-300 hover:bg-rose-50 text-[10px] font-bold uppercase text-slate-600 hover:text-rose-600 tracking-widest flex items-center gap-2 transition-all"
-              >
-                Seats: {minSeats}+ <X size={12} />
-              </button>
-            )}
-            {maxPrice < 100000 && (
-              <button
-                onClick={() => setMaxPrice(100000)}
-                className="px-4 py-2 rounded-full bg-white border border-slate-200 shadow-sm hover:border-rose-300 hover:bg-rose-50 text-[10px] font-bold uppercase text-slate-600 hover:text-rose-600 tracking-widest flex items-center gap-2 transition-all"
-              >
-                Under Rs. {maxPrice} <X size={12} />
-              </button>
-            )}
           </div>
-        )}
+        </div>
+      </div>
 
-        {/* ================= GRID LISTINGS ================= */}
-        {loading ? (
-          <div className="flex justify-center items-center py-32">
-            <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          </div>
-        ) : filteredListings.length === 0 ? (
-          <div className="text-center py-32 bg-white rounded-3xl border border-slate-200 shadow-sm">
-            <p className="text-slate-500 font-medium text-lg">
-              No vehicles found matching your criteria.
+      <main className="max-w-[1600px] mx-auto px-6 sm:px-8 md:px-10 lg:px-12 pt-8 pb-20 relative z-10">
+        {/* ================= COMPACT HERO HEADER ================= */}
+        {/* <div className="mb-6">
+          <div className="max-w-3xl">
+            <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-slate-900 leading-none">
+              Find Your Premium <span className="text-transparent bg-clip-text bg-gradient-to-r from-blue-600 to-cyan-500">Ride.</span>
+            </h1>
+            <p className="text-slate-500 font-medium text-xs mt-1.5">
+              Seamless premium rentals and verified shared commutes. Clean, fast, and verified.
             </p>
-            <button
-              onClick={clearAllAdvanced}
-              className="mt-4 text-blue-600 font-bold hover:text-blue-700 underline underline-offset-4"
-            >
-              Clear All Filters
-            </button>
           </div>
-        ) : (
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-8">
-            {filteredListings.map((listing) => {
-              const isFull = listing.listingType === "full";
+        </div> */}
 
-              return (
-                <div
-                  key={listing._id}
-                  className="group relative bg-white rounded-2xl border border-slate-100 shadow-[0_8px_30px_rgb(0,0,0,0.04)] hover:border-slate-200 hover:shadow-[0_20px_40px_rgb(0,0,0,0.08)] transition-all duration-300 overflow-hidden flex flex-col hover:-translate-y-1"
+        {/* ================= TWO COLUMN MARKETPLACE LAYOUT ================= */}
+        <div className="flex flex-col lg:flex-row gap-6 items-start">
+          {/* ================= FIXED LEFT SIDEBAR FILTERS (DESKTOP) ================= */}
+          <aside className="hidden lg:block w-80 shrink-0 sticky top-24 self-start max-h-[calc(100vh-120px)] overflow-y-auto bg-white/95 backdrop-blur-md border border-slate-200/50 shadow-[0_4px_24px_rgb(0,0,0,0.01)] rounded-2xl p-5 custom-scrollbar pr-2">
+            <div className="flex items-center justify-between pb-4 mb-4 border-b border-slate-100">
+              <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-2">
+                <SlidersHorizontal size={14} className="text-blue-500" /> Filter
+                Criteria
+              </h3>
+              {activeAdvCount > 0 && (
+                <span className="w-5 h-5 rounded-full bg-blue-600 text-white flex items-center justify-center text-[10px] font-black shadow-sm ring-2 ring-white">
+                  {activeAdvCount}
+                </span>
+              )}
+            </div>
+            <FilterControls />
+          </aside>
+
+          {/* ================= MAIN CONTENT LISTINGS AREA ================= */}
+          <div className="flex-1 w-full space-y-6">
+            {/* COMPACT HORIZONTAL SEARCH + SORTING ROW */}
+            <div className="flex flex-col md:flex-row items-center gap-3 bg-white p-2.5 rounded-2xl shadow-[0_4px_20px_rgb(0,0,0,0.015)] border border-slate-200/60 relative z-20">
+              {/* Compact Search Bar */}
+              <div className="flex-1 w-full md:max-w-md relative group">
+                <Search
+                  className="absolute left-4 top-1/2 -translate-y-1/2 text-slate-400 group-focus-within:text-blue-500 transition-colors"
+                  size={16}
+                />
+                <input
+                  type="text"
+                  placeholder="Search model, brand or location..."
+                  value={searchQuery}
+                  onChange={(e) => setSearchQuery(e.target.value)}
+                  className="w-full py-2.5 pl-11 pr-4 bg-slate-50 rounded-xl border border-slate-100 outline-none text-slate-900 font-semibold placeholder:text-slate-400 focus:bg-white focus:border-blue-500/50 transition-all text-xs"
+                />
+              </div>
+
+              <div className="flex items-center gap-2 w-full md:w-auto shrink-0">
+                {/* Sort dropdown */}
+                <div className="relative flex-1 md:flex-none">
+                  <select
+                    value={sortBy}
+                    onChange={(e) => setSortBy(e.target.value)}
+                    className="w-full appearance-none bg-slate-50 border border-slate-100 rounded-xl pl-4 pr-10 py-2.5 text-[10px] font-black uppercase tracking-wider text-slate-500 hover:text-slate-800 outline-none hover:bg-slate-100/80 focus:border-blue-500/50 transition-all cursor-pointer"
+                  >
+                    <option value="newest">Sort: Newest</option>
+                    <option value="price-asc">Price: Low to High</option>
+                    <option value="price-desc">Price: High to Low</option>
+                    <option value="popularity">Most Popular</option>
+                  </select>
+                  <ChevronDown
+                    className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"
+                    size={12}
+                  />
+                </div>
+
+                {/* Mobile Filter Toggle Button */}
+                <button
+                  onClick={() => setShowFilters(true)}
+                  className="lg:hidden relative flex-1 md:flex-none inline-flex items-center justify-center gap-1.5 px-5 py-2.5 rounded-xl bg-slate-900 hover:bg-slate-800 text-white font-bold text-[10px] uppercase tracking-wider transition-all"
                 >
-                  {/* Image Block */}
-                  <div className="relative h-[220px] overflow-hidden bg-slate-100">
-                    <img
-                      src={
-                        listing.photos?.length
-                          ? listing.photos[0].startsWith("http")
-                            ? listing.photos[0]
-                            : `${BACKEND_URL}${listing.photos[0]}`
-                          : "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000"
+                  <SlidersHorizontal size={12} />
+                  <span>Filters</span>
+                  {activeAdvCount > 0 && (
+                    <span className="w-4 h-4 rounded-full bg-blue-500 text-white flex items-center justify-center text-[9px] font-black shadow-sm border border-white">
+                      {activeAdvCount}
+                    </span>
+                  )}
+                </button>
+              </div>
+            </div>
+
+            {/* LIVE INVENTORY & DISMISSIBLE ACTIVE CHIPS ROW */}
+            <div className="flex flex-wrap items-center justify-between gap-3 pt-1">
+              <div className="flex items-center gap-2">
+                <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse"></span>
+                <p className="text-xs font-bold text-slate-500">
+                  <span className="text-slate-900 font-extrabold">
+                    {filteredListings.length}
+                  </span>{" "}
+                  vehicles ready for bookings
+                </p>
+              </div>
+
+              {/* Active Filter Chips */}
+              {(categoryFilter ||
+                fuelType.length > 0 ||
+                transmission.length > 0 ||
+                minSeats !== null ||
+                maxPrice < 100000 ||
+                activeFilter !== "all" ||
+                onlyAvailable) && (
+                <div className="flex flex-wrap gap-1.5 items-center">
+                  {activeFilter !== "all" && (
+                    <button
+                      onClick={() => setActiveFilter("all")}
+                      className="px-2.5 py-1.5 rounded-lg bg-blue-50/80 border border-blue-100 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-blue-600 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      Type: {activeFilter === "full" ? "Rental" : "Ride Share"}{" "}
+                      <X size={10} />
+                    </button>
+                  )}
+                  {categoryFilter && (
+                    <button
+                      onClick={() => setCategoryFilter("")}
+                      className="px-2.5 py-1.5 rounded-lg bg-blue-50/80 border border-blue-100 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-blue-600 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      Cat: {categoryFilter} <X size={10} />
+                    </button>
+                  )}
+                  {fuelType.map((f) => (
+                    <button
+                      key={f}
+                      onClick={() =>
+                        setFuelType((prev) => prev.filter((x) => x !== f))
                       }
-                      alt={listing.name}
-                      className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-700 ease-out"
-                    />
+                      className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      {f} <X size={10} />
+                    </button>
+                  ))}
+                  {transmission.map((t) => (
+                    <button
+                      key={t}
+                      onClick={() =>
+                        setTransmission((prev) => prev.filter((x) => x !== t))
+                      }
+                      className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      {t} <X size={10} />
+                    </button>
+                  ))}
+                  {minSeats !== null && (
+                    <button
+                      onClick={() => setMinSeats(null)}
+                      className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      Seats: {minSeats}+ <X size={10} />
+                    </button>
+                  )}
+                  {maxPrice < 100000 && (
+                    <button
+                      onClick={() => setMaxPrice(100000)}
+                      className="px-2.5 py-1.5 rounded-lg bg-white border border-slate-200 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-slate-500 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      Max: Rs. {maxPrice.toLocaleString()} <X size={10} />
+                    </button>
+                  )}
+                  {onlyAvailable && (
+                    <button
+                      onClick={() => setOnlyAvailable(false)}
+                      className="px-2.5 py-1.5 rounded-lg bg-blue-50/80 border border-blue-100 hover:border-rose-200 hover:bg-rose-50 text-[9px] font-bold uppercase text-blue-600 hover:text-rose-600 tracking-wider flex items-center gap-1.5 transition-all"
+                    >
+                      Available Only <X size={10} />
+                    </button>
+                  )}
+                </div>
+              )}
+            </div>
 
-                    {/* Gradient Overlay */}
-                    <div className="absolute inset-0 bg-gradient-to-t from-slate-900/70 via-slate-900/0 to-slate-900/0 pointer-events-none" />
+            {/* ================= COMPACT CONTENT-DENSE LISTINGS GRID ================= */}
+            {loading ? (
+              <div className="flex justify-center items-center py-28">
+                <div className="animate-spin rounded-full h-9 w-9 border-b-2 border-blue-600"></div>
+              </div>
+            ) : filteredListings.length === 0 ? (
+              <div className="text-center py-20 bg-white rounded-3xl border border-slate-200/60 shadow-[0_8px_30px_rgb(0,0,0,0.01)] flex flex-col items-center justify-center p-6">
+                <div className="w-12 h-12 rounded-full bg-slate-50 flex items-center justify-center text-slate-400 mb-3 border border-slate-100">
+                  <Car size={20} />
+                </div>
+                <p className="text-slate-800 font-extrabold text-sm uppercase tracking-wide">
+                  No Matches Found
+                </p>
+                <p className="text-slate-400 text-xs mt-1 max-w-xs">
+                  We couldn't find any vehicles matching those parameters. Try
+                  clearing your filters or broadening your search criteria.
+                </p>
+                <button
+                  onClick={clearAllAdvanced}
+                  className="mt-5 px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-bold text-[10px] uppercase tracking-widest rounded-xl transition-all shadow-md shadow-blue-500/10 hover:shadow-lg"
+                >
+                  Clear All Filters
+                </button>
+              </div>
+            ) : (
+              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-x-2 gap-y-5">
+                {filteredListings.map((listing) => {
+                  const isFull = listing.listingType === "full";
+                  const isFullyBooked =
+                    !isFull && Number(listing.availableSeats || 0) === 0;
 
-                    {/* Compare Box */}
-                    <div className="absolute top-3 right-3 z-20">
-                      <label className="flex items-center cursor-pointer bg-white/90 backdrop-blur-md p-1.5 rounded-lg shadow-sm hover:shadow-md hover:bg-white transition group/check border border-slate-200">
-                        <input
-                          type="checkbox"
-                          checked={selectedVehicles.some(
-                            (v) => v._id === listing._id,
-                          )}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            e.target.checked
-                              ? addToComparison(listing)
-                              : removeFromComparison(listing._id);
-                          }}
-                          className="w-4 h-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 cursor-pointer"
+                  return (
+                    <div
+                      key={listing._id}
+                      className="group relative max-w-[240px] w-full mx-auto bg-white rounded-2xl border border-slate-100/90 shadow-[0_4px_16px_rgba(0,0,0,0.012)] hover:border-slate-200/80 hover:shadow-[0_10px_28px_rgba(0,0,0,0.04)] transition-all duration-300 overflow-hidden flex flex-col hover:-translate-y-1"
+                    >
+                      {/* Image block (Aspect ratio optimized) */}
+                      <div className="relative h-[155px] overflow-hidden bg-slate-100 w-full shrink-0">
+                        <img
+                          src={
+                            listing.photos?.length
+                              ? listing.photos[0].startsWith("http")
+                                ? listing.photos[0]
+                                : `${BACKEND_URL}${listing.photos[0]}`
+                              : "https://images.unsplash.com/photo-1503376780353-7e6692767b70?q=80&w=1000"
+                          }
+                          alt={listing.name}
+                          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                         />
-                      </label>
-                    </div>
 
-                    {/* Badges */}
-                    <div className="absolute bottom-3 left-3 flex flex-wrap gap-2">
-                      <span className="px-2.5 py-1 rounded-md bg-white/25 backdrop-blur-md border border-white/20 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                        {isFull ? <Car size={12} /> : <Users size={12} />}
-                        {isFull ? "Full" : "Seats"}
-                      </span>
-                      {!isFull && Number(listing.availableSeats) === 0 && (
-                        <span className="px-2.5 py-1 rounded-md bg-rose-500/90 backdrop-blur-md border border-rose-500/50 text-white text-[10px] font-bold uppercase tracking-wider flex items-center gap-1.5 shadow-sm">
-                          Fully Booked
-                        </span>
-                      )}
-                    </div>
-                  </div>
+                        {/* Dark Premium Gradient Image Overlay */}
+                        <div className="absolute inset-0 bg-gradient-to-t from-slate-950/70 via-slate-950/15 to-transparent pointer-events-none" />
 
-                  {/* Text Block */}
-                  <div className="p-5 flex flex-col flex-1 text-slate-900 justify-between">
-                    <div>
-                      <div className="flex justify-between items-start mb-1">
-                        <div className="flex-1 pr-3">
-                          <p className="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-1 line-clamp-1">
-                            {listing.brand || "Vehicle"}
-                          </p>
-                          <h3 className="text-xl font-black tracking-tight leading-tight text-slate-900 group-hover:text-blue-600 transition-colors line-clamp-1">
-                            {listing.name}
-                          </h3>
+                        {/* Premium Compare Checkbox Overlay */}
+                        <div className="absolute top-2 right-2 z-20">
+                          <label className="flex items-center cursor-pointer bg-slate-900/65 backdrop-blur-md p-1.5 rounded-lg shadow-sm hover:shadow-md hover:bg-slate-900 border border-white/10 transition">
+                            <input
+                              type="checkbox"
+                              checked={selectedVehicles.some(
+                                (v) => v._id === listing._id,
+                              )}
+                              onChange={(e) => {
+                                e.stopPropagation();
+                                e.target.checked
+                                  ? addToComparison(listing)
+                                  : removeFromComparison(listing._id);
+                              }}
+                              className="w-3.5 h-3.5 rounded border-slate-500/50 text-blue-600 focus:ring-blue-500/40 cursor-pointer accent-blue-600"
+                            />
+                          </label>
+                        </div>
+
+                        {/* Glassmorphic Badges */}
+                        <div className="absolute bottom-2 left-2 flex flex-wrap gap-1 pointer-events-none">
+                          <span className="px-1.5 py-0.5 rounded bg-slate-950/45 backdrop-blur-md border border-white/15 text-white text-[8px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                            {isFull ? <Car size={9} /> : <Users size={9} />}
+                            {isFull ? "Rental" : "Ride Share"}
+                          </span>
+                          {isFullyBooked && (
+                            <span className="px-1.5 py-0.5 rounded bg-rose-500/80 backdrop-blur-md border border-rose-500/45 text-white text-[8px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                              Fully Booked
+                            </span>
+                          )}
+                          {!isFull &&
+                            !isFullyBooked &&
+                            listing.availableSeats !== undefined && (
+                              <span className="px-1.5 py-0.5 rounded bg-cyan-600/80 backdrop-blur-md border border-cyan-500/30 text-white text-[8px] font-black uppercase tracking-widest flex items-center gap-1 shadow-sm">
+                                {listing.availableSeats} Left
+                              </span>
+                            )}
                         </div>
                       </div>
 
-                      {/* Specs */}
-                      <div className="flex items-center gap-1.5 text-[11px] font-semibold text-slate-500 mb-4 uppercase tracking-wider">
-                        <span>{listing.transmission || "Auto"}</span>
-                        <span className="text-slate-300">•</span>
-                        <span>{listing.fuelType || "Gasoline"}</span>
-                        <span className="text-slate-300">•</span>
-                        <span>
-                          {listing.listingType === "seats"
-                            ? `${listing.availableSeats || 0} seats left`
-                            : `${listing.seats || 5} seats`}
-                        </span>
-                      </div>
+                      {/* Info Text Block */}
+                      <div className="p-4 flex flex-col flex-1 justify-between bg-white">
+                        <div className="space-y-1.5">
+                          <div className="flex items-start justify-between">
+                            <div className="min-w-0 flex-1">
+                              <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest mb-0.5 truncate">
+                                {listing.brand || "Premium"}
+                              </p>
+                              <h3 className="text-sm font-black tracking-tight text-slate-800 group-hover:text-blue-600 transition-colors line-clamp-1 leading-tight">
+                                {listing.name}
+                              </h3>
+                            </div>
+                          </div>
 
-                      {/* Price Section */}
-                      <div className="flex items-end gap-1 mb-1">
-                        <p className="text-2xl font-black text-slate-900 leading-none">
-                          Rs.{" "}
-                          {isFull ? listing.pricePerDay : listing.pricePerSeat}
-                        </p>
-                        <p className="text-xs font-bold text-slate-400 mb-0.5">
-                          /{isFull ? "day" : "seat"}
-                        </p>
+                          {/* Specific micro details */}
+                          <div className="flex items-center gap-1 text-[10px] font-bold text-slate-400 uppercase tracking-wider">
+                            <span>{listing.transmission || "Auto"}</span>
+                            <span className="text-slate-300">•</span>
+                            <span>{listing.fuelType || "Gasoline"}</span>
+                            <span className="text-slate-300">•</span>
+                            <span>
+                              {listing.listingType === "seats"
+                                ? `${listing.availableSeats || 0} seats left`
+                                : `${listing.seats || 5} seats`}
+                            </span>
+                          </div>
+                        </div>
+
+                        {/* Location Details (if present) */}
+                        {(listing.location || listing.departure) && (
+                          <div className="flex items-center gap-1 text-[10px] font-semibold text-slate-500 mt-2">
+                            <MapPin size={10} className="text-slate-400" />
+                            <span className="truncate">
+                              {listing.location || listing.departure}
+                            </span>
+                          </div>
+                        )}
+
+                        {/* Price & Action Row */}
+                        <div className="mt-4 pt-3 border-t border-slate-100 flex items-center justify-between gap-1.5">
+                          <div className="min-w-0">
+                            <p className="text-[10px] font-black text-slate-400 uppercase tracking-widest leading-none mb-0.5">
+                              Price
+                            </p>
+                            <div className="flex items-baseline gap-0.5">
+                              <span className="text-base font-black text-slate-900 leading-none">
+                                Rs.{" "}
+                                {isFull
+                                  ? (listing.pricePerDay || 0).toLocaleString()
+                                  : (
+                                      listing.pricePerSeat || 0
+                                    ).toLocaleString()}
+                              </span>
+                              <span className="text-xs font-bold text-slate-400">
+                                /{isFull ? "day" : "seat"}
+                              </span>
+                            </div>
+                          </div>
+
+                          <button
+                            onClick={() => navigate(`/listings/${listing._id}`)}
+                            className="px-2.5 py-1.5 bg-slate-900 hover:bg-blue-600 text-white font-black text-[10px] uppercase tracking-wider rounded-lg transition-all duration-300 shadow-sm hover:shadow-[0_0_8px_rgba(37,99,235,0.25)] active:scale-[0.98] shrink-0"
+                          >
+                            View Details
+                          </button>
+                        </div>
                       </div>
                     </div>
-
-                    <div className="mt-5">
-                      <button
-                        onClick={() => navigate(`/listings/${listing._id}`)}
-                        className="w-full py-3 bg-slate-900 hover:bg-blue-600 text-white font-bold text-xs uppercase tracking-wider rounded-xl transition-all duration-300 shadow-md hover:shadow-lg hover:-translate-y-0.5"
-                      >
-                        View Details
-                      </button>
-                    </div>
-                  </div>
-                </div>
-              );
-            })}
+                  );
+                })}
+              </div>
+            )}
           </div>
-        )}
+        </div>
       </main>
 
-      {/* ================= ADVANCED FILTER DRAWER ================= */}
+      {/* ================= SLIDING DRAWER FILTERS (MOBILE ONLY) ================= */}
       {showFilters && (
         <div className="fixed inset-0 z-[120] flex justify-end">
+          {/* Backdrop */}
           <div
-            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm"
+            className="absolute inset-0 bg-slate-900/40 backdrop-blur-sm transition-opacity"
             onClick={() => setShowFilters(false)}
           />
-          <div className="relative w-full max-w-sm h-full bg-white shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right">
-            <div className="p-6 border-b border-slate-100 flex items-center justify-between bg-slate-50/50">
+          {/* Slider Drawer Panel */}
+          <div className="relative w-full max-w-sm h-full bg-white shadow-2xl flex flex-col transform transition-transform animate-in slide-in-from-right duration-200">
+            {/* Header */}
+            <div className="p-4 border-b border-slate-100 flex items-center justify-between bg-slate-50/50 shrink-0">
               <div>
-                <h3 className="text-xl font-black text-slate-900">
-                  Advanced Filters
+                <h3 className="text-sm font-black text-slate-900 uppercase tracking-widest flex items-center gap-1.5">
+                  <SlidersHorizontal size={14} className="text-blue-500" />{" "}
+                  Filter Criteria
                 </h3>
-                <p className="text-[10px] font-bold text-slate-500 uppercase tracking-widest mt-1">
-                  Fine-tune your results
+                <p className="text-[8px] font-bold text-slate-400 uppercase tracking-widest mt-0.5">
+                  Refine Your Results
                 </p>
               </div>
               <button
                 onClick={() => setShowFilters(false)}
-                className="p-2.5 rounded-xl bg-white border border-slate-200 text-slate-500 hover:text-slate-900 hover:bg-slate-50 transition-colors shadow-sm"
+                className="p-2 rounded-xl bg-white border border-slate-200 text-slate-400 hover:text-slate-800 transition-colors shadow-sm"
               >
-                <X size={16} />
+                <X size={14} />
               </button>
             </div>
 
-            <div className="flex-1 overflow-y-auto p-6 space-y-10 bg-white">
-              <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                  <Fuel size={14} className="text-blue-500" /> Fuel Profile
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {["Electric", "Hybrid", "Diesel", "Gasoline"].map((t) => (
-                    <button
-                      key={t}
-                      onClick={() =>
-                        setFuelType((prev) =>
-                          prev.includes(t)
-                            ? prev.filter((x) => x !== t)
-                            : [...prev, t],
-                        )
-                      }
-                      className={`px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${fuelType.includes(t) ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"}`}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                  <Gauge size={14} className="text-blue-500" /> Transmission
-                </p>
-                <div className="grid grid-cols-2 gap-3">
-                  {["Automatic", "Manual"].map((t) => (
-                    <button
-                      key={t}
-                      onClick={() =>
-                        setTransmission((prev) =>
-                          prev.includes(t)
-                            ? prev.filter((x) => x !== t)
-                            : [...prev, t],
-                        )
-                      }
-                      className={`px-4 py-3 rounded-2xl text-[10px] font-black uppercase tracking-widest border transition-all ${transmission.includes(t) ? "bg-blue-600 border-blue-600 text-white shadow-md shadow-blue-500/20" : "bg-white border-slate-200 text-slate-500 hover:border-slate-300 hover:bg-slate-50"}`}
-                    >
-                      {t}
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-4">
-                <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                  <Users size={14} className="text-blue-500" /> Passenger
-                  Capacity
-                </p>
-                <div className="flex items-center gap-2 p-1.5 rounded-2xl bg-slate-50 border border-slate-200">
-                  {[2, 4, 5, 7].map((n) => (
-                    <button
-                      key={n}
-                      onClick={() => setMinSeats(minSeats === n ? null : n)}
-                      className={`flex-1 py-3 rounded-xl text-xs font-black transition-all ${minSeats === n ? "bg-white text-blue-600 shadow-sm border border-slate-100" : "text-slate-500 hover:text-slate-700"}`}
-                    >
-                      {n}+
-                    </button>
-                  ))}
-                </div>
-              </div>
-
-              <div className="space-y-5">
-                <div className="flex items-center justify-between">
-                  <p className="text-[10px] font-black uppercase tracking-widest text-slate-400 flex items-center gap-2">
-                    <span className="w-2 h-2 rounded-full bg-blue-500"></span>{" "}
-                    Maximum Price
-                  </p>
-                  <p className="text-sm font-black text-blue-600 bg-blue-50 px-3 py-1 rounded-lg">
-                    Rs. {maxPrice}
-                  </p>
-                </div>
-                <div className="pt-2">
-                  <input
-                    type="range"
-                    min="0"
-                    max="100000"
-                    step="1000"
-                    value={maxPrice}
-                    onChange={(e) => setMaxPrice(parseInt(e.target.value, 10))}
-                    className="w-full accent-blue-600 h-2 bg-slate-200 rounded-lg appearance-none cursor-pointer"
-                  />
-                  <div className="flex justify-between text-[10px] font-bold text-slate-400 mt-3">
-                    <span>Rs. 0</span>
-                    <span>Rs. 100,000</span>
-                  </div>
-                </div>
-              </div>
+            {/* Scrollable Filters Content */}
+            <div className="flex-1 overflow-y-auto p-5 scrollbar-thin">
+              <FilterControls />
             </div>
 
-            <div className="p-6 border-t border-slate-100 bg-slate-50/50 space-y-3">
+            {/* Sticky bottom Action Bar */}
+            <div className="p-4 border-t border-slate-100 bg-slate-50/50 flex gap-2 shrink-0">
               <button
                 onClick={() => setShowFilters(false)}
-                className="w-full py-4 rounded-xl bg-blue-600 text-white font-bold text-[11px] uppercase tracking-widest hover:bg-blue-700 transition-all shadow-md hover:shadow-lg shadow-blue-500/20 disabled:opacity-50"
+                className="flex-1 py-3.5 rounded-xl bg-blue-600 hover:bg-blue-700 text-white font-extrabold text-[10px] uppercase tracking-widest transition-all shadow-md shadow-blue-500/10 active:scale-95"
               >
                 Apply Criteria
               </button>
-
-              <button
-                onClick={clearAllAdvanced}
-                className="w-full py-4 rounded-xl bg-white border border-slate-200 text-slate-600 font-bold text-[11px] uppercase tracking-widest hover:bg-slate-50 hover:text-slate-900 transition-all shadow-sm"
-              >
-                Reset Defaults
-              </button>
+              {activeAdvCount > 0 && (
+                <button
+                  onClick={() => {
+                    clearAllAdvanced();
+                    setShowFilters(false);
+                  }}
+                  className="py-3.5 px-4 rounded-xl bg-white border border-slate-200 hover:bg-slate-50 text-[10px] font-extrabold uppercase tracking-widest text-slate-500 transition-all"
+                >
+                  Reset
+                </button>
+              )}
             </div>
           </div>
         </div>
