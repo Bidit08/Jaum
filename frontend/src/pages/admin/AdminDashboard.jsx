@@ -357,7 +357,7 @@ const AdminDashboard = () => {
                   src={
                     adminUser.profilePicture.startsWith("http")
                       ? adminUser.profilePicture
-                      : `http://localhost:5000${adminUser.profilePicture}`
+                      : `https://jaum-t3no.onrender.com${adminUser.profilePicture}`
                   }
                   alt={adminUser.name}
                   className="w-9 h-9 rounded-xl object-cover border border-slate-200 shadow-sm"
