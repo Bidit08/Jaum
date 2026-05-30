@@ -245,7 +245,7 @@ import {
   MapPin,
 } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const StepReview = ({ formData }) => {
   return (
