@@ -16,7 +16,7 @@ const ReviewCard = ({ review }) => {
           <div className="w-12 h-12 rounded-full bg-slate-50 border border-slate-200 flex items-center justify-center text-blue-600 font-bold overflow-hidden">
             {user?.profilePicture ? (
               <img
-                src={`http://localhost:5000${user.profilePicture}`}
+                src={`https://jaum-t3no.onrender.com${user.profilePicture}`}
                 alt={user.name}
                 className="w-full h-full object-cover"
               />
