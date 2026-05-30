@@ -36,7 +36,7 @@ const GET_IMAGE_URL = (path) => {
   if (!path) return null;
   if (path.startsWith("http")) return path;
   const cleanPath = path.startsWith("/") ? path.substring(1) : path;
-  return `http://localhost:5000/${cleanPath}`;
+  return `https://jaum-t3no.onrender.com/${cleanPath}`;
 };
 
 const AdminOverview = () => {
