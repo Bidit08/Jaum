@@ -8,7 +8,7 @@ const CompareCard = ({ listing }) => {
 
   const isSelected = selectedVehicles.some((v) => v._id === listing._id);
   const isFull = listing.listingType === "full";
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
   const handleToggle = () => {
     if (isSelected) {
