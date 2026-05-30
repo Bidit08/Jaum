@@ -820,7 +820,7 @@ import api from "../../utils/api";
 import { toast } from "react-toastify";
 import { Camera, User, AtSign, Calendar, Mail, FileText } from "lucide-react";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const ProfileInfo = ({ user, setUser }) => {
   const [form, setForm] = useState({
