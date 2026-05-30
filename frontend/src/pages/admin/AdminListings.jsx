@@ -40,7 +40,7 @@ const GET_IMAGE_URL = (path) => {
   if (path.startsWith("http")) return path;
   // Ensure we don't have double slashes if path already starts with /
   const cleanPath = path.startsWith("/") ? path.substring(1) : path;
-  return `https://jaum-t3no.onrender.com${cleanPath}`;
+  return `https://jaum-t3no.onrender.com/${cleanPath}`;
 };
 
 const FILTERS = [
