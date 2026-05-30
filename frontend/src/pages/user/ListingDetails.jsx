@@ -3288,7 +3288,7 @@ const destinationIcon = new L.Icon({
   shadowSize: [41, 41],
 });
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const Skeleton = ({ className }) => (
   <div className={`animate-pulse bg-slate-200 rounded-2xl ${className}`}></div>
