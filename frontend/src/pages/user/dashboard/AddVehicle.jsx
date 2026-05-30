@@ -1857,8 +1857,9 @@ const AddVehiclePage = () => {
           <div
             className="absolute top-[40%] left-12 h-[2px] bg-blue-600 z-0 transition-all duration-700 ease-in-out shadow-[0_0_15px_rgba(37,99,235,0.25)]"
             style={{
-              width: `${((currentStep - 1) / (steps.length - 1)) * (100 - (100 / steps.length) * 1.5)}%`,
-              maxWidth: "calc(100% - 6rem)",
+              // width: `${((currentStep - 1) / (steps.length - 1)) * (100 - (100 / steps.length) * 1.5)}%`,
+              // maxWidth: "calc(100% - 6rem)",
+              width: `calc((100% - 6rem) * ${(currentStep - 1) / (steps.length - 1)})`,
             }}
           />
 
