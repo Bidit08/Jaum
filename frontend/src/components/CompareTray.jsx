@@ -38,7 +38,7 @@ const CompareTray = () => {
                     v.photos?.[0]
                       ? v.photos[0].startsWith("http")
                         ? v.photos[0]
-                        : `http://localhost:5000${v.photos[0]}`
+                        : `https://jaum-t3no.onrender.com${v.photos[0]}`
                       : "/placeholder-car.jpg"
                   }
                   alt={v.name}
