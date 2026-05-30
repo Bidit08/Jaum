@@ -206,7 +206,7 @@ const ReceiptCard = ({ booking }) => {
     }
   };
 
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
   return (
     <div className="bg-white rounded-[2.5rem] shadow-[0_30px_100px_-20px_rgba(0,0,0,0.08)] border border-slate-100 overflow-hidden w-full mx-auto relative group">
