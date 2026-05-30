@@ -83,15 +83,165 @@
 
 // export default AdminDashboard;
 
+// import React, { useState, useEffect } from "react";
+// import { Outlet, useLocation } from "react-router-dom";
+// import { Menu, Bell } from "lucide-react";
+// import AdminSidebar from "../../components/admin/AdminSidebar";
+
+// const AdminDashboard = () => {
+//   const [isCollapsed, setIsCollapsed] = useState(false);
+//   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+//   const location = useLocation();
+
+//   const getPageTitle = () => {
+//     switch (location.pathname) {
+//       case "/admin":
+//         return "Dashboard Overview";
+//       case "/admin/listings":
+//         return "Vehicle Listings";
+//       case "/admin/bookings":
+//         return "Booking Management";
+//       case "/admin/payments":
+//         return "Payment Management";
+//       case "/admin/refunds":
+//         return "Refund Management";
+//       case "/admin/users":
+//         return "User Management";
+//       case "/admin/reviews":
+//         return "Review Management";
+//       default:
+//         return "Admin Panel";
+//     }
+//   };
+
+//   useEffect(() => {
+//     setIsMobileMenuOpen(false);
+//   }, [location.pathname]);
+
+//   return (
+//     <div className="flex h-screen bg-slate-50 text-slate-900 overflow-hidden">
+//       {/* Desktop Sidebar */}
+//       <div className="hidden md:block h-full shrink-0">
+//         <AdminSidebar
+//           isCollapsed={isCollapsed}
+//           setIsCollapsed={setIsCollapsed}
+//         />
+//       </div>
+
+//       {/* Mobile Overlay */}
+//       {isMobileMenuOpen && (
+//         <div
+//           className="fixed inset-0 z-[60] bg-slate-900/20 backdrop-blur-sm md:hidden"
+//           onClick={() => setIsMobileMenuOpen(false)}
+//         />
+//       )}
+
+//       {/* Mobile Sidebar */}
+//       <div
+//         className={`
+//           fixed inset-y-0 left-0 z-[70] transition-transform duration-300 transform md:hidden
+//           ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+//         `}
+//       >
+//         <AdminSidebar
+//           isCollapsed={false}
+//           setIsCollapsed={() => {}}
+//           isMobile
+//           onClose={() => setIsMobileMenuOpen(false)}
+//         />
+//       </div>
+
+//       {/* Main Content */}
+//       <div className="flex-1 flex flex-col min-w-0 h-full overflow-hidden relative">
+//         {/* Top Navbar */}
+//         <header className="h-20 border-b border-slate-200 bg-white/80 backdrop-blur-md flex items-center justify-between px-6 shrink-0 z-40">
+//           <div className="flex items-center gap-4">
+//             <button
+//               onClick={() => setIsMobileMenuOpen(true)}
+//               className="md:hidden p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-lg transition-colors"
+//             >
+//               <Menu size={24} />
+//             </button>
+
+//             <h1 className="text-xl font-bold text-slate-900 md:text-2xl tracking-tight">
+//               {getPageTitle()}
+//             </h1>
+//           </div>
+
+//           <div className="flex items-center gap-3 md:gap-6">
+//             {/* Notifications */}
+//             <button className="relative p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all">
+//               <Bell size={20} />
+//               <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></span>
+//             </button>
+
+//             <div className="h-8 w-px bg-slate-200 hidden md:block"></div>
+
+//             {/* Admin User Profile */}
+//             <div className="flex items-center gap-3 group cursor-pointer">
+//               <div className="hidden md:flex flex-col items-end">
+//                 <span className="text-sm font-semibold text-slate-900">
+//                   Site Admin
+//                 </span>
+//                 <span className="text-[10px] text-rose-600 font-bold tracking-widest uppercase">
+//                   Admin Panel
+//                 </span>
+//               </div>
+//               <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 font-bold flex items-center justify-center border border-rose-200 group-hover:border-rose-400 transition-colors shadow-sm">
+//                 A
+//               </div>
+//             </div>
+//           </div>
+//         </header>
+
+//         {/* Page Content */}
+//         <main className="flex-1 overflow-y-auto p-4 md:p-8">
+//           <div className="max-w-7xl mx-auto animate-in fade-in slide-in-from-bottom-2 duration-500">
+//             <Outlet />
+//           </div>
+//         </main>
+//       </div>
+//     </div>
+//   );
+// };
+
+// export default AdminDashboard;
+
 import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Menu, Bell } from "lucide-react";
 import AdminSidebar from "../../components/admin/AdminSidebar";
+import NotificationPanel from "../../components/NotificationPanel";
+import api from "../../utils/api";
 
 const AdminDashboard = () => {
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [adminUser, setAdminUser] = useState(() => {
+    try {
+      return JSON.parse(localStorage.getItem("user")) || {};
+    } catch {
+      return {};
+    }
+  });
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const location = useLocation();
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await api.get("/notifications");
+      setUnreadCount(res.data.filter((n) => !n.isRead).length);
+    } catch (err) {
+      console.error("Failed to fetch notification count", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 60000); // Poll every 60s
+    return () => clearInterval(interval);
+  }, []);
 
   const getPageTitle = () => {
     switch (location.pathname) {
@@ -170,10 +320,25 @@ const AdminDashboard = () => {
 
           <div className="flex items-center gap-3 md:gap-6">
             {/* Notifications */}
-            <button className="relative p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all">
-              <Bell size={20} />
-              <span className="absolute top-2.5 right-2.5 w-2 h-2 bg-blue-600 rounded-full border-2 border-white"></span>
-            </button>
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="relative p-2 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all active:scale-95"
+              >
+                <Bell size={20} />
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2 min-w-4 h-4 bg-blue-600 text-white text-[9px] font-bold rounded-full border border-white flex items-center justify-center px-1">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+              <NotificationPanel
+                isOpen={isNotificationsOpen}
+                onClose={() => setIsNotificationsOpen(false)}
+                onUpdate={fetchUnreadCount}
+                theme="light"
+              />
+            </div>
 
             <div className="h-8 w-px bg-slate-200 hidden md:block"></div>
 
@@ -181,15 +346,27 @@ const AdminDashboard = () => {
             <div className="flex items-center gap-3 group cursor-pointer">
               <div className="hidden md:flex flex-col items-end">
                 <span className="text-sm font-semibold text-slate-900">
-                  Site Admin
+                  {adminUser.name || "Site Admin"}
                 </span>
                 <span className="text-[10px] text-rose-600 font-bold tracking-widest uppercase">
-                  Admin Panel
+                  {adminUser.role || "Admin"}
                 </span>
               </div>
-              <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 font-bold flex items-center justify-center border border-rose-200 group-hover:border-rose-400 transition-colors shadow-sm">
-                A
-              </div>
+              {adminUser.profilePicture ? (
+                <img
+                  src={
+                    adminUser.profilePicture.startsWith("http")
+                      ? adminUser.profilePicture
+                      : `http://localhost:5000${adminUser.profilePicture}`
+                  }
+                  alt={adminUser.name}
+                  className="w-9 h-9 rounded-xl object-cover border border-slate-200 shadow-sm"
+                />
+              ) : (
+                <div className="w-9 h-9 rounded-xl bg-rose-100 text-rose-600 font-bold flex items-center justify-center border border-rose-200 group-hover:border-rose-400 transition-colors shadow-sm">
+                  {(adminUser.name || "A").charAt(0).toUpperCase()}
+                </div>
+              )}
             </div>
           </div>
         </header>

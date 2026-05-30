@@ -600,6 +600,8 @@
 // };
 
 import Listing from "../models/Listing.js";
+import User from "../models/User.js";
+import { createNotification } from "../utils/notificationHelper.js";
 
 /* =======================
    CREATE LISTING
@@ -684,6 +686,22 @@ export const createListing = async (req, res) => {
       owner: req.user.id,
       isApproved: false, // admin approval required
     });
+
+    // 🔔 Notify Admins about the new pending listing
+    try {
+      const admins = await User.find({ role: "admin" });
+      for (const admin of admins) {
+        await createNotification({
+          user: admin._id,
+          title: "New Pending Listing",
+          message: `A new listing "${listing.name}" by ${req.user.name || "a user"} is pending approval.`,
+          type: "system",
+          link: "/admin/listings",
+        });
+      }
+    } catch (err) {
+      console.error("Failed to notify admins for new listing:", err.message);
+    }
 
     res.status(201).json(listing);
   } catch (err) {

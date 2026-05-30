@@ -3474,7 +3474,7 @@ const AllListings = () => {
       </div>
 
       {/* 8. Availability Switch */}
-      <div className="flex items-center justify-between pt-2 border-t border-slate-100">
+      {/* <div className="flex items-center justify-between pt-2 border-t border-slate-100">
         <div className="space-y-0.5">
           <p className="text-xs font-black text-slate-800 uppercase tracking-wider">
             Available Only
@@ -3492,7 +3492,7 @@ const AllListings = () => {
           />
           <div className="w-9 h-5 bg-slate-200 rounded-full peer peer-checked:after:translate-x-full peer-checked:after:border-white after:content-[''] after:absolute after:top-0.5 after:left-[2px] after:bg-white after:border-slate-300 after:border after:rounded-full after:h-4 after:w-4 after:transition-all peer-checked:bg-blue-600"></div>
         </label>
-      </div>
+      </div> */}
 
       {/* 9. Reset Button */}
       {activeAdvCount > 0 && (
@@ -3605,7 +3605,7 @@ const AllListings = () => {
                     <option value="newest">Sort: Newest</option>
                     <option value="price-asc">Price: Low to High</option>
                     <option value="price-desc">Price: High to Low</option>
-                    <option value="popularity">Most Popular</option>
+                    {/* <option value="popularity">Most Popular</option> */}
                   </select>
                   <ChevronDown
                     className="absolute right-4 top-1/2 -translate-y-1/2 text-slate-400 pointer-events-none"

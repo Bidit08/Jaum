@@ -1014,7 +1014,21 @@ export const approveListing = async (req, res) => {
     }
 
     listing.isApproved = true;
+    listing.isRejected = false;
     await listing.save();
+
+    // 🔔 Notify the listing owner
+    try {
+      await createNotification({
+        user: listing.owner,
+        title: "Listing Approved ✅",
+        message: `Your listing "${listing.name}" has been approved by the admin and is now live!`,
+        type: "system",
+        link: "/dashboard/my-listings",
+      });
+    } catch (notifErr) {
+      console.error("Failed to send approval notification:", notifErr.message);
+    }
 
     res.json({ message: "Listing approved", listing });
   } catch (err) {
@@ -1036,6 +1050,19 @@ export const rejectListing = async (req, res) => {
     listing.isApproved = false;
     listing.isRejected = true;
     await listing.save();
+
+    // 🔔 Notify the listing owner
+    try {
+      await createNotification({
+        user: listing.owner,
+        title: "Listing Rejected ❌",
+        message: `Your listing "${listing.name}" was rejected by the admin. Please review and resubmit with corrections.`,
+        type: "system",
+        link: "/dashboard/my-listings",
+      });
+    } catch (notifErr) {
+      console.error("Failed to send rejection notification:", notifErr.message);
+    }
 
     res.json({ message: "Listing rejected", listing });
   } catch (err) {

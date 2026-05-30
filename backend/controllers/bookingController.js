@@ -347,7 +347,7 @@ export const getMyBookings = async (req, res) => {
     const bookings = await Booking.find({
       user: req.user.id,
     })
-      .populate("listing", "name photos listingType")
+      .populate("listing", "name photos listingType location departure destination")
       .sort({ createdAt: -1 });
 
     res.json(bookings);

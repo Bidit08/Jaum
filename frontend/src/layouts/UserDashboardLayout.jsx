@@ -144,6 +144,8 @@ import React, { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
 import { Menu, Bell, Search } from "lucide-react";
 import SidebarNavigation from "../components/SidebarNavigation";
+import NotificationPanel from "../components/NotificationPanel";
+import api from "../utils/api";
 
 const BACKEND = "http://localhost:5000";
 
@@ -173,7 +175,24 @@ const UserDashboardLayout = () => {
   const authUser = useAuthUser();
   const [isCollapsed, setIsCollapsed] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [unreadCount, setUnreadCount] = useState(0);
+  const [isNotificationsOpen, setIsNotificationsOpen] = useState(false);
   const location = useLocation();
+
+  const fetchUnreadCount = async () => {
+    try {
+      const res = await api.get("/notifications");
+      setUnreadCount(res.data.filter((n) => !n.isRead).length);
+    } catch (err) {
+      console.error("Failed to fetch notification count", err);
+    }
+  };
+
+  useEffect(() => {
+    fetchUnreadCount();
+    const interval = setInterval(fetchUnreadCount, 60000); // Poll every 60s
+    return () => clearInterval(interval);
+  }, []);
 
   const getPageTitle = () => {
     const path = location.pathname.split("/").pop() || "Dashboard";
@@ -251,10 +270,25 @@ const UserDashboardLayout = () => {
             </div>
 
             {/* Notifications */}
-            {/* <button className="relative p-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 group">
-              <Bell size={20} className="group-hover:animate-swing" />
-              <span className="absolute top-2 right-2.5 w-2 h-2 bg-rose-500 rounded-full border-2 border-white shadow-sm shadow-rose-500/40"></span>
-            </button> */}
+            <div className="relative">
+              <button
+                onClick={() => setIsNotificationsOpen(!isNotificationsOpen)}
+                className="relative p-2.5 text-slate-500 hover:text-slate-900 hover:bg-slate-100 rounded-xl transition-all duration-300 hover:scale-105 active:scale-95 group"
+              >
+                <Bell size={20} className="group-hover:animate-swing" />
+                {unreadCount > 0 && (
+                  <span className="absolute top-2 right-2.5 min-w-4 h-4 bg-rose-500 text-white text-[9px] font-bold rounded-full border border-white flex items-center justify-center px-1 shadow-sm shadow-rose-500/40">
+                    {unreadCount > 9 ? "9+" : unreadCount}
+                  </span>
+                )}
+              </button>
+              <NotificationPanel
+                isOpen={isNotificationsOpen}
+                onClose={() => setIsNotificationsOpen(false)}
+                onUpdate={fetchUnreadCount}
+                theme="light"
+              />
+            </div>
 
             <div className="h-8 w-px bg-slate-200 hidden sm:block"></div>
 
