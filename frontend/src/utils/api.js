@@ -9,7 +9,7 @@
 import axios from "axios";
 
 const api = axios.create({
-  baseURL: "http://localhost:5000/api",
+  baseURL: "https://jaum-t3no.onrender.com/api",
 });
 
 // 🔐 Attach token automatically
