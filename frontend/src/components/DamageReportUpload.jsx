@@ -115,7 +115,7 @@ const DamageReportUpload = ({
                 src={
                   img.startsWith("http")
                     ? img
-                    : `http://localhost:5000${img.replace(/\\/g, "/").startsWith("/") ? "" : "/"}${img.replace(/\\/g, "/")}`
+                    : `https://jaum-t3no.onrender.com${img.replace(/\\/g, "/").startsWith("/") ? "" : "/"}${img.replace(/\\/g, "/")}`
                 }
                 alt=""
                 className="w-full h-full object-cover transition duration-300 group-hover:scale-110"
