@@ -147,7 +147,7 @@ import SidebarNavigation from "../components/SidebarNavigation";
 import NotificationPanel from "../components/NotificationPanel";
 import api from "../utils/api";
 
-const BACKEND = "http://localhost:5000";
+const BACKEND = "https://jaum-t3no.onrender.com";
 
 const useAuthUser = () => {
   const [user, setUser] = useState(() => {

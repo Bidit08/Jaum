@@ -201,7 +201,7 @@ const IncomingVisits = () => {
                   <img
                     src={
                       visit.vehicleId?.photos?.[0]
-                        ? `http://localhost:5000${visit.vehicleId.photos[0]}`
+                        ? `https://jaum-t3no.onrender.com${visit.vehicleId.photos[0]}`
                         : "/placeholder-car.jpg"
                     }
                     alt={visit.vehicleId?.name}

@@ -13,7 +13,7 @@ import {
 } from "lucide-react";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const Chat = () => {
   const [conversations, setConversations] = useState([]);

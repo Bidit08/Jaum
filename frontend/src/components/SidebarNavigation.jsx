@@ -1028,7 +1028,7 @@ import {
 } from "lucide-react";
 import { cn } from "@/lib/utils";
 
-const BACKEND = "http://localhost:5000";
+const BACKEND = "https://jaum-t3no.onrender.com";
 
 const useAuthUser = () => {
   const [user, setUser] = useState(() => {

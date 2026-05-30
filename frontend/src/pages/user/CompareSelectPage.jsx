@@ -8,7 +8,7 @@ import { useNavigate } from "react-router-dom";
 import CompareCard from "../../components/CompareCard";
 import CompareTray from "../../components/CompareTray";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const CompareSelectPage = () => {
   const [listings, setListings] = useState([]);

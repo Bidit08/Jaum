@@ -382,7 +382,7 @@ import {
 import { Link } from "react-router-dom";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 // ── Confirmation Modal ──────────────────────────────────────────────────────
 const ConfirmCashModal = ({ booking, onConfirm, onCancel, loading }) => (

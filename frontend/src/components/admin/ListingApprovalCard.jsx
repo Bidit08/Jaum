@@ -65,7 +65,7 @@ import { Car, Users, CheckCircle, XCircle, Clock } from "lucide-react";
 import api from "../../utils/api";
 import { toast } from "react-toastify";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const ListingApprovalCard = ({ listing, onApproved, onRejected }) => {
   const approveListing = async () => {

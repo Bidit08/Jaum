@@ -145,7 +145,7 @@ const StepPhotos = ({ formData, updateFormData }) => {
             className="relative aspect-square rounded-xl overflow-hidden border"
           >
             <img
-              src={`http://localhost:5000${photo}`}
+              src={`https://jaum-t3no.onrender.com${photo}`}
               alt="Vehicle"
               className="w-full h-full object-cover"
             />

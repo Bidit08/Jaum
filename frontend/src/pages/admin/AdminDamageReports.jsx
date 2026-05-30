@@ -62,7 +62,7 @@ const AdminDamageReports = () => {
     if (!path) return "/placeholder-car.jpg";
     if (path.startsWith("http")) return path;
     const normalizedPath = path.replace(/\\/g, "/");
-    return `http://localhost:5000${normalizedPath.startsWith("/") ? "" : "/"}${normalizedPath}`;
+    return `https://jaum-t3no.onrender.com${normalizedPath.startsWith("/") ? "" : "/"}${normalizedPath}`;
   };
 
   return (

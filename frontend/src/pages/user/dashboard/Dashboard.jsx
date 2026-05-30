@@ -651,7 +651,7 @@ import api from "../../../utils/api";
 
 // ── helpers ───────────────────────────────────────────────────────────────────
 
-const BACKEND = "http://localhost:5000";
+const BACKEND = "https://jaum-t3no.onrender.com";
 
 const imgSrc = (photos) =>
   photos?.[0]

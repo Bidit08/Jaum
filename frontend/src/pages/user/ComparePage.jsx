@@ -339,7 +339,7 @@ const ComparePage = () => {
     );
   }
 
-  const BACKEND_URL = "http://localhost:5000";
+  const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
   const getLowestPriceId = () => {
     if (selectedVehicles.length < 2) return null;
