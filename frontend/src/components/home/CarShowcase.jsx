@@ -467,7 +467,7 @@ import { Users, Fuel, ArrowRight, Zap } from "lucide-react";
 import { Link } from "react-router-dom";
 import api from "../../utils/api";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const CarShowcase = () => {
   const [cars, setCars] = useState([]);
