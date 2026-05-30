@@ -369,7 +369,7 @@ import {
 import NotificationPanel from "./NotificationPanel";
 import { socket } from "@/utils/socket";
 
-const BACKEND_URL = "http://localhost:5000";
+const BACKEND_URL = "https://jaum-t3no.onrender.com";
 
 const Navbar = () => {
   const navigate = useNavigate();
