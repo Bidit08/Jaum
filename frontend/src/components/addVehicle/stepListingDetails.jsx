@@ -388,12 +388,77 @@ const StepListingDetails = ({ formData, updateFormData }) => {
     }
     setIsLocating(true);
     navigator.geolocation.getCurrentPosition(
-      (position) => {
+      async (position) => {
+        const { latitude, longitude } = position.coords;
         updateFormData({
-          latitude: position.coords.latitude,
-          longitude: position.coords.longitude,
+          latitude,
+          longitude,
         });
+
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.display_name) {
+              updateFormData({
+                location: data.display_name,
+                latitude,
+                longitude,
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error reverse geocoding location", error);
+        } finally {
+          setIsLocating(false);
+        }
+      },
+      (error) => {
+        console.error("Error obtaining location", error);
+        alert(
+          "Could not get your location. Please ensure location access is allowed.",
+        );
         setIsLocating(false);
+      },
+    );
+  };
+
+  const handleGetDepartureLocation = (e) => {
+    e.preventDefault();
+    if (!("geolocation" in navigator)) {
+      alert("Geolocation is not supported by your browser");
+      return;
+    }
+    setIsLocating(true);
+    navigator.geolocation.getCurrentPosition(
+      async (position) => {
+        const { latitude, longitude } = position.coords;
+        updateFormData({
+          departureLatitude: latitude,
+          departureLongitude: longitude,
+        });
+
+        try {
+          const response = await fetch(
+            `https://nominatim.openstreetmap.org/reverse?format=json&lat=${latitude}&lon=${longitude}`,
+          );
+          if (response.ok) {
+            const data = await response.json();
+            if (data && data.display_name) {
+              updateFormData({
+                departure: data.display_name,
+                departureLatitude: latitude,
+                departureLongitude: longitude,
+              });
+            }
+          }
+        } catch (error) {
+          console.error("Error reverse geocoding departure location", error);
+        } finally {
+          setIsLocating(false);
+        }
       },
       (error) => {
         console.error("Error obtaining location", error);
@@ -410,9 +475,9 @@ const StepListingDetails = ({ formData, updateFormData }) => {
       <div className="space-y-6 animate-in fade-in slide-in-from-bottom-4 duration-500">
         <div className="space-y-2">
           <h2 className="text-xl font-bold text-slate-900">Rental Terms</h2>
-          <p className="text-slate-500 text-sm">
+          {/* <p className="text-slate-500 text-sm">
             Define how much you want to charge and where the vehicle is located.
-          </p>
+          </p> */}
         </div>
 
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -544,30 +609,7 @@ const StepListingDetails = ({ formData, updateFormData }) => {
               <Map size={18} className="text-blue-600" /> Departure Location
             </h3>
             <button
-              onClick={(e) => {
-                e.preventDefault();
-                if (!("geolocation" in navigator)) {
-                  alert("Geolocation is not supported by your browser");
-                  return;
-                }
-                setIsLocating(true);
-                navigator.geolocation.getCurrentPosition(
-                  (position) => {
-                    updateFormData({
-                      departureLatitude: position.coords.latitude,
-                      departureLongitude: position.coords.longitude,
-                    });
-                    setIsLocating(false);
-                  },
-                  (error) => {
-                    console.error("Error obtaining location", error);
-                    alert(
-                      "Could not get your location. Please ensure location access is allowed.",
-                    );
-                    setIsLocating(false);
-                  },
-                );
-              }}
+              onClick={handleGetDepartureLocation}
               disabled={isLocating}
               className="flex items-center gap-2 text-xs font-bold bg-blue-100 text-blue-700 px-3 py-1.5 rounded-lg hover:bg-blue-200 transition-colors disabled:opacity-50"
             >
