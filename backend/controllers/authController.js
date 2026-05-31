@@ -741,6 +741,22 @@ const generateResetToken = (id) =>
     expiresIn: "15m",
   });
 
+// Strong password validation helper
+const validatePassword = (password) => {
+  if (!password) return false;
+  const hasUppercase = /[A-Z]/.test(password);
+  const hasLowercase = /[a-z]/.test(password);
+  const hasNumber = /[0-9]/.test(password);
+  const hasSpecial = /[^A-Za-z0-9]/.test(password);
+  return (
+    password.length >= 8 &&
+    hasUppercase &&
+    hasLowercase &&
+    hasNumber &&
+    hasSpecial
+  );
+};
+
 // ===============================
 // REGISTRATION OTP
 // ===============================
@@ -751,9 +767,18 @@ const generateResetToken = (id) =>
  */
 export const sendOtp = async (req, res) => {
   try {
-    const { name, email } = req.body;
+    const { name, email, password } = req.body;
 
     if (!email) return res.status(400).json({ message: "Email is required" });
+    if (!password)
+      return res.status(400).json({ message: "Password is required" });
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      });
+    }
 
     const userExists = await User.findOne({ email });
     if (userExists)
@@ -795,6 +820,13 @@ export const verifyOtp = async (req, res) => {
 
     if (!email || !password || !name || !otp)
       return res.status(400).json({ message: "Missing required fields" });
+
+    if (!validatePassword(password)) {
+      return res.status(400).json({
+        message:
+          "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      });
+    }
 
     const latest = await Otp.findOne({ email }).sort({ createdAt: -1 });
     if (!latest)

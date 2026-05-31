@@ -902,6 +902,24 @@ export default function Signup() {
       return;
     }
 
+    const hasUppercase = /[A-Z]/.test(password);
+    const hasLowercase = /[a-z]/.test(password);
+    const hasNumber = /[0-9]/.test(password);
+    const hasSpecial = /[^A-Za-z0-9]/.test(password);
+
+    if (
+      password.length < 8 ||
+      !hasUppercase ||
+      !hasLowercase ||
+      !hasNumber ||
+      !hasSpecial
+    ) {
+      setError(
+        "Password must be at least 8 characters long and include at least one uppercase letter, one lowercase letter, one number, and one special character.",
+      );
+      return;
+    }
+
     try {
       await api.post("/auth/send-otp", { name, email, password });
 

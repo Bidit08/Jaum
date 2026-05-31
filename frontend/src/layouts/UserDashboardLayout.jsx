@@ -255,7 +255,7 @@ const UserDashboardLayout = () => {
 
           <div className="flex items-center gap-6">
             {/* Glass Search Bar */}
-            <div className="hidden sm:flex items-center relative group">
+            {/* <div className="hidden sm:flex items-center relative group">
               <Search
                 size={16}
                 className="absolute left-4 text-slate-400 group-focus-within:text-blue-600 transition-colors z-10"
@@ -267,7 +267,7 @@ const UserDashboardLayout = () => {
                            rounded-full py-2.5 pl-11 pr-5 w-48 lg:w-72 text-sm font-medium text-slate-700 placeholder:text-slate-400
                            focus:outline-none transition-all duration-300 relative"
               />
-            </div>
+            </div> */}
 
             {/* Notifications */}
             <div className="relative">
