@@ -139,26 +139,60 @@
 // export default sendEmail;
 
 // backend/utils/sendEmail.js
+// import nodemailer from "nodemailer";
+
+// const sendEmail = async ({ email, subject, html }) => {
+//   try {
+//     const transporter = nodemailer.createTransport({
+//       service: "gmail",
+//       auth: {
+//         user: process.env.SMTP_EMAIL,
+//         pass: process.env.SMTP_PASSWORD,
+//       },
+//     });
+
+//     await transporter.sendMail({
+//       from: `"Jaum Rentals" <${process.env.SMTP_EMAIL}>`,
+//       to: email,
+//       subject,
+//       html,
+//     });
+
+//     console.log("Email sent to:", email);
+//   } catch (err) {
+//     console.error("sendEmail error:", err);
+//     throw err;
+//   }
+// };
+
+// export default sendEmail;
+
 import nodemailer from "nodemailer";
 
 const sendEmail = async ({ email, subject, html }) => {
   try {
     const transporter = nodemailer.createTransport({
-      service: "gmail",
+      host: "smtp.gmail.com",
+      port: 465,
+      secure: true,
       auth: {
         user: process.env.SMTP_EMAIL,
         pass: process.env.SMTP_PASSWORD,
       },
+      connectionTimeout: 30000,
+      greetingTimeout: 30000,
+      socketTimeout: 30000,
     });
 
-    await transporter.sendMail({
+    const info = await transporter.sendMail({
       from: `"Jaum Rentals" <${process.env.SMTP_EMAIL}>`,
       to: email,
       subject,
       html,
     });
 
-    console.log("Email sent to:", email);
+    console.log("✅ Email sent to:", email);
+    console.log("Message ID:", info.messageId);
   } catch (err) {
     console.error("sendEmail error:", err);
     throw err;
