@@ -3454,10 +3454,9 @@ const ListingDetails = () => {
   return (
     <div className="min-h-screen bg-slate-50/50">
       <Navbar />
-
-      <main className="relative max-w-7xl mx-auto px-4 py-12 lg:py-16 pt-20 lg:pt-36">
+      <main className="relative max-w-7xl mx-auto px-4 py-12 lg:py-16 pt-20 lg:pt-25">
         {/* Breadcrumb & Actions */}
-        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-10 gap-4">
+        <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-5 gap-4">
           <button
             onClick={() => navigate(-1)}
             className="flex items-center gap-2 text-slate-500 hover:text-blue-600 font-medium transition-colors group"
@@ -3468,7 +3467,7 @@ const ListingDetails = () => {
             Back to explore
           </button>
 
-          <div className="flex items-center gap-3">
+          {/* <div className="flex items-center gap-3">
             <button
               onClick={() => setIsFavorite(!isFavorite)}
               className="flex items-center gap-2 px-4 py-2 bg-white rounded-full border border-slate-200 shadow-sm hover:shadow-md transition-all active:scale-95 group"
@@ -3488,7 +3487,7 @@ const ListingDetails = () => {
                 Share
               </span>
             </button>
-          </div>
+          </div> */}
         </div>
 
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-10 items-start">
@@ -3908,7 +3907,7 @@ const ListingDetails = () => {
             )}
 
             {/* Owner Details Card */}
-            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
+            {/* <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 flex flex-col sm:flex-row items-start sm:items-center justify-between gap-6">
               <div className="flex items-center gap-4">
                 <div className="w-16 h-16 rounded-full bg-slate-800 flex items-center justify-center text-2xl font-semibold text-white uppercase overflow-hidden shrink-0">
                   {(listing.owner?.name || listing.ownerName || "P")[0]}
@@ -3931,7 +3930,7 @@ const ListingDetails = () => {
                 <MessageCircle size={18} />
                 Message Owner
               </button>
-            </section>
+            </section> */}
 
             {/* Reviews Card */}
             <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 md:p-8 space-y-8">
@@ -4041,6 +4040,34 @@ const ListingDetails = () => {
                 </div>
               </div>
             </div>
+
+            {/* Owner Details Card */}
+            <section className="bg-white rounded-2xl border border-slate-200 shadow-sm p-6 space-y-5">
+              <div className="flex items-center gap-4">
+                <div className="w-14 h-14 rounded-full bg-slate-800 flex items-center justify-center text-xl font-semibold text-white uppercase overflow-hidden shrink-0">
+                  {(listing.owner?.name || listing.ownerName || "P")[0]}
+                </div>
+
+                <div>
+                  <h2 className="text-lg font-semibold text-slate-900">
+                    Hosted by{" "}
+                    {listing.owner?.name || listing.ownerName || "Prasana"}
+                  </h2>
+                  <p className="text-slate-500 text-sm flex items-center gap-2 mt-1">
+                    <Shield size={15} className="text-emerald-500" />
+                    Identity verified
+                  </p>
+                </div>
+              </div>
+
+              <button
+                onClick={handleMessageOwner}
+                className="w-full flex items-center justify-center gap-2 px-5 py-3 bg-blue-50 text-blue-700 hover:bg-blue-100 border border-blue-200 rounded-xl font-bold transition-colors shadow-sm"
+              >
+                <MessageCircle size={18} />
+                Message Owner
+              </button>
+            </section>
 
             {/* Small Trust indicator below card */}
             <div className="flex items-center justify-center gap-2 text-slate-500 text-sm">
